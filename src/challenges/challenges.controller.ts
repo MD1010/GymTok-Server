@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { ChallengeDto as ChallengeDto } from "./challenge.model";
+import { Challenge as Challenge } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
 
 @Controller("Challenges")
@@ -12,7 +12,7 @@ export class ChallengesController {
     @ApiOkResponse({
         status: 200,
         description: "Get all challenges",
-        type: [ChallengeDto],
+        type: [Challenge],
     })
     async getAllArtists() {
         return this.challengesService.findAll();
@@ -22,10 +22,10 @@ export class ChallengesController {
     @ApiOkResponse({
         status: 201,
         description: "Adds new challenge",
-        type: ChallengeDto,
+        type: Challenge,
     })
-    async addChallenge(@Body() challenge: ChallengeDto) {
-        //todo - dor!!!
+    async addChallenge(@Body() challenge: Challenge) {
+        return this.challengesService.addChallenge(challenge);
     }
 
     @Post(":challengeId/Users")

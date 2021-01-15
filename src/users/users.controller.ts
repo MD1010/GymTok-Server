@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { UserDto } from "./user.model";
+import { UserDocument } from "./user.model";
 import { UsersService } from "./users.service";
 
 @Controller("Users")
@@ -12,7 +12,7 @@ export class UserController {
   @ApiOkResponse({
     status: 200,
     description: "Get all users",
-    type: [UserDto],
+    type: [UserDocument],
   })
   async getAllArtists() {
     return this.usersService.findAll();
@@ -22,9 +22,9 @@ export class UserController {
   @ApiOkResponse({
     status: 201,
     description: "Adds new challenge",
-    type: UserDto,
+    type: UserDocument,
   })
-  async addUser(@Body() user: UserDto) {
+  async addUser(@Body() user: UserDocument) {
     //todo - dor!!!
   }
 }

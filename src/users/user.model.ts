@@ -1,11 +1,8 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
+import { ApiProperty } from "@nestjs/swagger";
 import { Document } from "mongoose";
 
-export class UserDto {
-  @ApiResponseProperty()
-  _id: string;
-
+export class User {
   @ApiProperty()
   username: string;
 
@@ -23,7 +20,7 @@ export class UserDto {
 }
 
 @Schema()
-export class User extends Document {
+export class UserDocument extends Document {
   @Prop()
   username: string;
 
@@ -40,4 +37,4 @@ export class User extends Document {
   totalScore: number;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(UserDocument);

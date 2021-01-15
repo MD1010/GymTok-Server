@@ -1,15 +1,21 @@
 import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { UserDto, User } from "./user.model";
+import { User, UserDocument } from "./user.model";
 
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private readonly usersModel: Model<User>
+    @InjectModel(User.name) private readonly usersModel: Model<UserDocument>
   ) { }
 
   async findAll() {
-    return await this.usersModel.find();
+    return this.usersModel.find();
+  }
+
+  async addUser(user: User[]) {
+    const createdUser = new this.usersModel(user);
+
+    return createdUser.save();
   }
 }
