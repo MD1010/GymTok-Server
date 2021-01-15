@@ -1,0 +1,6 @@
+{
+  "MONGO_URL": "mongodb+srv://GymTok:123456!@cluster0.c7zju.mongodb.net/GymTok?retryWrites=true&w=majority",
+  "USERS_COLLECTION": "users",
+  "CHALLENGES_COLLECTION": "challenges",
+  "PORT": 8080
+}
