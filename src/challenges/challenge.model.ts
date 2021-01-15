@@ -2,7 +2,7 @@ import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { Document } from "mongoose";
 
-export class ChallengeDTO {
+export class ChallengeDto {
   @ApiResponseProperty()
   createdBy: string;
 
