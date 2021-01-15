@@ -1,6 +1,6 @@
-import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { ApiProperty, ApiResponseProperty } from '@nestjs/swagger';
-import { Document } from 'mongoose';
+import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
+import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
+import { Document } from "mongoose";
 
 export class UserDTO {
   @ApiResponseProperty()
@@ -13,13 +13,13 @@ export class UserDTO {
   fullName: string;
 
   @ApiProperty()
-  image: string
+  image: string;
 
   @ApiProperty()
-  recommendedChallenges: string[]
+  recommendedChallenges: string[];
 
   @ApiProperty()
-  totalScore: number
+  totalScore: number;
 }
 
 @Schema()
@@ -31,13 +31,13 @@ export class User extends Document {
   fullName: string;
 
   @Prop()
-  image: string
+  image: string;
 
   @Prop()
-  recommendedChallenges: string[]
+  recommendedChallenges: string[];
 
   @Prop()
-  totalScore: number
+  totalScore: number;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
