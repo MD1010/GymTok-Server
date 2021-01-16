@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Model, Document, FilterQuery } from "mongoose";
 
 @Injectable()
-export abstract class GenericService<T extends Document> {
+export abstract class BasicService<T extends Document> {
     constructor(
         private readonly model: Model<T>
     ) { }
@@ -11,7 +11,7 @@ export abstract class GenericService<T extends Document> {
         return this.model.find();
     }
 
-    async add<E>(object: E) {
+    async add(object: T) {
         const createdObject = new this.model(object);
 
         return createdObject.save();

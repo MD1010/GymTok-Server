@@ -2,46 +2,28 @@ import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { Document } from "mongoose";
 
-export class UserDto {
-  @ApiResponseProperty()
-  _id: string;
-
-  @ApiProperty()
-  username: string;
-
-  @ApiProperty()
-  fullName: string;
-
-  @ApiProperty()
-  image: string;
-
-  @ApiProperty()
-  recommendedChallenges: string[];
-
-  @ApiProperty()
-  acceptedChallenges: string[];
-
-  @ApiResponseProperty()
-  totalScore: number;
-}
-
 @Schema()
 export class User extends Document {
   @Prop()
   username: string;
 
+  @ApiProperty()
   @Prop()
   fullName: string;
 
+  @ApiProperty()
   @Prop()
   image: string;
 
+  @ApiProperty()
   @Prop()
   recommendedChallenges: string[];
 
+  @ApiProperty()
   @Prop()
   acceptedChallenges: string[];
 
+  @ApiResponseProperty()
   @Prop({ default: 0 })
   totalScore: number;
 }

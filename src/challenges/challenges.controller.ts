@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "src/users/users.service";
 import { UsersValidator } from "src/users/users.validator";
-import { ChallengeDto as ChallengeDto } from "./challenge.model";
+import { Challenge } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
 import { ChallengesValidator } from "./challenges.validator";
 
@@ -18,7 +18,7 @@ export class ChallengesController {
     @ApiOkResponse({
         status: 200,
         description: "Get all challenges",
-        type: [ChallengeDto],
+        type: [Challenge],
     })
     async getAllArtists() {
         return this.challengesService.findAll();
@@ -28,9 +28,9 @@ export class ChallengesController {
     @ApiOkResponse({
         status: 201,
         description: "Adds new challenge",
-        type: ChallengeDto,
+        type: Challenge,
     })
-    async addChallenge(@Body() challenge: ChallengeDto) {
+    async addChallenge(@Body() challenge: Challenge) {
         return this.challengesService.addChallenge(challenge);
     }
 
@@ -42,7 +42,7 @@ export class ChallengesController {
     })
     async addRecommendChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
         await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
-        const users = await this.usersValidator.getOrThrowErrorIfOneOfUsersIdsIsNotExist(usersIds);
+        const users = await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
         this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(users, challengeId);
 
         await this.usersService.addRecommendChallengeToUsers(challengeId, usersIds);
@@ -58,7 +58,7 @@ export class ChallengesController {
     })
     async addAcceptChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
         await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
-        await this.usersValidator.getOrThrowErrorIfOneOfUsersIdsIsNotExist(usersIds);
+        await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
 
         await this.usersService.addAcceptChallengeToUsers(challengeId, usersIds);
 

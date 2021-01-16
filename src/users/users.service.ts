@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { UserDto, User } from "./user.model";
-import { GenericService } from "src/common/genericService";
+import { User } from "./user.model";
+import { BasicService } from "src/common/basic.service";
 
 @Injectable()
-export class UsersService extends GenericService<User> {
+export class UsersService extends BasicService<User> {
   constructor(
     @InjectModel(User.name) private readonly usersModel: Model<User>
   ) {
@@ -16,7 +16,7 @@ export class UsersService extends GenericService<User> {
     return this.findAll();
   }
 
-  async addUser(user: UserDto) {
+  async addUser(user: User) {
     return this.add(user);
   }
 
@@ -29,7 +29,7 @@ export class UsersService extends GenericService<User> {
   }
 
   async addAcceptChallengeToUsers(challengeId: string, usersIds: string[]) {
-    return this.usersModel.updateMany({ _id: { $in: usersIds } }, { $addToSet: { acceptedChallenges: challengeId } });
+    return this.usersModel.updateMany({ _id: { $in: usersIds } }, { $addToSet: { acceptedChallenges: challengeId }, $pull: { recommendedChallenges: challengeId } });
   }
 
   async addRecommendChallengeToUsers(challengeId: string, usersIds: string[]) {

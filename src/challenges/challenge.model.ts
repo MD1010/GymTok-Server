@@ -3,49 +3,29 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
 import { Document } from "mongoose";
 
-export class ChallengeDto {
-  @ApiProperty()
-  @IsString()
-  name: string;
-
-  @ApiProperty()
-  @IsString()
-  createdBy: string;
-
-  @ApiProperty()
-  @IsString()
-  description: string;
-
-  @ApiProperty()
-  @IsNumber()
-  estimatedScore: number;
-
-  @ApiProperty()
-  @IsString()
-  image: string;
-
-  @ApiProperty()
-  @IsString()
-  video: string;
-}
-
 @Schema()
 export class Challenge extends Document {
+  @ApiProperty()
   @Prop()
   name: string;
 
+  @ApiProperty()
   @Prop()
   createdBy: string;
 
+  @ApiProperty()
   @Prop()
   description: string;
 
+  @ApiProperty()
   @Prop()
   estimatedScore: number;
 
+  @ApiProperty()
   @Prop()
   image: string;
 
+  @ApiProperty()
   @Prop()
   video: string;
 }
