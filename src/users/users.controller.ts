@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { ChallengesValidator } from "src/challenges/challenges.validator";
-import { User } from "./user.model";
+import { UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 import { UsersValidator } from "./users.validator";
 
@@ -16,7 +16,7 @@ export class UserController {
   @ApiOkResponse({
     status: 200,
     description: "Get all users",
-    type: [User],
+    type: [UserDto],
   })
   async getAllArtists() {
     return this.usersService.findAll();
@@ -26,9 +26,9 @@ export class UserController {
   @ApiOkResponse({
     status: 201,
     description: "Adds new challenge",
-    type: User,
+    type: UserDto,
   })
-  async addUser(@Body() user: User) {
+  async addUser(@Body() user: UserDto) {
     await this.usersValidator.throwErrorIfUserNameIsNotExist(user.username);
     await this.challengesValidator.throwErrorIfOneOfChallengesIdsIsNotExist(user.recommendedChallenges);
     await this.challengesValidator.throwErrorIfOneOfChallengesIdsIsNotExist(user.acceptedChallenges);

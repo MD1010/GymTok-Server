@@ -1,9 +1,11 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
-import { IsOptional } from "class-validator";
 import { Document } from "mongoose";
 
-export class User {
+export class UserDto {
+  @ApiResponseProperty()
+  _id: string;
+
   @ApiProperty()
   username: string;
 
@@ -24,7 +26,7 @@ export class User {
 }
 
 @Schema()
-export class UserDocument extends Document {
+export class User extends Document {
   @Prop()
   username: string;
 
@@ -44,4 +46,4 @@ export class UserDocument extends Document {
   totalScore: number;
 }
 
-export const UserSchema = SchemaFactory.createForClass(UserDocument);
+export const UserSchema = SchemaFactory.createForClass(User);

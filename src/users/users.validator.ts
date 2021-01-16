@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { User } from "./user.model";
 import { UsersService } from "./users.service";
 
 @Injectable()
@@ -12,11 +13,20 @@ export class UsersValidator {
     }
   }
 
-  async throwErrorIfOneOfUsersIdsIsNotExist(usersIds: string[]) {
-    for (const userId of usersIds) {
-      const user = await this.usersService.finsUserById(userId);
-      if (!user) {
-        throw new NotFoundException(`User id ${userId} is not exist`);
+  async getOrThrowErrorIfOneOfUsersIdsIsNotExist(usersIds: string[]) {
+    const users = await this.usersService.findUsersByIds(usersIds);
+    if (users.length !== usersIds.length) {
+      throw new NotFoundException(`At least one of the challenges ${JSON.stringify(usersIds)} is not exist`);
+    }
+
+    return users;
+  }
+
+  throwErrorIfRecommendedChallengeWasAcceptedForUsers(users: User[], challengeId: string) {
+    for (const user of users) {
+      const existAcceptedChallengeId = user.acceptedChallenges.find(acceptedChallengeId => acceptedChallengeId === challengeId);
+      if (existAcceptedChallengeId) {
+        throw new NotFoundException(`The challenge ${challengeId} was already accepted for user ${user._id}`);
       }
     }
   }

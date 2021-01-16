@@ -3,7 +3,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
 import { Document } from "mongoose";
 
-export class Challenge {
+export class ChallengeDto {
   @ApiProperty()
   @IsString()
   name: string;
@@ -30,7 +30,7 @@ export class Challenge {
 }
 
 @Schema()
-export class ChallengeDocument extends Document {
+export class Challenge extends Document {
   @Prop()
   name: string;
 
@@ -50,4 +50,4 @@ export class ChallengeDocument extends Document {
   video: string;
 }
 
-export const ChallengeSchema = SchemaFactory.createForClass(ChallengeDocument);
+export const ChallengeSchema = SchemaFactory.createForClass(Challenge);

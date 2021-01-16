@@ -1,24 +1,24 @@
 import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { ChallengeDocument, Challenge } from "./challenge.model";
+import { Challenge, ChallengeDto } from "./challenge.model";
 
 @Injectable()
 export class ChallengesService {
   constructor(
     @InjectModel(Challenge.name)
-    private readonly challengesModel: Model<ChallengeDocument>
+    private readonly challengesModel: Model<Challenge>
   ) { }
 
   async findAll() {
     return this.challengesModel.find();
   }
 
-  async findChallengeById(challengeId: string) {
+  async findById(challengeId: string) {
     return this.challengesModel.findById(challengeId);
   }
 
-  async addChallenge(challenge: Challenge) {
+  async addChallenge(challenge: ChallengeDto) {
     const createdChallenge = new this.challengesModel(challenge);
 
     return createdChallenge.save();

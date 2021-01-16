@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "src/users/users.service";
 import { UsersValidator } from "src/users/users.validator";
-import { Challenge as Challenge } from "./challenge.model";
+import { ChallengeDto as ChallengeDto } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
 import { ChallengesValidator } from "./challenges.validator";
 
@@ -18,7 +18,7 @@ export class ChallengesController {
     @ApiOkResponse({
         status: 200,
         description: "Get all challenges",
-        type: [Challenge],
+        type: [ChallengeDto],
     })
     async getAllArtists() {
         return this.challengesService.findAll();
@@ -28,9 +28,9 @@ export class ChallengesController {
     @ApiOkResponse({
         status: 201,
         description: "Adds new challenge",
-        type: Challenge,
+        type: ChallengeDto,
     })
-    async addChallenge(@Body() challenge: Challenge) {
+    async addChallenge(@Body() challenge: ChallengeDto) {
         return this.challengesService.addChallenge(challenge);
     }
 
@@ -42,7 +42,8 @@ export class ChallengesController {
     })
     async addRecommendChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
         await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
-        await this.usersValidator.throwErrorIfOneOfUsersIdsIsNotExist(usersIds);
+        const users = await this.usersValidator.getOrThrowErrorIfOneOfUsersIdsIsNotExist(usersIds);
+        this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(users, challengeId);
 
         await this.usersService.addRecommendChallengeToUsers(challengeId, usersIds);
 
@@ -57,7 +58,7 @@ export class ChallengesController {
     })
     async addAcceptChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
         await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
-        await this.usersValidator.throwErrorIfOneOfUsersIdsIsNotExist(usersIds);
+        await this.usersValidator.getOrThrowErrorIfOneOfUsersIdsIsNotExist(usersIds);
 
         await this.usersService.addAcceptChallengeToUsers(challengeId, usersIds);
 
