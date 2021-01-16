@@ -6,7 +6,7 @@ import { Challenge } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
 import { ChallengesValidator } from "./challenges.validator";
 
-@Controller("Challenges")
+@Controller("challenges")
 @ApiTags("Challenges")
 export class ChallengesController {
     constructor(private challengesService: ChallengesService,
@@ -34,10 +34,10 @@ export class ChallengesController {
         return this.challengesService.addChallenge(challenge);
     }
 
-    @Post("recommend/:challengeId/Users")
+    @Post("recommend/:challengeId/users")
     @ApiOkResponse({
         status: 201,
-        description: "The users who have the challenge added to them",
+        description: "Adds to the challenge id to the recommended challenges of the user ids",
         type: [String],
     })
     async addRecommendChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
@@ -50,10 +50,10 @@ export class ChallengesController {
         return usersIds;
     }
 
-    @Post("accept/:challengeId/Users")
+    @Post("accept/:challengeId/users")
     @ApiOkResponse({
         status: 201,
-        description: "The users who have the challenge added to them",
+        description: "Adds to the challenge id to the accepted challenges of the user ids",
         type: [String],
     })
     async addAcceptChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {

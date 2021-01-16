@@ -5,7 +5,7 @@ import { User } from "./user.model";
 import { UsersService } from "./users.service";
 import { UsersValidator } from "./users.validator";
 
-@Controller("Users")
+@Controller("users")
 @ApiTags("Users")
 export class UserController {
   constructor(private usersService: UsersService,
