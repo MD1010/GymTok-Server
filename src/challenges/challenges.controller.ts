@@ -1,12 +1,18 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { UsersService } from "src/users/users.service";
+import { UsersValidator } from "src/users/users.validator";
 import { Challenge as Challenge } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
+import { ChallengesValidator } from "./challenges.validator";
 
 @Controller("Challenges")
 @ApiTags("Challenges")
 export class ChallengesController {
-    constructor(private challengesService: ChallengesService) { }
+    constructor(private challengesService: ChallengesService,
+        private challengesValidator: ChallengesValidator,
+        private usersValidator: UsersValidator,
+        private usersService: UsersService) { }
 
     @Get()
     @ApiOkResponse({
@@ -28,13 +34,33 @@ export class ChallengesController {
         return this.challengesService.addChallenge(challenge);
     }
 
-    @Post(":challengeId/Users")
+    @Post("recommend/:challengeId/Users")
     @ApiOkResponse({
         status: 201,
         description: "The users who have the challenge added to them",
         type: [String],
     })
-    async addUser(@Body() usersIds: string[]) {
-        //todo - dor!!!
+    async addRecommendChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
+        await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
+        await this.usersValidator.throwErrorIfOneOfUsersIdsIsNotExist(usersIds);
+
+        await this.usersService.addRecommendChallengeToUsers(challengeId, usersIds);
+
+        return usersIds;
+    }
+
+    @Post("accept/:challengeId/Users")
+    @ApiOkResponse({
+        status: 201,
+        description: "The users who have the challenge added to them",
+        type: [String],
+    })
+    async addAcceptChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
+        await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
+        await this.usersValidator.throwErrorIfOneOfUsersIdsIsNotExist(usersIds);
+
+        await this.usersService.addAcceptChallengeToUsers(challengeId, usersIds);
+
+        return usersIds;
     }
 }

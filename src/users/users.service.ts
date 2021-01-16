@@ -22,4 +22,16 @@ export class UsersService {
   async getUserByUserName(username: string) {
     return this.usersModel.findOne({ username });
   }
+
+  async finsUserById(userId: string) {
+    return this.usersModel.findById(userId)
+  }
+
+  async addAcceptChallengeToUsers(challengeId: string, usersIds: string[]) {
+    return this.usersModel.updateMany({ _id: { $in: usersIds } }, { $addToSet: { acceptedChallenges: challengeId } });
+  }
+
+  async addRecommendChallengeToUsers(challengeId: string, usersIds: string[]) {
+    return this.usersModel.updateMany({ _id: { $in: usersIds } }, { $addToSet: { recommendedChallenges: challengeId } });
+  }
 }

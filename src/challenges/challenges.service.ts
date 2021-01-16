@@ -14,6 +14,10 @@ export class ChallengesService {
     return this.challengesModel.find();
   }
 
+  async findChallengeById(challengeId: string) {
+    return this.challengesModel.findById(challengeId);
+  }
+
   async addChallenge(challenge: Challenge) {
     const createdChallenge = new this.challengesModel(challenge);
 
