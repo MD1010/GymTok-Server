@@ -42,7 +42,7 @@ export class User extends Document {
   @Prop()
   acceptedChallenges: string[];
 
-  @Prop()
+  @Prop({ default: 0 })
   totalScore: number;
 }
 

@@ -2,29 +2,29 @@ import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
+import { GenericService } from "src/common/genericService";
 
 @Injectable()
-export class ChallengesService {
+export class ChallengesService extends GenericService<Challenge> {
   constructor(
-    @InjectModel(Challenge.name)
-    private readonly challengesModel: Model<Challenge>
-  ) { }
+    @InjectModel(Challenge.name) private readonly challengesModel: Model<Challenge>
+  ) {
+    super(challengesModel);
+  }
 
-  async findAll() {
-    return this.challengesModel.find();
+  async findAllChallenges() {
+    return this.findAll();
   }
 
   async findById(challengeId: string) {
-    return this.challengesModel.findById(challengeId);
+    return this.findById(challengeId);
   }
 
   async addChallenge(challenge: ChallengeDto) {
-    const createdChallenge = new this.challengesModel(challenge);
-
-    return createdChallenge.save();
+    return this.add(challenge);
   }
 
   async findChallengesByIds(challengesIds: string[]) {
-    return this.challengesModel.find({ _id: { $in: challengesIds } })
+    return this.findByIds(challengesIds)
   }
 }

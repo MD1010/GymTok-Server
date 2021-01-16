@@ -33,6 +33,7 @@ export class UserController {
     await this.challengesValidator.throwErrorIfOneOfChallengesIdsIsNotExist(user.recommendedChallenges);
     await this.challengesValidator.throwErrorIfOneOfChallengesIdsIsNotExist(user.acceptedChallenges);
 
+
     return this.usersService.addUser(user);
   }
 }

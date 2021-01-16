@@ -2,21 +2,22 @@ import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { UserDto, User } from "./user.model";
+import { GenericService } from "src/common/genericService";
 
 @Injectable()
-export class UsersService {
+export class UsersService extends GenericService<User> {
   constructor(
     @InjectModel(User.name) private readonly usersModel: Model<User>
-  ) { }
+  ) {
+    super(usersModel);
+  }
 
-  async findAll() {
-    return this.usersModel.find();
+  async findAllUsers() {
+    return this.findAll();
   }
 
   async addUser(user: UserDto) {
-    const createdUser = new this.usersModel(user);
-
-    return createdUser.save();
+    return this.add(user);
   }
 
   async getUserByUserName(username: string) {
@@ -24,7 +25,7 @@ export class UsersService {
   }
 
   async findUsersByIds(usersIds: string[]) {
-    return this.usersModel.find({ _id: { $in: usersIds } }).exec();
+    return this.findByIds(usersIds);
   }
 
   async addAcceptChallengeToUsers(challengeId: string, usersIds: string[]) {
