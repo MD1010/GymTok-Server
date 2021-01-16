@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
+import { IsOptional } from "class-validator";
 import { Document } from "mongoose";
 
 export class User {
@@ -16,6 +17,9 @@ export class User {
   recommendedChallenges: string[];
 
   @ApiProperty()
+  acceptedChallenges: string[];
+
+  @ApiResponseProperty()
   totalScore: number;
 }
 
@@ -32,6 +36,9 @@ export class UserDocument extends Document {
 
   @Prop()
   recommendedChallenges: string[];
+
+  @Prop()
+  acceptedChallenges: string[];
 
   @Prop()
   totalScore: number;

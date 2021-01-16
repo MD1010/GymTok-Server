@@ -13,9 +13,13 @@ export class UsersService {
     return this.usersModel.find();
   }
 
-  async addUser(user: User[]) {
+  async addUser(user: User) {
     const createdUser = new this.usersModel(user);
 
     return createdUser.save();
+  }
+
+  async getUserByUserName(username: string) {
+    return this.usersModel.findOne({ username });
   }
 }

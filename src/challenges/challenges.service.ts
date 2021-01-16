@@ -19,4 +19,8 @@ export class ChallengesService {
 
     return createdChallenge.save();
   }
+
+  async findChallengesByIds(challengesIds: string[]) {
+    return this.challengesModel.find({ _id: { $in: challengesIds } })
+  }
 }

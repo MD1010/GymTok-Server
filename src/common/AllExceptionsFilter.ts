@@ -9,7 +9,7 @@ import {
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-    catch(exception: InternalServerErrorException, host: ArgumentsHost) {
+    catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse();
         const request = ctx.getRequest();
@@ -19,16 +19,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
                 ? exception.getStatus()
                 : HttpStatus.INTERNAL_SERVER_ERROR;
 
-        const responseMessage = (type, message) => {
-            response.status(status).json({
-                statusCode: status,
-                path: request.url,
-                errorType: type,
-                errorMessage: message
-            });
-        };
-
-        responseMessage(exception.message || exception, exception.message);
+        response.status(status).json({
+            statusCode: status,
+            path: request.url,
+            name: exception.name || "Error",
+            message: exception.message || exception
+        });
 
     }
 }
