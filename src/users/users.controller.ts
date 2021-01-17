@@ -19,7 +19,7 @@ export class UserController {
     type: [User],
   })
   async getAllArtists() {
-    return this.usersService.findAll();
+    return this.usersService.findAllUsers();
   }
 
   @Post()

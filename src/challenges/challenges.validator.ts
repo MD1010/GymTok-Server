@@ -6,6 +6,6 @@ import { ChallengesService } from "./challenges.service";
 @Injectable()
 export class ChallengesValidator extends GenericValidator<Challenge> {
   constructor(private challengesService: ChallengesService) {
-    super(challengesService);
+    super(challengesService.basicChallengesService);
   }
 }

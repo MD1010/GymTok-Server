@@ -4,7 +4,6 @@ import {
     ArgumentsHost,
     HttpException,
     HttpStatus,
-    InternalServerErrorException
 } from "@nestjs/common";
 
 @Catch()

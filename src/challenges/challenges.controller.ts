@@ -21,7 +21,7 @@ export class ChallengesController {
         type: [Challenge],
     })
     async getAllArtists() {
-        return this.challengesService.findAll();
+        return this.challengesService.findAllChallenges();
     }
 
     @Post()

@@ -5,27 +5,28 @@ import { User } from "./user.model";
 import { GenericDalService } from "src/common/genericDalService.service";
 
 @Injectable()
-export class UsersService extends GenericDalService<User> {
+export class UsersService {
+  public basicUsersService: GenericDalService<User>;
   constructor(
     @InjectModel(User.name) private readonly usersModel: Model<User>
   ) {
-    super(usersModel);
+    this.basicUsersService = new GenericDalService<User>(usersModel);
   }
 
   async findAllUsers() {
-    return this.findAll();
+    return this.basicUsersService.findAll();
   }
 
   async addUser(user: User) {
-    return this.addEntity(user);
+    return this.basicUsersService.addEntity(user);
   }
 
   async getUserByUserName(username: string) {
-    return this.usersModel.findOne({ username });
+    return this.basicUsersService.findPropertyWithSpecificValue('username', username);
   }
 
   async findUsersByIds(usersIds: string[]) {
-    return this.findByIds(usersIds);
+    return this.basicUsersService.findByIds(usersIds);
   }
 
   async addAcceptChallengeToUsers(challengeId: string, usersIds: string[]) {

@@ -6,7 +6,7 @@ import { UsersService } from "./users.service";
 @Injectable()
 export class UsersValidator extends GenericValidator<User>{
   constructor(private usersService: UsersService) {
-    super(usersService)
+    super(usersService.basicUsersService)
   }
 
   async throwErrorIfUserNameIsNotExist(userName: string) {

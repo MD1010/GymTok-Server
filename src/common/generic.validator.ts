@@ -4,7 +4,6 @@ import { GenericDalService } from "./genericDalService.service";
 
 @Injectable()
 export class GenericValidator<T extends Document> {
-  entityName: string;
   constructor(private entityService: GenericDalService<T>) { }
 
   async getOrThrowErrorIfOneOfEntityIdsIsNotExist(entityIds: string[]) {

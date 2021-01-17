@@ -1,7 +1,6 @@
-import { Injectable } from "@nestjs/common";
 import { Model, Document, FilterQuery } from "mongoose";
 
-export abstract class GenericDalService<T extends Document> {
+export class GenericDalService<T extends Document> {
     constructor(
         private readonly model: Model<T>
     ) { }
@@ -17,11 +16,15 @@ export abstract class GenericDalService<T extends Document> {
     }
 
     async findByIds(ids: string[]) {
-        return this.model.find({ _id: { $in: ids } } as unknown as FilterQuery<T>);
+        return this.model.where('_id').in(ids).exec();
     }
 
     async findById(id) {
-        return this.model.findOne({ _id: id });
+        return this.model.findOne({ _id: id }).exec();
+    }
+
+    async findPropertyWithSpecificValue(property: string, value: any) {
+        return this.model.findOne({ [property]: value } as FilterQuery<T>);
     }
 
 }
