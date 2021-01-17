@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { UsersService } from "src/users/users.service";
-import { UsersValidator } from "src/users/users.validator";
+import { UsersService } from "../users/users.service";
+import { UsersValidator } from "../users/users.validator";
 import { ChallengeDto as ChallengeDto } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
 import { ChallengesValidator } from "./challenges.validator";

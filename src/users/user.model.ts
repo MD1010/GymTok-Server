@@ -1,5 +1,5 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiResponseProperty} from "@nestjs/swagger";
 import { Document } from "mongoose";
 
 export class UserDto {
@@ -8,6 +8,9 @@ export class UserDto {
 
   @ApiProperty()
   username: string;
+
+  @ApiProperty()
+  password: string;
 
   @ApiProperty()
   fullName: string;
@@ -29,6 +32,9 @@ export class UserDto {
 export class User extends Document {
   @Prop()
   username: string;
+
+  @Prop()
+  password: string;
 
   @Prop()
   fullName: string;

@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { ChallengesValidator } from "src/challenges/challenges.validator";
+import { Controller, Get, Post, Body, UseGuards, Req, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiOkResponse, ApiTags, ApiCreatedResponse } from "@nestjs/swagger";
+import { ChallengesValidator } from "../challenges/challenges.validator";
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 import { UsersValidator } from "./users.validator";
@@ -22,18 +24,25 @@ export class UserController {
     return this.usersService.findAll();
   }
 
-  @Post()
-  @ApiOkResponse({
-    status: 201,
-    description: "Adds new challenge",
-    type: UserDto,
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({
+    status: 200,
+    description: "Create a user",
+    type: [CreateUserDto],
   })
-  async addUser(@Body() user: UserDto) {
-    await this.usersValidator.throwErrorIfUserNameIsNotExist(user.username);
-    await this.challengesValidator.throwErrorIfOneOfChallengesIdsIsNotExist(user.recommendedChallenges);
-    await this.challengesValidator.throwErrorIfOneOfChallengesIdsIsNotExist(user.acceptedChallenges);
+  async register(@Body() createUserDto: CreateUserDto) {
+      return await this.usersService.create(createUserDto);
+  }
 
-
-    return this.usersService.addUser(user);
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    status: 200,
+    description: "Login success",
+    type: [LoginUserDto],
+  })
+  async login(@Body() loginUserDto: LoginUserDto) {
+      return await this.usersService.login(loginUserDto);
   }
 }
