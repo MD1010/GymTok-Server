@@ -1,10 +1,10 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { BasicValidator } from "src/common/basic.validator";
+import { GenericValidator } from "src/common/generic.validator";
 import { User } from "./user.model";
 import { UsersService } from "./users.service";
 
 @Injectable()
-export class UsersValidator extends BasicValidator<User>{
+export class UsersValidator extends GenericValidator<User>{
   constructor(private usersService: UsersService) {
     super(usersService)
   }

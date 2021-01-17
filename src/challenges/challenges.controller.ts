@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "src/users/users.service";
 import { UsersValidator } from "src/users/users.validator";
-import { Challenge } from "./challenge.model";
+import { Challenge, ChallengeDto } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
 import { ChallengesValidator } from "./challenges.validator";
 
@@ -28,7 +28,7 @@ export class ChallengesController {
     @ApiOkResponse({
         status: 201,
         description: "Adds new challenge",
-        type: Challenge,
+        type: ChallengeDto,
     })
     async addChallenge(@Body() challenge: Challenge) {
         return this.challengesService.addChallenge(challenge);

@@ -2,10 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { Challenge } from "./challenge.model";
-import { BasicService } from "src/common/basic.service";
+import { GenericDalService } from "src/common/genericDalService.service";
 
 @Injectable()
-export class ChallengesService extends BasicService<Challenge> {
+export class ChallengesService extends GenericDalService<Challenge> {
   constructor(
     @InjectModel(Challenge.name) private readonly challengesModel: Model<Challenge>
   ) {
@@ -21,7 +21,7 @@ export class ChallengesService extends BasicService<Challenge> {
   }
 
   async addChallenge(challenge: Challenge) {
-    return this.add(challenge);
+    return this.addEntity(challenge);
   }
 
   async findChallengesByIds(challengesIds: string[]) {

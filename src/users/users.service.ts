@@ -2,10 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./user.model";
-import { BasicService } from "src/common/basic.service";
+import { GenericDalService } from "src/common/genericDalService.service";
 
 @Injectable()
-export class UsersService extends BasicService<User> {
+export class UsersService extends GenericDalService<User> {
   constructor(
     @InjectModel(User.name) private readonly usersModel: Model<User>
   ) {
@@ -17,7 +17,7 @@ export class UsersService extends BasicService<User> {
   }
 
   async addUser(user: User) {
-    return this.add(user);
+    return this.addEntity(user);
   }
 
   async getUserByUserName(username: string) {
