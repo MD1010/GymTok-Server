@@ -1,6 +1,7 @@
 import { Model, Document, FilterQuery } from "mongoose";
+import { BasicDto } from "./basic.dto";
 
-export class GenericDalService<T extends Document> {
+export class GenericDalService<T extends Document, D extends BasicDto> {
     constructor(
         private readonly model: Model<T>
     ) { }
@@ -9,7 +10,7 @@ export class GenericDalService<T extends Document> {
         return this.model.find();
     }
 
-    async addEntity(entity: T) {
+    async addEntity(entity: D) {
         const createdEntity = new this.model(entity);
 
         return createdEntity.save();

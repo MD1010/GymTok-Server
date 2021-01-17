@@ -18,7 +18,7 @@ export class ChallengesController {
     @ApiOkResponse({
         status: 200,
         description: "Get all challenges",
-        type: [Challenge],
+        type: [ChallengeDto],
     })
     async getAllArtists() {
         return this.challengesService.findAllChallenges();
@@ -30,7 +30,7 @@ export class ChallengesController {
         description: "Adds new challenge",
         type: ChallengeDto,
     })
-    async addChallenge(@Body() challenge: Challenge) {
+    async addChallenge(@Body() challenge: ChallengeDto) {
         return this.challengesService.addChallenge(challenge);
     }
 
