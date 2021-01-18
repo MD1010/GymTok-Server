@@ -7,7 +7,7 @@ import { UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 import { UsersValidator } from "./users.validator";
 
-@Controller("Users")
+@Controller("users")
 @ApiTags("Users")
 export class UserController {
   constructor(private usersService: UsersService,
@@ -21,7 +21,7 @@ export class UserController {
     type: [UserDto],
   })
   async getAllArtists() {
-    return this.usersService.findAll();
+    return this.usersService.findAllUsers();
   }
 
   @Post('register')
@@ -33,6 +33,20 @@ export class UserController {
   })
   async register(@Body() createUserDto: CreateUserDto) {
       return await this.usersService.create(createUserDto);
+  }
+
+  @Post()
+  @ApiOkResponse({
+    status: 201,
+    description: "Adds new challenge",
+    type: UserDto,
+  })
+  async addUser(@Body() user: UserDto) {
+    await this.usersValidator.throwErrorIfUserNameIsNotExist(user.username);
+    await this.challengesValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(user.recommendedChallenges);
+    await this.challengesValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(user.acceptedChallenges);
+
+    return this.usersService.addUser(user);
   }
 
   @Post('login')

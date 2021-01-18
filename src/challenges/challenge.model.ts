@@ -1,9 +1,14 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
 import { Document } from "mongoose";
+import { BasicEntityDto } from "../common/basicEntity.dto";
 
-export class ChallengeDto {
+
+export class ChallengeDto extends BasicEntityDto {
+  @ApiResponseProperty()
+  _id: string;
+
   @ApiProperty()
   @IsString()
   name: string;
@@ -16,8 +21,10 @@ export class ChallengeDto {
   @IsString()
   description: string;
 
+  @ApiResponseProperty()
+  creationTime: Date;
+
   @ApiProperty()
-  @IsNumber()
   estimatedScore: number;
 
   @ApiProperty()
@@ -39,6 +46,9 @@ export class Challenge extends Document {
 
   @Prop()
   description: string;
+
+  @Prop({ default: new Date() })
+  creationTime: Date;
 
   @Prop()
   estimatedScore: number;

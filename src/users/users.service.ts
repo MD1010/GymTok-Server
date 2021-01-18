@@ -1,50 +1,60 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { User } from "./user.model";
-import { GenericService } from "../common/genericService";
 import { AuthService } from "../auth/auth.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { v4 } from 'uuid';
 import { addHours } from 'date-fns';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from "./dto/login-user.dto";
+import { User, UserDto } from "./user.model";
+import { GenericDalService } from "../common/genericDalService.service";
 
 @Injectable()
-export class UsersService extends GenericService<User> {
+export class UsersService {
+  public basicUsersService: GenericDalService<User, UserDto>;
   constructor(
     @InjectModel(User.name) private readonly usersModel: Model<User>,
     private authService: AuthService
   ) {
-    super(usersModel);
+    this.basicUsersService = new GenericDalService<User, UserDto>(usersModel);
   }
 
   HOURS_TO_VERIFY = 4;
   HOURS_TO_BLOCK = 6;
 
   async findAllUsers() {
-    return this.findAll();
+    return this.basicUsersService.findAll();
+  }
+
+  async addUser(user: UserDto) {
+    return this.basicUsersService.createEntity(user);
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    // const user = new this.usersModel(createUserDto);
     try {
       await this.isUserNameUnique(createUserDto.username);
 
-      const newUser = new this.usersModel({
-        username: createUserDto.username,
-        fullName: createUserDto.fullName,
-        acceptedChallenges: [],
-        recommendedChallenges: [],
-        image: "",
-        password: ""
-      })
-    
+      // const newUser = new this.usersModel({
+      //   username: createUserDto.username,
+      //   fullName: createUserDto.fullName,
+      //   acceptedChallenges: [],
+      //   recommendedChallenges: [],
+      //   image: "",
+      //   password: ""
+      // })
+
+      const newUser = new UserDto();
+      newUser.username = createUserDto.username;
+      newUser.fullName = createUserDto.fullName;
+      newUser.acceptedChallenges = [];
+      newUser.recommendedChallenges = [];
+      newUser.image = "";
       const salt = await bcrypt.genSalt(10);
       newUser.password = await bcrypt.hash(createUserDto.password, salt);
 
       this.setRegistrationInfo(newUser);
-      await this.add(newUser);
+      await this.basicUsersService.createEntity(newUser);
       return this.buildRegistrationInfo(newUser);
 
     } catch(err) {
@@ -95,15 +105,15 @@ export class UsersService extends GenericService<User> {
   }
 
   async getUserByUserName(username: string) {
-    return this.usersModel.findOne({ username });
+    return this.basicUsersService.findPropertyWithSpecificValue('username', username);
   }
 
   async findUsersByIds(usersIds: string[]) {
-    return this.findByIds(usersIds);
+    return this.basicUsersService.findByIds(usersIds);
   }
 
   async addAcceptChallengeToUsers(challengeId: string, usersIds: string[]) {
-    return this.usersModel.updateMany({ _id: { $in: usersIds } }, { $addToSet: { acceptedChallenges: challengeId } });
+    return this.usersModel.updateMany({ _id: { $in: usersIds } }, { $addToSet: { acceptedChallenges: challengeId }, $pull: { recommendedChallenges: challengeId } });
   }
 
   async addRecommendChallengeToUsers(challengeId: string, usersIds: string[]) {

@@ -1,27 +1,36 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
-import { ApiProperty, ApiResponseProperty} from "@nestjs/swagger";
-import { Document } from "mongoose";
+import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
+import { IsArray, IsString } from "class-validator";
 
-export class UserDto {
+import { Document } from "mongoose";
+import { BasicEntityDto } from "../common/basicEntity.dto";
+
+export class UserDto extends BasicEntityDto {
   @ApiResponseProperty()
   _id: string;
 
   @ApiProperty()
+  @IsString()
   username: string;
 
   @ApiProperty()
+  @IsString()
   password: string;
 
   @ApiProperty()
+  @IsString()
   fullName: string;
 
   @ApiProperty()
+  @IsString()
   image: string;
 
   @ApiProperty()
+  @IsArray()
   recommendedChallenges: string[];
 
   @ApiProperty()
+  @IsArray()
   acceptedChallenges: string[];
 
   @ApiResponseProperty()

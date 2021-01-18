@@ -2,11 +2,11 @@ import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "../users/users.service";
 import { UsersValidator } from "../users/users.validator";
-import { ChallengeDto as ChallengeDto } from "./challenge.model";
+import { Challenge, ChallengeDto } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
 import { ChallengesValidator } from "./challenges.validator";
 
-@Controller("Challenges")
+@Controller("challenges")
 @ApiTags("Challenges")
 export class ChallengesController {
     constructor(private challengesService: ChallengesService,
@@ -21,7 +21,7 @@ export class ChallengesController {
         type: [ChallengeDto],
     })
     async getAllArtists() {
-        return this.challengesService.findAll();
+        return this.challengesService.findAllChallenges();
     }
 
     @Post()
@@ -34,15 +34,15 @@ export class ChallengesController {
         return this.challengesService.addChallenge(challenge);
     }
 
-    @Post("recommend/:challengeId/Users")
+    @Post("recommend/:challengeId/users")
     @ApiOkResponse({
         status: 201,
-        description: "The users who have the challenge added to them",
+        description: "Adds to the challenge id to the recommended challenges of the user ids",
         type: [String],
     })
     async addRecommendChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
-        await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
-        const users = await this.usersValidator.getOrThrowErrorIfOneOfUsersIdsIsNotExist(usersIds);
+        await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
+        const users = await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
         this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(users, challengeId);
 
         await this.usersService.addRecommendChallengeToUsers(challengeId, usersIds);
@@ -50,15 +50,15 @@ export class ChallengesController {
         return usersIds;
     }
 
-    @Post("accept/:challengeId/Users")
+    @Post("accept/:challengeId/users")
     @ApiOkResponse({
         status: 201,
-        description: "The users who have the challenge added to them",
+        description: "Adds to the challenge id to the accepted challenges of the user ids",
         type: [String],
     })
     async addAcceptChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
-        await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
-        await this.usersValidator.getOrThrowErrorIfOneOfUsersIdsIsNotExist(usersIds);
+        await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
+        await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
 
         await this.usersService.addAcceptChallengeToUsers(challengeId, usersIds);
 
