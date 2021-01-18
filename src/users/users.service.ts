@@ -18,7 +18,7 @@ export class UsersService {
   }
 
   async addUser(user: UserDto) {
-    return this.basicUsersService.addEntity(user);
+    return this.basicUsersService.createEntity(user);
   }
 
   async getUserByUserName(username: string) {

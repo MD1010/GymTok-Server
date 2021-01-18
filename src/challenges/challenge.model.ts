@@ -2,10 +2,10 @@ import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
 import { Document } from "mongoose";
-import { BasicDto } from "src/common/basic.dto";
+import { BasicEntityDto } from "src/common/basicEntity.dto";
 
 
-export class ChallengeDto extends BasicDto {
+export class ChallengeDto extends BasicEntityDto {
   @ApiResponseProperty()
   _id: string;
 

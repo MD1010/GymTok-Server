@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { Document } from "mongoose";
-import { BasicDto } from "./basic.dto";
+import { BasicEntityDto } from "./basicEntity.dto";
 import { GenericDalService } from "./genericDalService.service";
 
 @Injectable()
-export class GenericValidator<T extends Document, D extends BasicDto> {
+export class GenericValidator<T extends Document, D extends BasicEntityDto> {
   constructor(private entityService: GenericDalService<T, D>) { }
 
   async getOrThrowErrorIfOneOfEntityIdsIsNotExist(entityIds: string[]) {
@@ -16,7 +16,7 @@ export class GenericValidator<T extends Document, D extends BasicDto> {
     return entities;
   }
 
-  async throwErrorIfChallengeIdIsNotExist(entityId: string) {
+  async throwErrorIfIdIsNotNotExist(entityId: string) {
     const entity = await this.entityService.findById(entityId);
     if (!entity) {
       throw new NotFoundException(`The id ${entityId} is not exist`);

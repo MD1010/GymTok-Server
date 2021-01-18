@@ -22,7 +22,7 @@ export class ChallengesService {
   }
 
   async addChallenge(challenge: ChallengeDto) {
-    return this.basicChallengesService.addEntity(challenge);
+    return this.basicChallengesService.createEntity(challenge);
   }
 
   async findChallengesByIds(challengesIds: string[]) {

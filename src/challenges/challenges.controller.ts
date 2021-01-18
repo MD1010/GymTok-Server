@@ -41,7 +41,7 @@ export class ChallengesController {
         type: [String],
     })
     async addRecommendChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
-        await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
+        await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
         const users = await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
         this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(users, challengeId);
 
@@ -57,7 +57,7 @@ export class ChallengesController {
         type: [String],
     })
     async addAcceptChallengeForUsers(@Param('challengeId') challengeId: string, @Body() usersIds: string[]) {
-        await this.challengesValidator.throwErrorIfChallengeIdIsNotExist(challengeId);
+        await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
         await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
 
         await this.usersService.addAcceptChallengeToUsers(challengeId, usersIds);
