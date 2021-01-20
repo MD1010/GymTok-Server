@@ -35,15 +35,6 @@ export class UsersService {
     try {
       await this.isUserNameUnique(createUserDto.username);
 
-      // const newUser = new this.usersModel({
-      //   username: createUserDto.username,
-      //   fullName: createUserDto.fullName,
-      //   acceptedChallenges: [],
-      //   recommendedChallenges: [],
-      //   image: "",
-      //   password: ""
-      // })
-
       const newUser = new UserDto();
       newUser.username = createUserDto.username;
       newUser.fullName = createUserDto.fullName;
