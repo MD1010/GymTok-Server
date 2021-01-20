@@ -79,6 +79,7 @@ export class UsersService {
       await this.checkPassword(loginUserDto.password, user);
       return {
           username: user.username,
+          fullname: user.fullName,
           accessToken: await this.authService.createAccessToken(user._id),
           // refreshToken: await this.authService.createRefreshToken(req, user._id),
       };

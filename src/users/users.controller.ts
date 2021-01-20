@@ -32,7 +32,8 @@ export class UserController {
     type: [CreateUserDto],
   })
   async register(@Body() createUserDto: CreateUserDto) {
-      return await this.usersService.create(createUserDto);
+    await this.usersValidator.throwErrorIfUserNameIsNotExist(createUserDto.username);
+    return await this.usersService.create(createUserDto);
   }
 
   @Post()
