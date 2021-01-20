@@ -32,25 +32,20 @@ export class UsersService {
   }
 
   async create(createUserDto: CreateUserDto): Promise<User> {
-    try {
-      await this.isUserNameUnique(createUserDto.username);
+    await this.isUserNameUnique(createUserDto.username);
 
-      const newUser = new UserDto();
-      newUser.username = createUserDto.username;
-      newUser.fullName = createUserDto.fullName;
-      newUser.acceptedChallenges = [];
-      newUser.recommendedChallenges = [];
-      newUser.image = "";
-      const salt = await bcrypt.genSalt(10);
-      newUser.password = await bcrypt.hash(createUserDto.password, salt);
+    const newUser = new UserDto();
+    newUser.username = createUserDto.username;
+    newUser.fullName = createUserDto.fullName;
+    newUser.acceptedChallenges = [];
+    newUser.recommendedChallenges = [];
+    newUser.image = "";
+    const salt = await bcrypt.genSalt(10);
+    newUser.password = await bcrypt.hash(createUserDto.password, salt);
 
-      this.setRegistrationInfo(newUser);
-      await this.basicUsersService.createEntity(newUser);
-      return this.buildRegistrationInfo(newUser);
-
-    } catch(err) {
-      console.log(err);
-    }   
+    this.setRegistrationInfo(newUser);
+    await this.basicUsersService.createEntity(newUser);
+    return this.buildRegistrationInfo(newUser);
   }
 
   private buildRegistrationInfo(user): any {
@@ -74,18 +69,14 @@ export class UsersService {
   }
 
   async login(loginUserDto: LoginUserDto) {
-    try {
-      const user = await this.getUserByUserName(loginUserDto.username);
-      await this.checkPassword(loginUserDto.password, user);
-      return {
-          username: user.username,
-          fullname: user.fullName,
-          accessToken: await this.authService.createAccessToken(user._id),
-          // refreshToken: await this.authService.createRefreshToken(req, user._id),
-      };
-    } catch (err) {
-      console.log(err);
-    }
+    const user = await this.getUserByUserName(loginUserDto.username);
+    await this.checkPassword(loginUserDto.password, user);
+    return {
+        username: user.username,
+        fullname: user.fullName,
+        accessToken: await this.authService.createAccessToken(user._id),
+        // refreshToken: await this.authService.createRefreshToken(req, user._id),
+    };
   }
 
   private async checkPassword(attemptPass: string, user) {
