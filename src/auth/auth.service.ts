@@ -1,14 +1,10 @@
-import { JwtService } from "@nestjs/jwt";
-import { User } from "../users/user.model";
-import { Injectable, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { sign } from 'jsonwebtoken';
-import { Model } from 'mongoose';
-import { RefreshToken } from './interfaces/refresh-token.interface';
-import { InjectModel } from '@nestjs/mongoose';
+import v4 from 'uuid';
+import { addHours } from 'date-fns';
 import * as Cryptr from 'cryptr';
 const bcrypt = require('bcrypt');
-import { v4 } from 'uuid';
+
 
 @Injectable()
 export class AuthService {
@@ -16,9 +12,6 @@ export class AuthService {
     cryptr: any;
 
     constructor(
-        @InjectModel('User') private readonly userModel: Model<User>,
-        @InjectModel('RefreshToken') private readonly refreshTokenModel: Model<RefreshToken>,
-        private readonly jwtService : JwtService
     ){
         this.cryptr = new Cryptr(process.env.ENCRYPT_JWT_SECRET);
     }
@@ -28,34 +21,13 @@ export class AuthService {
         return this.encryptText(accessToken);
     }
 
+    async createRefreshToken(userId: string) {
+      const accessToken = sign({userId}, process.env.JWT_SECRET , { expiresIn: process.env.JWT_REFRESH_EXPIRATION });
+      return this.encryptText(accessToken);
+  }
+
     encryptText(text: string): string {
         return this.cryptr.encrypt(text);
-    }
-
-    async createRefreshToken(req: Request, userId) {
-        const refreshToken = new this.refreshTokenModel({
-          userId,
-          refreshToken: v4()
-        });
-        
-        await refreshToken.save();
-        return refreshToken.refreshToken;
-    }
-    
-    async findRefreshToken(token: string) {
-        const refreshToken = await this.refreshTokenModel.findOne({refreshToken: token});
-        if (!refreshToken) {
-            throw new UnauthorizedException('User has been logged out.');
-        }
-        return refreshToken.userId;
-    }
-    
-    async validateUser(jwtPayload: JwtPayload): Promise<any> {
-        const user = await this.userModel.findOne({_id: jwtPayload.userId, verified: true});
-        if (!user) {
-            throw new UnauthorizedException('User not found.');
-        }
-        return user;
     }
 
     private jwtExtractor(request) {
@@ -83,6 +55,27 @@ export class AuthService {
     
     returnJwtExtractor() {
         return this.jwtExtractor;
+    }
+
+    public buildRegistrationInfo(user): any {
+      const userRegistrationInfo = {
+          username: user.username,
+          fullName: user.fullName
+      };
+      return userRegistrationInfo;
+    }
+  
+    public setRegistrationInfo(user): any {
+      user.verification = v4();
+      user.verificationExpires = addHours(new Date(), Number(process.env.HOURS_TO_VERIFY));
+    }
+  
+    public async checkPassword(attemptPass: string, user) {
+      const match = await bcrypt.compare(attemptPass, user.password);
+      if (!match) {
+          throw new NotFoundException('Wrong email or password.');
+      }
+      return match;
     }
 
 }

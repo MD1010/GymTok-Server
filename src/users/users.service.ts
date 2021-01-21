@@ -1,14 +1,12 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { AuthService } from "../auth/auth.service";
 import { CreateUserDto } from "./dto/create-user.dto";
-import { v4 } from 'uuid';
-import { addHours } from 'date-fns';
 import * as bcrypt from 'bcrypt';
-import { LoginUserDto } from "./dto/login-user.dto";
 import { User, UserDto } from "./user.model";
 import { GenericDalService } from "../common/genericDalService.service";
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -19,9 +17,6 @@ export class UsersService {
   ) {
     this.basicUsersService = new GenericDalService<User, UserDto>(usersModel);
   }
-
-  HOURS_TO_VERIFY = 4;
-  HOURS_TO_BLOCK = 6;
 
   async findAllUsers() {
     return this.basicUsersService.findAll();
@@ -34,6 +29,30 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<User> {
     await this.isUserNameUnique(createUserDto.username);
 
+    const newUser = await this.createUserDto(createUserDto);
+
+    this.authService.setRegistrationInfo(newUser);
+    await this.basicUsersService.createEntity(newUser);
+    return this.authService.buildRegistrationInfo(newUser);
+  }
+
+  async getUserByUserName(username: string) {
+    return this.basicUsersService.findPropertyWithSpecificValue('username', username);
+  }
+
+  async login(loginUserDto: LoginUserDto) {
+    const user = await this.getUserByUserName(loginUserDto.username);
+    await this.authService.checkPassword(loginUserDto.password, user);
+    return {
+        username: user.username,
+        fullname: user.fullName,
+        accessToken: await this.authService.createAccessToken(user._id),
+        refreshToken: await this.authService.createRefreshToken(user._id),
+    };
+  }
+
+
+  private async createUserDto(createUserDto: CreateUserDto) {
     const newUser = new UserDto();
     newUser.username = createUserDto.username;
     newUser.fullName = createUserDto.fullName;
@@ -43,22 +62,7 @@ export class UsersService {
     const salt = await bcrypt.genSalt(10);
     newUser.password = await bcrypt.hash(createUserDto.password, salt);
 
-    this.setRegistrationInfo(newUser);
-    await this.basicUsersService.createEntity(newUser);
-    return this.buildRegistrationInfo(newUser);
-  }
-
-  private buildRegistrationInfo(user): any {
-    const userRegistrationInfo = {
-        username: user.username,
-        fullName: user.fullName
-    };
-    return userRegistrationInfo;
-  }
-
-  private setRegistrationInfo(user): any {
-    user.verification = v4();
-    user.verificationExpires = addHours(new Date(), this.HOURS_TO_VERIFY);
+    return newUser;
   }
 
   private async isUserNameUnique(username: string) {
@@ -66,29 +70,6 @@ export class UsersService {
     if (user) {
         throw new BadRequestException('User name most be unique.');
     }
-  }
-
-  async login(loginUserDto: LoginUserDto) {
-    const user = await this.getUserByUserName(loginUserDto.username);
-    await this.checkPassword(loginUserDto.password, user);
-    return {
-        username: user.username,
-        fullname: user.fullName,
-        accessToken: await this.authService.createAccessToken(user._id),
-        // refreshToken: await this.authService.createRefreshToken(req, user._id),
-    };
-  }
-
-  private async checkPassword(attemptPass: string, user) {
-    const match = await bcrypt.compare(attemptPass, user.password);
-    if (!match) {
-        throw new NotFoundException('Wrong email or password.');
-    }
-    return match;
-  }
-
-  async getUserByUserName(username: string) {
-    return this.basicUsersService.findPropertyWithSpecificValue('username', username);
   }
 
   async findUsersByIds(usersIds: string[]) {
