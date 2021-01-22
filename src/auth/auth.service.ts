@@ -99,11 +99,6 @@ export class AuthService {
       return userRegistrationInfo;
     }
   
-    public setRegistrationInfo(user): any {
-      user.verification = v4();
-      user.verificationExpires = addHours(new Date(), Number(process.env.HOURS_TO_VERIFY));
-    }
-  
     public async checkPassword(attemptPass: string, user) {
       const match = await bcrypt.compare(attemptPass, user.password);
       if (!match) {

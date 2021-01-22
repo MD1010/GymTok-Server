@@ -30,8 +30,6 @@ export class UsersService {
     await this.isUserNameUnique(createUserDto.username);
 
     const newUser = await this.createUserDto(createUserDto);
-
-    this.authService.setRegistrationInfo(newUser);
     await this.basicUsersService.createEntity(newUser);
     return this.authService.buildRegistrationInfo(newUser);
   }
