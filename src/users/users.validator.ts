@@ -9,10 +9,17 @@ export class UsersValidator extends GenericValidator<User, UserDto>{
     super(usersService.basicUsersService)
   }
 
-  async throwErrorIfUserNameIsNotExist(userName: string) {
+  async throwErrorIfUserNameIsExist(userName: string) {
     const existUser = await this.usersService.getUserByUserName(userName);
     if (existUser) {
       throw new ConflictException(`The username ${userName} is already exist`);
+    }
+  }
+
+  async throwErrorIfUserNameIsNotExist(userName: string) {
+    const existUser = await this.usersService.getUserByUserName(userName);
+    if (!existUser) {
+      throw new ConflictException(`The username ${userName} is not exist`);
     }
   }
 

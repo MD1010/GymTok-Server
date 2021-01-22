@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
+import { AuthGuard } from "@nestjs/passport";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "../users/users.service";
 import { UsersValidator } from "../users/users.validator";
@@ -15,6 +16,7 @@ export class ChallengesController {
         private usersService: UsersService) { }
 
     @Get()
+    @UseGuards(AuthGuard('jwt'))
     @ApiOkResponse({
         status: 200,
         description: "Get all challenges",

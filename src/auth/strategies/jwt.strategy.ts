@@ -12,4 +12,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       secretOrKey: process.env.JWT_SECRET,
     });
   }
+
+  async validate(res: any) {
+    const user = await this.authService.validateUser(res.userId);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return user;
+  }
 }

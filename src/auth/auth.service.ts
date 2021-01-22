@@ -3,7 +3,11 @@ import { sign } from 'jsonwebtoken';
 import v4 from 'uuid';
 import { addHours } from 'date-fns';
 import * as Cryptr from 'cryptr';
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from '../users/user.model';
+import { Model } from 'mongoose';
 const bcrypt = require('bcrypt');
+import jwt from 'jsonwebtoken';
 
 
 @Injectable()
@@ -12,6 +16,7 @@ export class AuthService {
     cryptr: any;
 
     constructor(
+      @InjectModel(User.name) private readonly usersModel: Model<User>,
     ){
         this.cryptr = new Cryptr(process.env.ENCRYPT_JWT_SECRET);
     }
@@ -30,27 +35,56 @@ export class AuthService {
         return this.cryptr.encrypt(text);
     }
 
-    private jwtExtractor(request) {
+    private jwtExtractor(headers) {
         let token = null;
-        if (request.header('x-token')) {
-        token = request.get('x-token');
-      } else if (request.headers.authorization) {
-        token = request.headers.authorization.replace('Bearer ', '').replace(' ', '');
-      } else if (request.body.token) {
-        token = request.body.token.replace(' ', '');
-      }
-        if (request.query.token) {
-        token = request.body.token.replace(' ', '');
-      }
+        if (headers.headers.authorization.split(' ')[1]) {
+          token = headers.headers.authorization.split(' ')[1];;
+        }
+
         const cryptr = new Cryptr(process.env.ENCRYPT_JWT_SECRET);
         if (token) {
           try {
             token = cryptr.decrypt(token);
           } catch (err) {
-            throw new BadRequestException('Bad request.');
+            throw new BadRequestException('Token has expired');
           }
       }
         return token;
+    }
+
+    public async createAccessTokenFromRefreshToken (headers, body) {
+      let token = headers.authorization.split(' ')[1];
+      if (!token) {
+        throw new BadRequestException('Bad request.');
+      }
+
+      try {
+        const cryptr = new Cryptr(process.env.ENCRYPT_JWT_SECRET);
+        token = cryptr.decrypt(token);
+      } catch (err) {
+        throw new BadRequestException('Bad request.');
+      }
+
+      try{
+        const user = await this.validateUserByName(body.username); 
+        return {
+          accessToken: await this.createAccessToken(user.id),
+          username: user.username
+        }
+      } catch(err) {
+        console.log(err);
+        throw new BadRequestException('Bad request.');
+      }
+
+
+    }
+
+    public async validateUser(userId: string) {
+      return await this.usersModel.findById(userId); 
+    }
+
+    public async validateUserByName(username: string) {
+      return await this.usersModel.findOne({username}); 
     }
     
     returnJwtExtractor() {
