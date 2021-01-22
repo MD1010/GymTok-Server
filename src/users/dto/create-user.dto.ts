@@ -14,7 +14,7 @@ export class CreateUserDto {
     @IsNotEmpty()
     @IsString()
     @MinLength(5)
-    @MaxLength(255)
+    @MaxLength(255) 
     @ApiProperty()
     readonly fullName: string;
 
