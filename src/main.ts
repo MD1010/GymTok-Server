@@ -14,7 +14,9 @@ async function bootstrap() {
     .setTitle("GymTok server - until when???")
     .setDescription("Best API ever")
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
+    
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup("swagger", app, document);
 
