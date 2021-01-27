@@ -90,14 +90,6 @@ export class AuthService {
     returnJwtExtractor() {
         return this.jwtExtractor;
     }
-
-    public buildRegistrationInfo(user): any {
-      const userRegistrationInfo = {
-          username: user.username,
-          fullName: user.fullName
-      };
-      return userRegistrationInfo;
-    }
   
     public async checkPassword(attemptPass: string, user) {
       const match = await bcrypt.compare(attemptPass, user.password);

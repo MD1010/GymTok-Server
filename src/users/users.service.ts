@@ -26,12 +26,17 @@ export class UsersService {
     return this.basicUsersService.createEntity(user);
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto) {
     await this.isUserNameUnique(createUserDto.username);
 
     const newUser = await this.createUserDto(createUserDto);
-    await this.basicUsersService.createEntity(newUser);
-    return this.authService.buildRegistrationInfo(newUser);
+    const user = await this.basicUsersService.createEntity(newUser);
+
+    return {
+      user: {username: user.username, fullName: user.fullName},
+      accessToken: await this.authService.createAccessToken(user.id),
+      refreshToken: await this.authService.createRefreshToken(user.id),
+    };
   }
 
   async getUserByUserName(username: string) {
@@ -42,8 +47,7 @@ export class UsersService {
     const user = await this.getUserByUserName(loginUserDto.username);
     await this.authService.checkPassword(loginUserDto.password, user);
     return {
-        username: user.username,
-        fullname: user.fullName,
+        user: {username: user.username, fullName: user.fullName},
         accessToken: await this.authService.createAccessToken(user._id),
         refreshToken: await this.authService.createRefreshToken(user._id),
     };
