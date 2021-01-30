@@ -1,9 +1,8 @@
 import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader } from "@nestjs/swagger";
+import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
 import { ChallengesValidator } from "../challenges/challenges.validator";
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginUserDto } from './dto/login-user.dto';
-import { RefreshTokenDto } from '../auth/dto/refresh-token.dto';
 import { UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 import { AuthService } from "../auth/auth.service";
@@ -68,14 +67,13 @@ export class UserController {
   @Post('/refresh')
   @ApiOkResponse({
     status: 200,
-    description: "Get all users",
-    type: [UserDto],
   })
   @ApiHeader({
     name: 'X-MyHeader',
     description: 'Custom header',
   })
-  async refresh (@Body() body: RefreshTokenDto, @Headers() headers) {
-    return await this.authService.createAccessTokenFromRefreshToken(headers, body);
+  @ApiBearerAuth()
+  async refresh (@Headers() headers) {
+    return await this.authService.createAccessTokenFromRefreshToken(headers);
   }
 }
