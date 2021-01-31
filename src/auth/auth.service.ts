@@ -54,6 +54,11 @@ export class AuthService {
     }
 
     public async checkPassword(attemptPass: string, user) {
+
+      if(!user.password) {
+        throw new BadRequestException('User has not password.');
+      }
+      
       const match = await bcrypt.compare(attemptPass, user.password);
       if (!match) {
           throw new NotFoundException('Wrong credentials.');
