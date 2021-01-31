@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
-import { GenericDalService } from "src/common/genericDalService.service";
+import { GenericDalService } from "../common/genericDalService.service";
 
 @Injectable()
 export class ChallengesService {

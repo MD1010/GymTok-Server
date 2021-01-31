@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { GenericValidator } from "src/common/generic.validator";
+import { GenericValidator } from "../common/generic.validator";
 import { User, UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 
@@ -9,10 +9,17 @@ export class UsersValidator extends GenericValidator<User, UserDto>{
     super(usersService.basicUsersService)
   }
 
-  async throwErrorIfUserNameIsNotExist(userName: string) {
+  async throwErrorIfUserNameIsExist(userName: string) {
     const existUser = await this.usersService.getUserByUserName(userName);
     if (existUser) {
       throw new ConflictException(`The username ${userName} is already exist`);
+    }
+  }
+
+  async throwErrorIfUserNameIsNotExist(userName: string) {
+    const existUser = await this.usersService.getUserByUserName(userName);
+    if (!existUser) {
+      throw new ConflictException(`Wrong credentials.`);
     }
   }
 

@@ -2,7 +2,7 @@ import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { IsNumber, IsString } from "class-validator";
 import { Document } from "mongoose";
-import { BasicEntityDto } from "src/common/basicEntity.dto";
+import { BasicEntityDto } from "../common/basicEntity.dto";
 
 
 export class ChallengeDto extends BasicEntityDto {

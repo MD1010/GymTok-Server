@@ -1,8 +1,11 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { ChallengesValidator } from "src/challenges/challenges.validator";
+import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
+import { ChallengesValidator } from "../challenges/challenges.validator";
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 import { UserDto } from "./user.model";
 import { UsersService } from "./users.service";
+import { AuthService } from "../auth/auth.service";
 import { UsersValidator } from "./users.validator";
 
 @Controller("users")
@@ -10,7 +13,8 @@ import { UsersValidator } from "./users.validator";
 export class UserController {
   constructor(private usersService: UsersService,
     private usersValidator: UsersValidator,
-    private challengesValidator: ChallengesValidator) { }
+    private challengesValidator: ChallengesValidator,
+    private authService: AuthService) { }
 
   @Get()
   @ApiOkResponse({
@@ -22,6 +26,18 @@ export class UserController {
     return this.usersService.findAllUsers();
   }
 
+  @Post('register')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({
+    status: 200,
+    description: "Create a user",
+    type: [CreateUserDto],
+  })
+  async register(@Body() createUserDto: CreateUserDto) {
+    await this.usersValidator.throwErrorIfUserNameIsExist(createUserDto.username);
+    return await this.usersService.create(createUserDto);
+  }
+
   @Post()
   @ApiOkResponse({
     status: 201,
@@ -29,10 +45,31 @@ export class UserController {
     type: UserDto,
   })
   async addUser(@Body() user: UserDto) {
-    await this.usersValidator.throwErrorIfUserNameIsNotExist(user.username);
+    await this.usersValidator.throwErrorIfUserNameIsExist(user.username);
     await this.challengesValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(user.recommendedChallenges);
     await this.challengesValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(user.acceptedChallenges);
 
     return this.usersService.addUser(user);
+  }
+
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({
+    status: 200,
+    description: "Login success",
+    type: [LoginUserDto],
+  })
+  async login(@Body() loginUserDto: LoginUserDto) {
+      await this.usersValidator.throwErrorIfUserNameIsNotExist(loginUserDto.username);
+      return await this.usersService.login(loginUserDto);
+  }
+
+  @Post('/refresh')
+  @ApiOkResponse({
+    status: 200,
+  })
+  @ApiBearerAuth()
+  async refresh (@Headers() headers) {
+    return await this.authService.createAccessTokenFromRefreshToken(headers);
   }
 }

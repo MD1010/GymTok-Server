@@ -1,8 +1,9 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { IsArray, IsString } from "class-validator";
+
 import { Document } from "mongoose";
-import { BasicEntityDto } from "src/common/basicEntity.dto";
+import { BasicEntityDto } from "../common/basicEntity.dto";
 
 export class UserDto extends BasicEntityDto {
   @ApiResponseProperty()
@@ -11,6 +12,10 @@ export class UserDto extends BasicEntityDto {
   @ApiProperty()
   @IsString()
   username: string;
+
+  @ApiProperty()
+  @IsString()
+  password: string;
 
   @ApiProperty()
   @IsString()
@@ -36,6 +41,9 @@ export class UserDto extends BasicEntityDto {
 export class User extends Document {
   @Prop()
   username: string;
+
+  @Prop()
+  password: string;
 
   @Prop()
   fullName: string;

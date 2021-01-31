@@ -1,6 +1,6 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { UserModule } from "src/users/user.module";
+import { UserModule } from "../users/user.module";
 import { Challenge, ChallengeSchema } from "./challenge.model";
 import { ChallengesController } from "./challenges.controller";
 import { ChallengesService } from "./challenges.service";
