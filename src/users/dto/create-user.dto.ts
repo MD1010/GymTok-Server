@@ -19,7 +19,6 @@ export class CreateUserDto {
     // Password
     @IsNotEmpty()
     @IsString()
-    @MinLength(5)
     @MaxLength(1024)
     @ApiProperty()
     readonly password: string;

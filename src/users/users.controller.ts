@@ -68,10 +68,6 @@ export class UserController {
   @ApiOkResponse({
     status: 200,
   })
-  @ApiHeader({
-    name: 'X-MyHeader',
-    description: 'Custom header',
-  })
   @ApiBearerAuth()
   async refresh (@Headers() headers) {
     return await this.authService.createAccessTokenFromRefreshToken(headers);
