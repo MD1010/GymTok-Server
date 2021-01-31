@@ -6,14 +6,12 @@ export class CreateUserDto {
     // username
     @IsNotEmpty()
     @IsString()
-    @MinLength(5)
     @MaxLength(255)
     @ApiProperty()
     readonly username: string;
 
     @IsNotEmpty()
     @IsString()
-    @MinLength(5)
     @MaxLength(255) 
     @ApiProperty()
     readonly fullName: string;

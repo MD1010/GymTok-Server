@@ -19,7 +19,7 @@ export class UsersValidator extends GenericValidator<User, UserDto>{
   async throwErrorIfUserNameIsNotExist(userName: string) {
     const existUser = await this.usersService.getUserByUserName(userName);
     if (!existUser) {
-      throw new ConflictException(`The username ${userName} is not exist`);
+      throw new ConflictException(`Wrong credentials.`);
     }
   }
 
