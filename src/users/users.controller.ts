@@ -62,9 +62,9 @@ export class UserController {
     type: [ChallengeDto],
   })
   async getRecommendChallengeByUserId(@Param('userId') userId: string) {
-    this.linkPredictionService.initModel();
+    const recomendedChallengesIds = this.linkPredictionService.getRecommendedChallengesByUserId(userId);
 
-    return "soon....."
+    return recomendedChallengesIds;
   }
 
   @Post('login')

@@ -10,14 +10,15 @@ export class LinkPredictionService {
   }
 
   getRecommendedChallengesByUserId(userId: string) {
-    console.log("aaaa", this.configService.get<string>("LINK_PREDICTION_SERVICE_URL"));
-
-    return "soon"
+    return this.httpService.get(`${this.linkPredictionServiceUrl}/recommendedChallenges/${userId}`).toPromise().then(res => {
+      console.log("eeee", res.data);
+      return res.data;
+    })
   }
 
   initModel() {
     this.httpService.post(`${this.linkPredictionServiceUrl}/initModel`).toPromise().then(res => {
-      console.log("eeee", res);
+      console.log("eeee", res.data);
     })
 
     return "soon"
