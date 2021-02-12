@@ -12,7 +12,7 @@ import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), forwardRef(() => ChallengesModule),
     AuthModule,
-    LinkPredictionModule
+    forwardRef(() => LinkPredictionModule)
   ],
   controllers: [UserController],
   providers: [UsersService, UsersValidator],

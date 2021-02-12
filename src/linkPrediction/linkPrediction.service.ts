@@ -16,8 +16,8 @@ export class LinkPredictionService {
     })
   }
 
-  initModel() {
-    this.httpService.post(`${this.linkPredictionServiceUrl}/initModel`).toPromise().then(res => {
+  initModelTraining() {
+    this.httpService.post(`${this.linkPredictionServiceUrl}/initModelTraining`).toPromise().then(res => {
       console.log("eeee", res.data);
     })
 

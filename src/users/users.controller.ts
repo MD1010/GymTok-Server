@@ -25,7 +25,7 @@ export class UserController {
     description: "Get all users",
     type: [UserDto],
   })
-  async getAllArtists() {
+  async getAllUsers() {
     return this.usersService.findAllUsers();
   }
 

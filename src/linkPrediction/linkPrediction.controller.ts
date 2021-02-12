@@ -1,13 +1,18 @@
 import { Controller, Post } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { UsersService } from "src/users/users.service";
+import { LinkPredictionParser } from "./linkPrediction.parser";
 import { LinkPredictionService } from "./linkPrediction.service";
 
 @Controller("LinkPrediction")
-@ApiTags("LinkPrediction")
 export class LinkPredictionController {
-    constructor(private linkPredictionService: LinkPredictionService) { }
+    constructor(private linkPredictionService: LinkPredictionService,
+        private usersService: UsersService,
+        private linkPredictionParser: LinkPredictionParser) { }
 
     async initModel() {
-        this.linkPredictionService.initModel();
+        const users = await this.usersService.findAllUsers();
+        const bipartiteGraph = this.linkPredictionParser.parseUsersAndChallengesToLinkPredictionFormat(users);
+
+        this.linkPredictionService.initModelTraining();
     }
 }
