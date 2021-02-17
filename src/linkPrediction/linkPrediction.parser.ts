@@ -13,8 +13,6 @@ export class LinkPredictionParser {
       }
     }
 
-    console.log("bipartiteGraph", bipartiteGraph);
-
-    return bipartiteGraph;
+    return bipartiteGraph.trim();
   }
 }
