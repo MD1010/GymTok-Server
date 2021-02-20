@@ -1,63 +1,39 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
-import { IsNumber, IsString } from "class-validator";
-import { Document } from "mongoose";
+import { IsArray, IsString } from "class-validator";
+import { Document, ObjectId } from "mongoose";
 import { BasicEntityDto } from "../common/basicEntity.dto";
 
-
+import * as mongoose from "mongoose";
+import { Reply } from "src/Replies/replies.model";
+import { Post } from "src/Posts/posts.model";
 export class ChallengeDto extends BasicEntityDto {
   @ApiResponseProperty()
   _id: string;
 
   @ApiProperty()
   @IsString()
-  name: string;
-
-  @ApiProperty()
-  @IsString()
   createdBy: string;
 
   @ApiProperty()
   @IsString()
   description: string;
 
-  @ApiResponseProperty()
-  creationTime: Date;
-
-  @ApiProperty()
-  estimatedScore: number;
-
   @ApiProperty()
   @IsString()
-  image: string;
-
-  @ApiProperty()
-  @IsString()
-  video: string;
+  score: string;
 }
 
 @Schema()
 export class Challenge extends Document {
-  @Prop()
-  name: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Post" })
+  postId: Post;
 
   @Prop()
-  createdBy: string;
+  score: number;
 
-  @Prop()
-  description: string;
-
-  @Prop({ default: new Date() })
-  creationTime: Date;
-
-  @Prop()
-  estimatedScore: number;
-
-  @Prop()
-  image: string;
-
-  @Prop()
-  video: string;
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reply" }] })
+  replies: Reply[];
 }
 
 export const ChallengeSchema = SchemaFactory.createForClass(Challenge);
