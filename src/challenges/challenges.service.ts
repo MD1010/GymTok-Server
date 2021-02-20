@@ -1,16 +1,24 @@
 import { Injectable } from "@nestjs/common";
-import { Model } from "mongoose";
-import { InjectModel } from "@nestjs/mongoose";
+import { Connection, Model } from "mongoose";
+import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
 import { GenericDalService } from "../common/genericDalService.service";
+import { MongoGridFS } from "mongo-gridfs";
 
 @Injectable()
 export class ChallengesService {
+  private fileModel: MongoGridFS;
   public basicChallengesService: GenericDalService<Challenge, ChallengeDto>;
   constructor(
-    @InjectModel(Challenge.name) private readonly challengesModel: Model<Challenge>
+    @InjectModel(Challenge.name)
+    private readonly challengesModel: Model<Challenge>,
+    @InjectConnection() private readonly connection: Connection
   ) {
-    this.basicChallengesService = new GenericDalService<Challenge, ChallengeDto>(challengesModel);
+    this.basicChallengesService = new GenericDalService<
+      Challenge,
+      ChallengeDto
+    >(challengesModel);
+    this.fileModel = new MongoGridFS(this.connection.db, "Challenges");
   }
 
   async findAllChallenges() {
@@ -26,6 +34,9 @@ export class ChallengesService {
   }
 
   async findChallengesByIds(challengesIds: string[]) {
-    return this.basicChallengesService.findByIds(challengesIds)
+    return this.basicChallengesService.findByIds(challengesIds);
   }
+  // async uploadChallenge(Challenge:ChallengeDto){
+  //   this.fileModel.writeFileStream()
+  // }
 }

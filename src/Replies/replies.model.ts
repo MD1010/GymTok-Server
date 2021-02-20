@@ -15,7 +15,7 @@ export class ReplyDto extends BasicEntityDto {
 
   @ApiProperty()
   @IsString()
-  createdBy: mongoose.ObjectId;
+  createdBy: mongoose.Schema.Types.ObjectId;
 
   @ApiProperty()
   @IsString()
@@ -25,7 +25,7 @@ export class ReplyDto extends BasicEntityDto {
   video: string;
 
   @ApiProperty()
-  replierId: mongoose.ObjectId;
+  replierId: mongoose.Schema.Types.ObjectId;
 }
 
 @Schema()
