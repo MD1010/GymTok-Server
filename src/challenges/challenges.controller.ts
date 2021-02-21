@@ -10,17 +10,8 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
-import {
-  FileFieldsInterceptor,
-  FileInterceptor,
-  FilesInterceptor,
-} from "@nestjs/platform-express/multer";
-import {
-  ApiBearerAuth,
-  ApiConsumes,
-  ApiOkResponse,
-  ApiTags,
-} from "@nestjs/swagger";
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestjs/platform-express/multer";
+import { ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { UsersService } from "../users/users.service";
 import { UsersValidator } from "../users/users.validator";
 import { Challenge, ChallengeDto } from "./challenge.model";
@@ -66,17 +57,13 @@ export class ChallengesController {
     description: "Adds new challenge",
     type: ChallengeDto,
   })
-  // @UseInterceptors(FilesInterceptor("file"))
-  @UseInterceptors(
-    FileFieldsInterceptor([
-      { name: "description" },
-      { name: "video" },
-      { name: "selectedFriends" },
-    ])
-  )
+  //@UseInterceptors(FilesInterceptor("file"))
+  @UseInterceptors(FileFieldsInterceptor([{ name: "description" }, { name: "video" }, { name: "selectedFriends" }]))
   async addChallenge(@UploadedFiles() challengeFiles, @Body() fields: any) {
+    console.log(fields);
+    console.log(challengeFiles);
     // console.log(fields);
-    const response = [];
+    // const response = [];
     //   const fileReponse = {
     //     originalname: file.originalname,
     //     encoding: file.encoding,
@@ -93,7 +80,7 @@ export class ChallengesController {
     // };
     // response.push(fileReponse);
     // console.log(Buffer.from(challengeFiles.video[0].buffer).toString("base64"));
-    console.log(challengeFiles.video[0]);
+    //console.log(challengeFiles.video[0]);
 
     // this.filesControoler.upload(challengeFiles)
   }
@@ -101,22 +88,13 @@ export class ChallengesController {
   @Post("recommend/:challengeId/users")
   @ApiOkResponse({
     status: 201,
-    description:
-      "Adds to the challenge id to the recommended challenges of the user ids",
+    description: "Adds to the challenge id to the recommended challenges of the user ids",
     type: [String],
   })
-  async addRecommendChallengeForUsers(
-    @Param("challengeId") challengeId: string,
-    @Body() usersIds: string[]
-  ) {
+  async addRecommendChallengeForUsers(@Param("challengeId") challengeId: string, @Body() usersIds: string[]) {
     await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
-    const users = await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(
-      usersIds
-    );
-    this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(
-      users,
-      challengeId
-    );
+    const users = await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
+    this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(users, challengeId);
 
     await this.usersService.addRecommendChallengeToUsers(challengeId, usersIds);
 
@@ -126,18 +104,12 @@ export class ChallengesController {
   @Post("accept/:challengeId/users")
   @ApiOkResponse({
     status: 201,
-    description:
-      "Adds to the challenge id to the accepted challenges of the user ids",
+    description: "Adds to the challenge id to the accepted challenges of the user ids",
     type: [String],
   })
-  async addAcceptChallengeForUsers(
-    @Param("challengeId") challengeId: string,
-    @Body() usersIds: string[]
-  ) {
+  async addAcceptChallengeForUsers(@Param("challengeId") challengeId: string, @Body() usersIds: string[]) {
     await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
-    await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(
-      usersIds
-    );
+    await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
 
     await this.usersService.addAcceptChallengeToUsers(challengeId, usersIds);
 
