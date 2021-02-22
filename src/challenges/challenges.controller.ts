@@ -12,6 +12,7 @@ import {
 import { AuthGuard } from "@nestjs/passport";
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestjs/platform-express/multer";
 import { ApiBearerAuth, ApiConsumes, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { FilesService } from "src/files/files.service";
 import { UsersService } from "../users/users.service";
 import { UsersValidator } from "../users/users.validator";
 import { Challenge, ChallengeDto } from "./challenge.model";
@@ -25,12 +26,13 @@ export class ChallengesController {
     private challengesService: ChallengesService,
     private challengesValidator: ChallengesValidator,
     private usersValidator: UsersValidator,
-    private usersService: UsersService
+    private usersService: UsersService,
+    private fileService: FilesService
   ) {}
 
   @Get()
-  @UseGuards(AuthGuard("jwt"))
-  @ApiBearerAuth()
+  // @UseGuards(AuthGuard("jwt"))
+  // @ApiBearerAuth()
   @ApiOkResponse({
     status: 200,
     description: "Get all challenges",
@@ -59,30 +61,8 @@ export class ChallengesController {
   })
   //@UseInterceptors(FilesInterceptor("file"))
   @UseInterceptors(FileFieldsInterceptor([{ name: "description" }, { name: "video" }, { name: "selectedFriends" }]))
-  async addChallenge(@UploadedFiles() challengeFiles, @Body() fields: any) {
-    console.log(fields);
-    console.log(challengeFiles);
-    // console.log(fields);
-    // const response = [];
-    //   const fileReponse = {
-    //     originalname: file.originalname,
-    //     encoding: file.encoding,
-    //     mimetype: file.mimetype,
-    //     id: file.id,
-    //     filename: file.filename,
-    //     metadata: file.metadata,
-    //     bucketName: file.bucketName,
-    //     chunkSize: file.chunkSize,
-    //     size: file.size,
-    //     md5: file.md5,
-    //     uploadDate: file.uploadDate,
-    //     contentType: file.contentType,
-    // };
-    // response.push(fileReponse);
-    // console.log(Buffer.from(challengeFiles.video[0].buffer).toString("base64"));
-    //console.log(challengeFiles.video[0]);
-
-    // this.filesControoler.upload(challengeFiles)
+  async addChallenge(@UploadedFiles() filesToUpload, @Body() fields: any) {
+    this.fileService.uploadFile(filesToUpload.video[0]);
   }
 
   @Post("recommend/:challengeId/users")

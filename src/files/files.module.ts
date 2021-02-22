@@ -11,5 +11,6 @@ import { GridFsMulterConfigService } from "./multer-config.service";
   ],
   controllers: [],
   providers: [GridFsMulterConfigService, FilesService],
+  exports: [FilesService],
 })
 export class FilesModule {}

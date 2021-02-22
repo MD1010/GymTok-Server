@@ -9,15 +9,11 @@ import { ConfigService } from "@nestjs/config";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  const configService: ConfigService = app.get(ConfigService);
-  // Set the config options
-  console.log("?!@#!?@#!@#", process.env.FIREBASE_PROJECT_ID);
   const adminConfig: ServiceAccount = {
     projectId: process.env.FIREBASE_PROJECT_ID,
     privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
     clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
   };
-  // Initialize the firebase admin app
   admin.initializeApp({
     credential: admin.credential.cert(adminConfig),
     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
