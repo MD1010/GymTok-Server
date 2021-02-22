@@ -3,22 +3,16 @@ import { Connection, Model } from "mongoose";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
 import { GenericDalService } from "../common/genericDalService.service";
-import { MongoGridFS } from "mongo-gridfs";
 
 @Injectable()
 export class ChallengesService {
-  private fileModel: MongoGridFS;
   public basicChallengesService: GenericDalService<Challenge, ChallengeDto>;
   constructor(
     @InjectModel(Challenge.name)
     private readonly challengesModel: Model<Challenge>,
     @InjectConnection() private readonly connection: Connection
   ) {
-    this.basicChallengesService = new GenericDalService<
-      Challenge,
-      ChallengeDto
-    >(challengesModel);
-    this.fileModel = new MongoGridFS(this.connection.db, "Challenges");
+    this.basicChallengesService = new GenericDalService<Challenge, ChallengeDto>(challengesModel);
   }
 
   async findAllChallenges() {
