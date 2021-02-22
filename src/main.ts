@@ -1,11 +1,10 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-import { AppModule } from "./app.module";
-import { AllExceptionsFilter } from "./common/allExceptionsFilter";
 import * as admin from "firebase-admin";
 import { ServiceAccount } from "firebase-admin";
-import { ConfigService } from "@nestjs/config";
+import { AppModule } from "./app.module";
+import { AllExceptionsFilter } from "./common/allExceptionsFilter";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

@@ -30,7 +30,4 @@ export class ChallengesService {
   async findChallengesByIds(challengesIds: string[]) {
     return this.basicChallengesService.findByIds(challengesIds);
   }
-  // async uploadChallenge(Challenge:ChallengeDto){
-  //   this.fileModel.writeFileStream()
-  // }
 }

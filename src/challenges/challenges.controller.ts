@@ -59,7 +59,6 @@ export class ChallengesController {
     description: "Adds new challenge",
     type: ChallengeDto,
   })
-  //@UseInterceptors(FilesInterceptor("file"))
   @UseInterceptors(FileFieldsInterceptor([{ name: "description" }, { name: "video" }, { name: "selectedFriends" }]))
   async addChallenge(@UploadedFiles() filesToUpload, @Body() fields: any) {
     this.fileService.uploadFile(filesToUpload.video[0]);
