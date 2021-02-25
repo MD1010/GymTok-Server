@@ -7,12 +7,17 @@ import { GenericDalService } from "../common/genericDalService.service";
 @Injectable()
 export class ChallengesService {
   public basicChallengesService: GenericDalService<Challenge, ChallengeDto>;
+
   constructor(
     @InjectModel(Challenge.name)
     private readonly challengesModel: Model<Challenge>,
+
     @InjectConnection() private readonly connection: Connection
   ) {
-    this.basicChallengesService = new GenericDalService<Challenge, ChallengeDto>(challengesModel);
+    this.basicChallengesService = new GenericDalService<
+      Challenge,
+      ChallengeDto
+    >(challengesModel);
   }
 
   async findAllChallenges() {

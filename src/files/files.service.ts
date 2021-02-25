@@ -14,6 +14,7 @@ export class FilesService {
         expires: "03-09-2500",
       });
       console.log(`media url = ${url}`);
+      return url;
     } catch (e) {
       console.log(`Unable to upload encoded file ${e}`);
     }
