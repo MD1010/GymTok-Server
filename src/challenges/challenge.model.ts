@@ -3,14 +3,13 @@ import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { IsArray, IsString } from "class-validator";
 import { Document } from "mongoose";
 import { BasicEntityDto } from "../common/basicEntity.dto";
-
 import { Reply } from "src/Replies/replies.model";
-import { Post } from "src/Posts/posts.model";
 
 import * as mongoose from "mongoose";
+import { User } from "src/users/user.model";
 export class ChallengeDto extends BasicEntityDto {
-  @ApiResponseProperty()
-  _id: string;
+  // @ApiResponseProperty()
+  // _id: string;
 
   @ApiProperty()
   @IsString()
@@ -22,16 +21,29 @@ export class ChallengeDto extends BasicEntityDto {
 
   @ApiProperty()
   @IsString()
-  score: string;
+  video: string;
+
+  // @ApiProperty()
+  // @IsString()
+  // score: string;
 }
 
 @Schema()
 export class Challenge extends Document {
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "Post" })
-  postId: Post;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User" })
+  createdBy: User;
 
   @Prop()
-  score: number;
+  description: string;
+
+  @Prop({ default: new Date() })
+  creationTime: Date;
+
+  @Prop()
+  video: string;
+
+  // @Prop()
+  // score: number;
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reply" }] })
   replies: Reply[];
