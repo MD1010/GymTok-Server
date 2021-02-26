@@ -1,8 +1,8 @@
-import { Module } from "@nestjs/common";
+import { HttpModule, Module } from "@nestjs/common";
 import { FilesService } from "./files.service";
 
 @Module({
-  imports: [],
+  imports: [HttpModule],
   controllers: [],
   providers: [FilesService],
   exports: [FilesService],
