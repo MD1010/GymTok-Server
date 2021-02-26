@@ -27,6 +27,7 @@ import { UsersValidator } from "../users/users.validator";
 import { Challenge, ChallengeDto } from "./challenge.model";
 import { ChallengesService } from "./challenges.service";
 import { ChallengesValidator } from "./challenges.validator";
+import FormData from "form-data";
 
 @Controller("challenges")
 @ApiTags("Challenges")
@@ -76,14 +77,27 @@ export class ChallengesController {
     ])
   )
   async addChallenge(@UploadedFiles() filesToUpload, @Body() fields: any) {
-    console.log(`fileToUpload ${filesToUpload} fields:${fields}`);
-    let videoUrl = await this.fileService.uploadFile(filesToUpload.video[0]);
-    let challenge: ChallengeDto = {
-      createdBy: "mishok",
-      description: fields.description,
-      video: videoUrl,
-    };
-    await this.challengesService.addChallenge(challenge);
+    console.log("here finished");
+    try {
+      var formData = new FormData();
+      formData.append("video", filesToUpload[0].buffer);
+      console.log(
+        filesToUpload,
+        "................................................",
+        fields
+      );
+    } catch (error) {
+      console.log(error);
+    }
+
+    // let videoUrl = await this.fileService.uploadFile(videoBuffer);
+
+    // let challenge: ChallengeDto = {
+    //   createdBy: "mishok",
+    //   description: fields.description,
+    //   video: videoUrl,
+    // };
+    // await this.challengesService.addChallenge(challenge);
     // console.log(videoUrl);
   }
 
