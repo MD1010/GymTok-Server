@@ -23,6 +23,10 @@ export class ChallengeDto extends BasicEntityDto {
   @IsString()
   video: string;
 
+  @ApiProperty()
+  @IsArray()
+  selectedFriends: string[];
+
   // @ApiProperty()
   // @IsString()
   // score: string;

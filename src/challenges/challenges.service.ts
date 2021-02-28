@@ -35,4 +35,19 @@ export class ChallengesService {
   async findChallengesByIds(challengesIds: string[]) {
     return this.basicChallengesService.findByIds(challengesIds);
   }
+
+  createChallengeObject(
+    challengeFields: any,
+    videoLocation: string
+  ): ChallengeDto {
+    let userId = challengeFields.userId;
+    let description = challengeFields.discreption;
+    let selectedFriends = challengeFields.selectedFriends;
+    return {
+      createdBy: userId,
+      description: description,
+      selectedFriends: selectedFriends,
+      video: videoLocation,
+    };
+  }
 }
