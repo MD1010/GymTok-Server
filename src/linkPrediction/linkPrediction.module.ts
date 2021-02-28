@@ -9,7 +9,7 @@ import { LinkPredictionService } from "./linkPrediction.service";
 @Module({
   imports: [ConfigModule, HttpModule, forwardRef(() => UserModule)],
   controllers: [LinkPredictionController],
-  providers: [LinkPredictionService, LinkPredictionParser, LinkPredictionHelper],
-  exports: [LinkPredictionService, LinkPredictionHelper]
+  providers: [LinkPredictionService, LinkPredictionParser, LinkPredictionHelper, LinkPredictionController],
+  exports: [LinkPredictionService, LinkPredictionHelper, LinkPredictionController]
 })
 export class LinkPredictionModule { }

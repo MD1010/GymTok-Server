@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { LinkPredictionController } from "src/linkPrediction/linkPrediction.controller";
 import { UsersService } from "../users/users.service";
 import { UsersValidator } from "../users/users.validator";
 import { Challenge, ChallengeDto } from "./challenge.model";
@@ -13,6 +14,7 @@ export class ChallengesController {
     constructor(private challengesService: ChallengesService,
         private challengesValidator: ChallengesValidator,
         private usersValidator: UsersValidator,
+        private linkPredictionController: LinkPredictionController,
         private usersService: UsersService) { }
 
     @Get()
@@ -64,6 +66,10 @@ export class ChallengesController {
         await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
 
         await this.usersService.addAcceptChallengeToUsers(challengeId, usersIds);
+
+        setTimeout(() => {
+            this.linkPredictionController.initModelTraining();
+        }, 0);
 
         return usersIds;
     }

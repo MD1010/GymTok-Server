@@ -11,7 +11,7 @@ export class LinkPredictionController {
         private usersService: UsersService,
         private linkPredictionParser: LinkPredictionParser) { }
 
-    async initModel() {
+    async initModelTraining() {
         const users = await this.usersService.findAllUsers();
         const bipartiteGraph = this.linkPredictionParser.parseUsersAndChallengesToLinkPredictionFormat(users);
 
