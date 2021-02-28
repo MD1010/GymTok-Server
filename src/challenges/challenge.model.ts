@@ -46,8 +46,8 @@ export class Challenge extends Document {
   @Prop()
   video: string;
 
-  // @Prop()
-  // score: number;
+  @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] })
+  selectedFriends: User[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Reply" }] })
   replies: Reply[];

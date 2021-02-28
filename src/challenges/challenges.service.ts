@@ -14,10 +14,7 @@ export class ChallengesService {
 
     @InjectConnection() private readonly connection: Connection
   ) {
-    this.basicChallengesService = new GenericDalService<
-      Challenge,
-      ChallengeDto
-    >(challengesModel);
+    this.basicChallengesService = new GenericDalService<Challenge, ChallengeDto>(challengesModel);
   }
 
   async findAllChallenges() {
@@ -36,17 +33,15 @@ export class ChallengesService {
     return this.basicChallengesService.findByIds(challengesIds);
   }
 
-  createChallengeObject(
-    challengeFields: any,
-    videoLocation: string
-  ): ChallengeDto {
-    let userId = challengeFields.userId;
-    let description = challengeFields.discreption;
-    let selectedFriends = challengeFields.selectedFriends;
+  createChallengeObject(challengeFields: any, videoLocation: string): ChallengeDto {
+    const userId = challengeFields.userId;
+    const description = challengeFields.description;
+    const parsedSelectedFriends = JSON.parse(challengeFields.selectedFriends);
+    const selectedFriends = parsedSelectedFriends.map((f) => f._id);
     return {
       createdBy: userId,
-      description: description,
-      selectedFriends: selectedFriends,
+      description,
+      selectedFriends,
       video: videoLocation,
     };
   }
