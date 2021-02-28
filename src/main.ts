@@ -1,8 +1,6 @@
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
-// import * as admin from "firebase-admin";
-// import { ServiceAccount } from "firebase-admin";
 import { AppModule } from "./app.module";
 import { AllExceptionsFilter } from "./common/allExceptionsFilter";
 
