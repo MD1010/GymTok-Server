@@ -28,4 +28,8 @@ export class ChallengesService {
   async findChallengesByIds(challengesIds: string[]) {
     return this.basicChallengesService.findByIds(challengesIds)
   }
+
+  async getComplementChallengesOfChallengesIds(challengesIds: string[]) {
+    return this.challengesModel.where('_id').nin(challengesIds).exec();
+  }
 }

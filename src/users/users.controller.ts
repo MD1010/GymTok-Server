@@ -66,12 +66,17 @@ export class UserController {
     type: [ChallengeDto],
   })
   async getRecommendChallengeByUserId(@Param('userId') userId: string) {
-    const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(userId);
-    const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedChallenges(challengesAndTheirRecommendPercent);
-    const recommendedChallenges = await this.challengesService.findChallengesByIds(recommendedChallengesIds);
+    try {
+      const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(userId);
+      const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedChallenges(challengesAndTheirRecommendPercent);
+      const recommendedChallenges = await this.challengesService.findChallengesByIds(recommendedChallengesIds);
 
-    console.log("recommendedChallengesIds", recommendedChallengesIds);
-    return recommendedChallenges;
+      return recommendedChallenges;
+    }
+    catch (err) {
+      const user = await this.usersService.findUserById(userId);
+      return this.challengesService.getComplementChallengesOfChallengesIds(user.acceptedChallenges)
+    }
   }
 
   @Post('login')
