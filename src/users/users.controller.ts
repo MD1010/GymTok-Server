@@ -9,6 +9,8 @@ import { AuthService } from "../auth/auth.service";
 import { UsersValidator } from "./users.validator";
 import { LinkPredictionService } from '../linkPrediction/linkPrediction.service';
 import { ChallengeDto } from 'src/challenges/challenge.model';
+import { LinkPredictionHelper } from 'src/linkPrediction/linkPrediction.helper';
+import { ChallengesService } from 'src/challenges/challenges.service';
 
 @Controller("users")
 @ApiTags("Users")
@@ -16,8 +18,10 @@ export class UserController {
   constructor(private usersService: UsersService,
     private usersValidator: UsersValidator,
     private challengesValidator: ChallengesValidator,
+    private challengesService: ChallengesService,
     private authService: AuthService,
-    private linkPredictionService: LinkPredictionService) { }
+    private linkPredictionService: LinkPredictionService,
+    private linkPredictionHelper: LinkPredictionHelper) { }
 
   @Get()
   @ApiOkResponse({
@@ -62,9 +66,12 @@ export class UserController {
     type: [ChallengeDto],
   })
   async getRecommendChallengeByUserId(@Param('userId') userId: string) {
-    const recomendedChallengesIds = this.linkPredictionService.getRecommendedChallengesByUserId(userId);
+    const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(userId);
+    const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedChallenges(challengesAndTheirRecommendPercent);
+    const recommendedChallenges = await this.challengesService.findChallengesByIds(recommendedChallengesIds);
 
-    return recomendedChallengesIds;
+    console.log("recommendedChallengesIds", recommendedChallengesIds);
+    return recommendedChallenges;
   }
 
   @Post('login')

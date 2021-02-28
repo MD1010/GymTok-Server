@@ -1,5 +1,6 @@
 import { Injectable, HttpService } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { LinkPredictionResponse } from './linkPrediction.model';
 
 @Injectable()
 export class LinkPredictionService {
@@ -9,18 +10,13 @@ export class LinkPredictionService {
     this.linkPredictionServiceUrl = this.configService.get<string>("LINK_PREDICTION_SERVICE_URL");
   }
 
-  getRecommendedChallengesByUserId(userId: string) {
+  getLinkPredictionCalculationResult(userId: string): Promise<LinkPredictionResponse> {
     return this.httpService.get(`${this.linkPredictionServiceUrl}/recommendedChallenges/${userId}`).toPromise().then(res => {
-      console.log("eeee", res.data);
       return res.data;
     })
   }
 
   initModelTraining(data: string) {
-    this.httpService.post(`${this.linkPredictionServiceUrl}/initModelTraining`, { data }).toPromise().then(res => {
-      // console.log("eeee", res.data);
-    })
-
-    return "soon"
+    return this.httpService.post(`${this.linkPredictionServiceUrl}/initModelTraining`, { data }).toPromise();
   }
 }

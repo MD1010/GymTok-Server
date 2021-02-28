@@ -15,6 +15,6 @@ import { ChallengesValidator } from "./challenges.validator";
   ],
   controllers: [ChallengesController],
   providers: [ChallengesService, ChallengesValidator],
-  exports: [ChallengesValidator]
+  exports: [ChallengesValidator, ChallengesService]
 })
 export class ChallengesModule { }
