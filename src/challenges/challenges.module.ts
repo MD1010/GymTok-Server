@@ -1,5 +1,6 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+import { FilesModule } from "src/files/files.module";
 import { LinkPredictionModule } from "src/linkPrediction/linkPrediction.module";
 import { UserModule } from "../users/user.module";
 import { Challenge, ChallengeSchema } from "./challenge.model";
@@ -13,6 +14,7 @@ import { ChallengesValidator } from "./challenges.validator";
       { name: Challenge.name, schema: ChallengeSchema },
     ]),
     forwardRef(() => UserModule),
+    FilesModule,
     LinkPredictionModule
   ],
   controllers: [ChallengesController],

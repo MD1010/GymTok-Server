@@ -4,7 +4,8 @@ import { IsArray, IsString } from "class-validator";
 
 import { Document } from "mongoose";
 import { BasicEntityDto } from "../common/basicEntity.dto";
-
+import * as mongoose from "mongoose";
+interface INotification {}
 export class UserDto extends BasicEntityDto {
   @ApiResponseProperty()
   _id: string;
@@ -59,6 +60,9 @@ export class User extends Document {
 
   @Prop({ default: 0 })
   totalScore: number;
+
+  // @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: "Challenge" }])
+  // notifications: INotification;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
