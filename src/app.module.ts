@@ -5,6 +5,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ChallengesModule } from "./challenges/challenges.module";
 import { ConfigModule } from "@nestjs/config";
 import { FilesModule } from "./files/files.module";
+import { RepliesModule } from "./Replies/replies.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { FilesModule } from "./files/files.module";
     ChallengesModule,
     FilesModule,
     ConfigModule.forRoot(),
+    RepliesModule
   ],
 })
-export class AppModule {}
+export class AppModule { }
