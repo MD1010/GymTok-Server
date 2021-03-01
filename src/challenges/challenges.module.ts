@@ -15,7 +15,7 @@ import { ChallengesValidator } from "./challenges.validator";
     ]),
     forwardRef(() => UserModule),
     FilesModule,
-    LinkPredictionModule
+    forwardRef(() => LinkPredictionModule),
   ],
   controllers: [ChallengesController],
   providers: [ChallengesService, ChallengesValidator],

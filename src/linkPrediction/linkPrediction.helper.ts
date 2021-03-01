@@ -12,7 +12,7 @@ export class LinkPredictionHelper {
 
     for (const challengeId in challengesAndTheirRecommendPercent) {
       if (challengesAndTheirRecommendPercent[challengeId] >= minimumRecmommendedPrecentToReturnChallenge) {
-        recommendedChallenges.push(challengeId);
+        recommendedChallenges.push(challengeId.trim());
       }
     }
 

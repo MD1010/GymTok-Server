@@ -60,12 +60,10 @@ export class ChallengesController {
             const challenge = this.challengesService.createChallengeObject(fields, videoLocation.data);
             await this.challengesService.addChallenge(challenge);
 
-
             setTimeout(() => {
                 this.linkPredictionController.initModelTraining();
             }, 0);
             return 201;
-            // res.status(HttpStatus.CREATED).send();
         } catch (error) {
             console.log(error);
         }
