@@ -5,17 +5,20 @@ import { LinkPredictionParser } from "./linkPrediction.parser";
 import { LinkPredictionService } from "./linkPrediction.service";
 import { readFile, writeFile } from 'fs'
 import { ChallengesService } from "src/challenges/challenges.service";
+import { RepliesService } from "src/Replies/replies.service";
 
 @Controller("LinkPrediction")
 export class LinkPredictionController {
     constructor(private linkPredictionService: LinkPredictionService,
         private challengesService: ChallengesService,
+        private repliesService: RepliesService,
         private linkPredictionParser: LinkPredictionParser) { }
 
     async initModelTraining() {
         const challenges = await this.challengesService.findAllChallenges();
+        const replies = await this.repliesService.findAllReplies();
         console.log("aaaa", challenges);
-        const bipartiteGraph = this.linkPredictionParser.parseUsersAndChallengesToLinkPredictionFormat(challenges);
+        const bipartiteGraph = this.linkPredictionParser.parseUsersAndChallengesToLinkPredictionFormat(challenges, replies);
 
         console.log("bipartiteGraph", bipartiteGraph);
 
