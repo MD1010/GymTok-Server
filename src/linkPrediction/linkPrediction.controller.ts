@@ -17,23 +17,23 @@ export class LinkPredictionController {
     async initModelTraining() {
         const challenges = await this.challengesService.findAllChallenges();
         const replies = await this.repliesService.findAllReplies();
-        console.log("aaaa", challenges);
         const bipartiteGraph = this.linkPredictionParser.parseUsersAndChallengesToLinkPredictionFormat(challenges, replies);
 
-        console.log("bipartiteGraph", bipartiteGraph);
+        this.linkPredictionService.initModelTraining(bipartiteGraph);
 
-        readFile('read.txt', 'utf8', (err, data) => {
-            if (err) {
-                throw err;
-            }
 
-            const str = bipartiteGraph.concat(`\n${data}`);
-            writeFile('write.txt', str, err => {
-                if (err) {
-                    throw err;
-                }
-                this.linkPredictionService.initModelTraining(str);
-            })
-        });
+        // readFile('read.txt', 'utf8', (err, data) => {
+        //     if (err) {
+        //         throw err;
+        //     }
+
+        //     const str = bipartiteGraph.concat(`\n${data}`);
+        //     writeFile('write.txt', str, err => {
+        //         if (err) {
+        //             throw err;
+        //         }
+        //         this.linkPredictionService.initModelTraining(str);
+        //     })
+        // });
     }
 }

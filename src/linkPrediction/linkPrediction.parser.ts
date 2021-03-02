@@ -12,7 +12,6 @@ export class LinkPredictionParser {
     let usersPerChallenges = {};
     for (const challenge of challenges) {
       usersPerChallenges[challenge.createdBy._id] = [challenge._id];
-      bipartiteGraph += `${challenge.createdBy},${challenge._id}\n`;
     }
 
     for (const reply of replies) {
@@ -20,6 +19,12 @@ export class LinkPredictionParser {
         usersPerChallenges[reply.replierId._id].push(reply.challengeId._id);
       } else {
         usersPerChallenges[reply.replierId._id] = [reply.challengeId._id];
+      }
+    }
+
+    for (const userId in usersPerChallenges) {
+      for (const challengeId of usersPerChallenges[userId]) {
+        bipartiteGraph += `${userId},${challengeId}\n`;
       }
     }
 
