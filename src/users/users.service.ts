@@ -33,7 +33,7 @@ export class UsersService {
     const user = await this.basicUsersService.createEntity(newUser);
 
     return {
-      user: {username: user.username, fullName: user.fullName},
+      user: { username: user.username, fullName: user.fullName },
       accessToken: await this.authService.createAccessToken(user.id),
       refreshToken: await this.authService.createRefreshToken(user.id),
     };
@@ -47,9 +47,9 @@ export class UsersService {
     const user = await this.getUserByUserName(loginUserDto.username);
     await this.authService.checkPassword(loginUserDto.password, user);
     return {
-        user: {username: user.username, fullName: user.fullName},
-        accessToken: await this.authService.createAccessToken(user._id),
-        refreshToken: await this.authService.createRefreshToken(user._id),
+      user: { username: user.username, fullName: user.fullName },
+      accessToken: await this.authService.createAccessToken(user._id),
+      refreshToken: await this.authService.createRefreshToken(user._id),
     };
   }
 
@@ -68,14 +68,18 @@ export class UsersService {
   }
 
   private async isUserNameUnique(username: string) {
-    const user = await this.usersModel.findOne({username});
+    const user = await this.usersModel.findOne({ username });
     if (user) {
-        throw new BadRequestException('User name most be unique.');
+      throw new BadRequestException('User name most be unique.');
     }
   }
 
   async findUsersByIds(usersIds: string[]) {
     return this.basicUsersService.findByIds(usersIds);
+  }
+
+  async findUserById(userId: string) {
+    return this.basicUsersService.findById(userId);
   }
 
   async addAcceptChallengeToUsers(challengeId: string, usersIds: string[]) {

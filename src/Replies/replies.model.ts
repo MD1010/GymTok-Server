@@ -22,6 +22,10 @@ export class ReplyDto extends BasicEntityDto {
 
   @ApiProperty()
   @IsString()
+  description: string;
+
+  @ApiProperty()
+  @IsString()
   video: string;
 }
 
@@ -35,6 +39,9 @@ export class Reply extends mongoose.Document {
 
   @Prop({ default: new Date() })
   creationTime: Date;
+
+  @Prop()
+  description: string;
 
   @Prop()
   video: string;

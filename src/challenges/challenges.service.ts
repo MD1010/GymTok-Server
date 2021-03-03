@@ -45,4 +45,8 @@ export class ChallengesService {
       video: videoLocation,
     };
   }
+
+  async getComplementChallengesOfChallengesIds(challengesIds: string[]) {
+    return this.challengesModel.where('_id').nin(challengesIds).exec();
+  }
 }

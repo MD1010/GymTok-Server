@@ -6,11 +6,13 @@ import { User, UserSchema } from "./user.model";
 import { UsersValidator } from "./users.validator";
 import { ChallengesModule } from "../challenges/challenges.module";
 import { AuthModule } from "../auth/auth.module";
+import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), forwardRef(() => ChallengesModule),
-    AuthModule
+    AuthModule,
+    forwardRef(() => LinkPredictionModule)
   ],
   controllers: [UserController],
   providers: [UsersService, UsersValidator],
