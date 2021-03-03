@@ -12,22 +12,18 @@ export class FilesService {
   async uploadFile(fileBuffer) {
     const formData = new FormData();
     formData.append("uplodedFile", fileBuffer, {
-      filename: uuidv4(),
+      filename: `${uuidv4()}.mp4`,
     });
     const headers = {
       ...formData.getHeaders(),
       "Content-Length": formData.getLengthSync(),
       "Content-Type": "multipart/form-data",
     };
-    let videoLocation = await axios.post(
-      "http://localhost:8000/upload-video",
-      formData,
-      {
-        headers,
-        maxContentLength: Number.MAX_SAFE_INTEGER,
-        maxBodyLength: Number.MAX_SAFE_INTEGER,
-      }
-    );
+    let videoLocation = await axios.post(`${process.env.STREAMING_SERVER_ENPOINT}/upload-video`, formData, {
+      headers,
+      maxContentLength: Number.MAX_SAFE_INTEGER,
+      maxBodyLength: Number.MAX_SAFE_INTEGER,
+    });
     return videoLocation;
   }
 }

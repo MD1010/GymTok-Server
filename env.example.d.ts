@@ -9,5 +9,6 @@ declare namespace NodeJS {
     FIREBASE_PRIVATE_KEY: string;
     FIREBASE_CLIENT_EMAIL: string;
     FIREBASE_STORAGE_BUCKET: string;
+    STREAMING_SERVER_ENPOINT: string;
   }
 }
