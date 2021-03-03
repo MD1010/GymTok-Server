@@ -9,7 +9,6 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalPipes(new ValidationPipe());
-
   const options = new DocumentBuilder()
     .setTitle("GymTok server - until when???")
     .setDescription("Best API ever")
