@@ -17,8 +17,14 @@ export class ChallengesService {
     this.basicChallengesService = new GenericDalService<Challenge, ChallengeDto>(challengesModel);
   }
 
-  async findAllChallenges() {
-    return this.basicChallengesService.findAll();
+  async findAllChallenges(pageNumber?: number, pageSize?: number) {
+    return this.challengesModel
+      .find()
+      .limit(pageSize)
+      .skip(pageSize * pageNumber)
+      .sort({
+        creationTime: "desc",
+      });
   }
 
   async findChallengeById(challengeId: string) {
@@ -47,6 +53,6 @@ export class ChallengesService {
   }
 
   async getComplementChallengesOfChallengesIds(challengesIds: string[]) {
-    return this.challengesModel.where('_id').nin(challengesIds).exec();
+    return this.challengesModel.where("_id").nin(challengesIds).exec();
   }
 }
