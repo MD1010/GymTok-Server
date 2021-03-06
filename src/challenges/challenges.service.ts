@@ -20,8 +20,8 @@ export class ChallengesService {
   async findAllChallenges(pageNumber?: number, pageSize?: number) {
     return this.challengesModel
       .find()
-      .limit(pageSize)
       .skip(pageSize * pageNumber)
+      .limit(pageSize)
       .sort({
         creationTime: "desc",
       });
