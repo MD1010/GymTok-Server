@@ -11,8 +11,8 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
   app.useGlobalPipes(new ValidationPipe());
 
-  // const linkPredictionController = app.get(LinkPredictionController);
-  // linkPredictionController.initModelTraining();
+  const linkPredictionController = app.get(LinkPredictionController);
+  linkPredictionController.initModelTraining();
 
   const options = new DocumentBuilder()
     .setTitle("GymTok server - until when???")

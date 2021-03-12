@@ -20,20 +20,5 @@ export class LinkPredictionController {
         const bipartiteGraph = this.linkPredictionParser.parseUsersAndChallengesToLinkPredictionFormat(challenges, replies);
 
         this.linkPredictionService.initModelTraining(bipartiteGraph);
-
-
-        // readFile('read.txt', 'utf8', (err, data) => {
-        //     if (err) {
-        //         throw err;
-        //     }
-
-        //     const str = bipartiteGraph.concat(`\n${data}`);
-        //     writeFile('write.txt', str, err => {
-        //         if (err) {
-        //             throw err;
-        //         }
-        //         this.linkPredictionService.initModelTraining(str);
-        //     })
-        // });
     }
 }

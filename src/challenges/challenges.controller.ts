@@ -20,7 +20,7 @@ export class ChallengesController {
     private usersService: UsersService,
     private fileService: FilesService,
     private linkPredictionController: LinkPredictionController
-  ) {}
+  ) { }
 
   @Get()
   // @UseGuards(AuthGuard("jwt"))
