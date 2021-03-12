@@ -7,6 +7,7 @@ import { UsersValidator } from "./users.validator";
 import { ChallengesModule } from "../challenges/challenges.module";
 import { AuthModule } from "../auth/auth.module";
 import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
+import { UsersHelper } from "./users.helper.";
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
     forwardRef(() => LinkPredictionModule)
   ],
   controllers: [UserController],
-  providers: [UsersService, UsersValidator],
-  exports: [UsersService, UsersValidator]
+  providers: [UsersService, UsersValidator, UsersHelper],
+  exports: [UsersService, UsersValidator, UsersHelper]
 })
 export class UserModule { }

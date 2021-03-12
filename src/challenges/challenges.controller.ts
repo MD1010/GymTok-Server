@@ -3,6 +3,7 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { FilesService } from "src/files/files.service";
 import { LinkPredictionController } from "src/linkPrediction/linkPrediction.controller";
+import { UsersHelper } from "src/users/users.helper.";
 import { resourceLimits } from "worker_threads";
 import { UsersService } from "../users/users.service";
 import { UsersValidator } from "../users/users.validator";
@@ -19,7 +20,8 @@ export class ChallengesController {
     private usersValidator: UsersValidator,
     private usersService: UsersService,
     private fileService: FilesService,
-    private linkPredictionController: LinkPredictionController
+    private linkPredictionController: LinkPredictionController,
+    private usersHelper: UsersHelper
   ) { }
 
   @Get()
@@ -31,7 +33,10 @@ export class ChallengesController {
     type: [ChallengeDto],
   })
   async getAllChallenges(@Query("page") page, @Query("size") size) {
-    return this.challengesService.findAllChallenges(+page, +size);
+    const challenges = await this.challengesService.findAllChallenges(+page, +size);
+    await this.usersHelper.addCreatedUserToChallenges(challenges);
+
+    return challenges;
   }
 
   // @Post()
