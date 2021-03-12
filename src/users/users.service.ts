@@ -1,20 +1,17 @@
-import { Injectable, UnauthorizedException, NotFoundException, BadRequestException } from '@nestjs/common';
-import { Model } from "mongoose";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import * as bcrypt from "bcrypt";
+import { Model } from "mongoose";
 import { AuthService } from "../auth/auth.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import * as bcrypt from 'bcrypt';
-import { User, UserDto } from "./user.model";
 import { GenericDalService } from "../common/genericDalService.service";
-import { LoginUserDto } from './dto/login-user.dto';
+import { CreateUserDto } from "./dto/create-user.dto";
+import { LoginUserDto } from "./dto/login-user.dto";
+import { User, UserDto } from "./user.model";
 
 @Injectable()
 export class UsersService {
   public basicUsersService: GenericDalService<User, UserDto>;
-  constructor(
-    @InjectModel(User.name) private readonly usersModel: Model<User>,
-    private authService: AuthService
-  ) {
+  constructor(@InjectModel(User.name) private readonly usersModel: Model<User>, private authService: AuthService) {
     this.basicUsersService = new GenericDalService<User, UserDto>(usersModel);
   }
 
@@ -33,26 +30,25 @@ export class UsersService {
     const user = await this.basicUsersService.createEntity(newUser);
 
     return {
-      user: { username: user.username, fullName: user.fullName },
+      user,
       accessToken: await this.authService.createAccessToken(user.id),
       refreshToken: await this.authService.createRefreshToken(user.id),
     };
   }
 
   async getUserByUserName(username: string) {
-    return this.basicUsersService.findPropertyWithSpecificValue('username', username);
+    return this.basicUsersService.findPropertyWithSpecificValue("username", username);
   }
 
   async login(loginUserDto: LoginUserDto) {
     const user = await this.getUserByUserName(loginUserDto.username);
     await this.authService.checkPassword(loginUserDto.password, user);
     return {
-      user: { username: user.username, fullName: user.fullName },
+      user,
       accessToken: await this.authService.createAccessToken(user._id),
       refreshToken: await this.authService.createRefreshToken(user._id),
     };
   }
-
 
   private async createUserDto(createUserDto: CreateUserDto) {
     const newUser = new UserDto();
@@ -70,7 +66,7 @@ export class UsersService {
   private async isUserNameUnique(username: string) {
     const user = await this.usersModel.findOne({ username });
     if (user) {
-      throw new BadRequestException('User name most be unique.');
+      throw new BadRequestException("User name most be unique.");
     }
   }
 
@@ -83,10 +79,16 @@ export class UsersService {
   }
 
   async addAcceptChallengeToUsers(challengeId: string, usersIds: string[]) {
-    return this.usersModel.updateMany({ _id: { $in: usersIds } }, { $addToSet: { acceptedChallenges: challengeId }, $pull: { recommendedChallenges: challengeId } });
+    return this.usersModel.updateMany(
+      { _id: { $in: usersIds } },
+      { $addToSet: { acceptedChallenges: challengeId }, $pull: { recommendedChallenges: challengeId } }
+    );
   }
 
   async addRecommendChallengeToUsers(challengeId: string, usersIds: string[]) {
-    return this.usersModel.updateMany({ _id: { $in: usersIds } }, { $addToSet: { recommendedChallenges: challengeId } });
+    return this.usersModel.updateMany(
+      { _id: { $in: usersIds } },
+      { $addToSet: { recommendedChallenges: challengeId } }
+    );
   }
 }
