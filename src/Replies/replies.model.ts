@@ -1,7 +1,7 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
-import { IsString } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 import * as mongoose from "mongoose";
 
 import { BasicEntityDto } from "../common/basicEntity.dto";
@@ -45,6 +45,10 @@ export class Reply extends mongoose.Document {
 
   @Prop()
   video: string;
+
+  @Prop({ default: [] })
+  likes: string[];
+
 }
 
 export const ReplySchema = SchemaFactory.createForClass(Reply);
