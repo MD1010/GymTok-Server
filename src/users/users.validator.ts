@@ -21,6 +21,8 @@ export class UsersValidator extends GenericValidator<User, UserDto>{
     if (!existUser) {
       throw new ConflictException(`Wrong credentials.`);
     }
+
+    return existUser;
   }
 
   throwErrorIfRecommendedChallengeWasAcceptedForUsers(users: User[], challengeId: string) {

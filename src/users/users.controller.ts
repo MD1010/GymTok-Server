@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
 import { ChallengesValidator } from "../challenges/challenges.validator";
 import { CreateUserDto } from './dto/create-user.dto';
@@ -59,23 +59,23 @@ export class UserController {
     return this.usersService.addUser(user);
   }
 
-  @Get(":userId/recommendedChallenges")
+  @Get(":username/recommendedChallenges")
   @ApiOkResponse({
     status: 200,
     description: "Adds to the challenge id to the recommended challenges of the user ids",
     type: [ChallengeDto],
   })
-  async getRecommendChallengeByUserId(@Param('userId') userId: string) {
+  async getRecommendChallengeByUserId(@Param('username') username: string, @Query("page") page: number, @Query("size") size: number) {
+    const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(username);
     try {
-      const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(userId);
+      const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(user._id);
       const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedChallenges(challengesAndTheirRecommendPercent);
       const recommendedChallenges = await this.challengesService.findChallengesByIds(recommendedChallengesIds);
 
-      return recommendedChallenges;
+      return recommendedChallenges.slice((page - 1) * size, page * size);
     }
     catch (err) {
-      const user = await this.usersService.findUserById(userId);
-      return this.challengesService.getComplementChallengesOfChallengesIds(user.acceptedChallenges)
+      return (await this.challengesService.getComplementChallengesOfChallengesIds(user.acceptedChallenges)).slice((page - 1) * size, page * size);
     }
   }
 
