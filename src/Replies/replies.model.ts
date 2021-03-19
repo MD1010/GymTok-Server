@@ -10,15 +10,15 @@ import { Challenge } from "src/challenges/challenge.model";
 
 export class ReplyDto extends BasicEntityDto {
   @ApiResponseProperty()
-  _id: string;
+  _id?: string;
 
   @ApiProperty()
   @IsString()
-  challengeId: mongoose.Schema.Types.ObjectId;
+  challengeId: string;
 
   @ApiProperty()
   @IsString()
-  replierId: mongoose.Schema.Types.ObjectId;
+  replierId: string;
 
   @ApiProperty()
   @IsString()
