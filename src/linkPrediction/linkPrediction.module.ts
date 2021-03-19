@@ -9,7 +9,7 @@ import { LinkPredictionParser } from "./linkPrediction.parser";
 import { LinkPredictionService } from "./linkPrediction.service";
 
 @Module({
-  imports: [ConfigModule, HttpModule, forwardRef(() => UserModule), forwardRef(() => ChallengesModule), RepliesModule
+  imports: [ConfigModule, HttpModule, forwardRef(() => UserModule), forwardRef(() => ChallengesModule), forwardRef(() => RepliesModule)
   ],
   controllers: [LinkPredictionController],
   providers: [LinkPredictionService, LinkPredictionParser, LinkPredictionHelper, LinkPredictionController],

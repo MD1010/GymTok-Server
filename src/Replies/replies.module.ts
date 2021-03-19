@@ -10,7 +10,7 @@ import { UserModule } from "src/users/user.module";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Reply.name, schema: ReplySchema }]), FilesModule, ChallengesModule, UserModule
+    MongooseModule.forFeature([{ name: Reply.name, schema: ReplySchema }]), FilesModule, forwardRef(() => ChallengesModule), forwardRef(() => UserModule)
   ],
   controllers: [RepliesController],
   providers: [RepliesService, RepliesParser],
