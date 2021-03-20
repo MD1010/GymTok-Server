@@ -6,15 +6,18 @@ import { Reply, ReplyDto } from './replies.model';
 
 @Injectable()
 export class RepliesService {
-  public basicUsersService: GenericDalService<Reply, ReplyDto>;
+  public basicRepliesService: GenericDalService<Reply, ReplyDto>;
   constructor(
-    @InjectModel(Reply.name) private readonly usersModel: Model<Reply>,
+    @InjectModel(Reply.name) private readonly repliesModel: Model<Reply>,
   ) {
-    this.basicUsersService = new GenericDalService<Reply, ReplyDto>(usersModel);
+    this.basicRepliesService = new GenericDalService<Reply, ReplyDto>(repliesModel);
   }
 
-  @Get()
   async findAllReplies() {
-    return this.basicUsersService.findAll();
+    return this.basicRepliesService.findAll();
+  }
+
+  async findAllRepliesOfChallengeId(challengeId: string) {
+    return this.repliesModel.where({ challengeId });
   }
 }

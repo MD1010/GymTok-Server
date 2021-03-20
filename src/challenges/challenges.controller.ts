@@ -3,6 +3,8 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { FilesService } from "src/files/files.service";
 import { LinkPredictionController } from "src/linkPrediction/linkPrediction.controller";
+import { ReplyDto } from "src/Replies/replies.model";
+import { RepliesService } from "src/Replies/replies.service";
 import { UsersHelper } from "src/users/users.helper.";
 import { resourceLimits } from "worker_threads";
 import { UsersService } from "../users/users.service";
@@ -21,7 +23,8 @@ export class ChallengesController {
     private usersService: UsersService,
     private fileService: FilesService,
     private linkPredictionController: LinkPredictionController,
-    private usersHelper: UsersHelper
+    private usersHelper: UsersHelper,
+    private repliesService: RepliesService
   ) { }
 
   @Get()
@@ -108,5 +111,17 @@ export class ChallengesController {
     }, 0);
 
     return usersIds;
+  }
+
+
+  @Get(":challengeId/replies")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get all replies of challenge id",
+    type: [ReplyDto],
+  })
+  async getAllRepliesOfChallengeId(@Param("challengeId") challengeId: string) {
+    await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
+    return this.repliesService.findAllRepliesOfChallengeId(challengeId);
   }
 }

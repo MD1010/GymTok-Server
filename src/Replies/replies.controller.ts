@@ -21,7 +21,7 @@ export class RepliesController {
   @Get()
   @ApiOkResponse({
     status: 200,
-    description: "Get all users",
+    description: "Get all replies",
     type: [ReplyDto],
   })
   async getAllReplies() {
@@ -32,7 +32,7 @@ export class RepliesController {
   // @ApiConsumes("multipart/form-data")
   @ApiOkResponse({
     status: 201,
-    description: "Adds new challenge",
+    description: "Adds new reply",
     type: ReplyDto,
   })
   @UseInterceptors(
@@ -45,6 +45,7 @@ export class RepliesController {
       await this.challengesValidator.throwErrorIfIdIsNotNotExist(reply.challengeId);
       console.log("filesToUpload.video[0].buffer", filesToUpload.video[0].buffer);
       //const videoLocation = await this.filesService.uploadFile(filesToUpload.video[0].buffer);
+      //reply.video = videoLocation.data;
       //await this.challengesService.addChallenge(challenge);
 
       // setTimeout(() => {
