@@ -25,7 +25,7 @@ export class ChallengesController {
     private linkPredictionController: LinkPredictionController,
     private usersHelper: UsersHelper,
     private repliesService: RepliesService
-  ) { }
+  ) {}
 
   @Get()
   // @UseGuards(AuthGuard("jwt"))
@@ -35,8 +35,8 @@ export class ChallengesController {
     description: "Get all challenges",
     type: [ChallengeDto],
   })
-  async getAllChallenges(@Query("page") page, @Query("size") size) {
-    const challenges = await this.challengesService.findAllChallenges(+page, +size);
+  async getAllChallenges(@Query("page") page, @Query("size") size, @Query("uid") userId) {
+    const challenges = await this.challengesService.findAllChallenges(+page, +size, userId);
     await this.usersHelper.addCreatedUserToChallenges(challenges);
 
     return challenges;
@@ -112,7 +112,6 @@ export class ChallengesController {
 
     return usersIds;
   }
-
 
   @Get(":challengeId/replies")
   @ApiOkResponse({

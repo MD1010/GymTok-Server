@@ -37,7 +37,7 @@ export class UsersService {
   }
 
   async getUserByUserName(username: string) {
-    return this.basicUsersService.findPropertyWithSpecificValue("username", username);
+    return this.basicUsersService.findWithFilter({ username });
   }
 
   async login(loginUserDto: LoginUserDto) {

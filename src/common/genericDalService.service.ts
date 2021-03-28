@@ -21,7 +21,7 @@ export class GenericDalService<T extends Document, D extends BasicEntityDto = an
     return this.model.findOne({ _id: id }).exec();
   }
 
-  async findPropertyWithSpecificValue(property: string, value: any) {
-    return this.model.findOne({ [property]: value } as FilterQuery<T>);
+  async findWithFilter(filter: { [key: string]: any }) {
+    return this.model.findOne(filter as FilterQuery<T>);
   }
 }
