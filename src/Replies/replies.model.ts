@@ -45,10 +45,6 @@ export class Reply extends mongoose.Document {
 
   @Prop()
   video: string;
-
-  @Prop({ default: [] })
-  likes: string[];
-
 }
 
 export const ReplySchema = SchemaFactory.createForClass(Reply);

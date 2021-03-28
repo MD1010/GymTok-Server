@@ -7,10 +7,12 @@ import { FilesModule } from "src/files/files.module";
 import { RepliesParser } from "./replies.parser";
 import { ChallengesModule } from "src/challenges/challenges.module";
 import { UserModule } from "src/users/user.module";
+import { LinkPredictionModule } from "src/linkPrediction/linkPrediction.module";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Reply.name, schema: ReplySchema }]), FilesModule, forwardRef(() => ChallengesModule), forwardRef(() => UserModule)
+    MongooseModule.forFeature([{ name: Reply.name, schema: ReplySchema }]), FilesModule,
+    forwardRef(() => ChallengesModule), forwardRef(() => UserModule), forwardRef(() => LinkPredictionModule)
   ],
   controllers: [RepliesController],
   providers: [RepliesService, RepliesParser],

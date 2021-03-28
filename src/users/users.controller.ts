@@ -72,10 +72,11 @@ export class UserController {
       const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedChallenges(challengesAndTheirRecommendPercent);
       const recommendedChallenges = await this.challengesService.findChallengesByIds(recommendedChallengesIds);
 
-      return recommendedChallenges.slice((page - 1) * size, page * size);
+      return recommendedChallenges.slice(page * size, (page + 1) * size);
     }
     catch (err) {
-      return (await this.challengesService.getComplementChallengesOfChallengesIds(user.acceptedChallenges)).slice((page - 1) * size, page * size);
+      const d = await this.challengesService.getComplementChallengesOfChallengesIds(user.acceptedChallenges);
+      return d.slice(page * size, (page + 1) * size);
     }
   }
 
