@@ -22,6 +22,6 @@ export class GenericDalService<T extends Document, D extends BasicEntityDto = an
   }
 
   async findWithFilter(filter: { [key: string]: any }) {
-    return this.model.findOne(filter as FilterQuery<T>);
+    return this.model.find(filter as FilterQuery<T>);
   }
 }
