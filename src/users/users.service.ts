@@ -39,7 +39,8 @@ export class UsersService {
   }
 
   async getUserByUserName(username: string) {
-    return this.basicUsersService.findWithFilter({ username })[0];
+    const [result] = await this.basicUsersService.findWithFilter({ username });
+    return result;
   }
 
   async login(loginUserDto: LoginUserDto) {
