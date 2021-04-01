@@ -1,5 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
-import { Challenge } from "src/challenges/challenge.model";
+import { Challenge } from "../challenges/challenge.model";
 import { User, UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 

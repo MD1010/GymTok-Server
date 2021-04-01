@@ -8,9 +8,9 @@ import { UsersService } from "./users.service";
 import { AuthService } from "../auth/auth.service";
 import { UsersValidator } from "./users.validator";
 import { LinkPredictionService } from '../linkPrediction/linkPrediction.service';
-import { ChallengeDto } from 'src/challenges/challenge.model';
-import { LinkPredictionHelper } from 'src/linkPrediction/linkPrediction.helper';
-import { ChallengesService } from 'src/challenges/challenges.service';
+import { ChallengeDto } from '../challenges/challenge.model';
+import { LinkPredictionHelper } from '../linkPrediction/linkPrediction.helper';
+import { ChallengesService } from '../challenges/challenges.service';
 
 @Controller("users")
 @ApiTags("Users")
@@ -43,6 +43,17 @@ export class UserController {
   async register(@Body() createUserDto: CreateUserDto) {
     await this.usersValidator.throwErrorIfUserNameIsExist(createUserDto.username);
     return await this.usersService.create(createUserDto);
+  }
+
+  @Post('registerIfNeed')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiCreatedResponse({
+    status: 200,
+    description: "Create a user if need (for Google/Facebook signin)",
+    type: [CreateUserDto],
+  })
+  async registerIfNeed(@Body() createUserDto: CreateUserDto) {
+    return await this.usersService.getOrCreate(createUserDto);
   }
 
   @Post()

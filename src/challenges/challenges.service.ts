@@ -3,7 +3,7 @@ import { Connection, FilterQuery, Model } from "mongoose";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
 import { GenericDalService } from "../common/genericDalService.service";
-import { User } from "src/users/user.model";
+import { User } from "../users/user.model";
 
 @Injectable()
 export class ChallengesService {

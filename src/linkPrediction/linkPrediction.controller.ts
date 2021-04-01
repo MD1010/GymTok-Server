@@ -1,11 +1,11 @@
 import { Controller, Post } from "@nestjs/common";
 import { fstat } from "fs";
-import { UsersService } from "src/users/users.service";
+import { UsersService } from "../users/users.service";
 import { LinkPredictionParser } from "./linkPrediction.parser";
 import { LinkPredictionService } from "./linkPrediction.service";
 import { readFile, writeFile } from 'fs'
-import { ChallengesService } from "src/challenges/challenges.service";
-import { RepliesService } from "src/Replies/replies.service";
+import { ChallengesService } from "../challenges/challenges.service";
+import { RepliesService } from "../Replies/replies.service";
 
 @Controller("LinkPrediction")
 export class LinkPredictionController {

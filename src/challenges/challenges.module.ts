@@ -1,8 +1,8 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
-import { FilesModule } from "src/files/files.module";
-import { LinkPredictionModule } from "src/linkPrediction/linkPrediction.module";
-import { RepliesModule } from "src/Replies/replies.module";
+import { FilesModule } from "../files/files.module";
+import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
+import { RepliesModule } from "../Replies/replies.module";
 import { UserModule } from "../users/user.module";
 import { Challenge, ChallengeSchema } from "./challenge.model";
 import { ChallengesController } from "./challenges.controller";

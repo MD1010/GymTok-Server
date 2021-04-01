@@ -1,8 +1,8 @@
 import { forwardRef, HttpModule, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { ChallengesModule } from "src/challenges/challenges.module";
-import { RepliesModule } from "src/Replies/replies.module";
-import { UserModule } from "src/users/user.module";
+import { ChallengesModule } from "../challenges/challenges.module";
+import { RepliesModule } from "../Replies/replies.module";
+import { UserModule } from "../users/user.module";
 import { LinkPredictionController } from "./linkPrediction.controller";
 import { LinkPredictionHelper } from "./linkPrediction.helper";
 import { LinkPredictionParser } from "./linkPrediction.parser";

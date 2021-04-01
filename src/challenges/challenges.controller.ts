@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Param, Post, Query, Req, Res, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { FilesService } from "src/files/files.service";
-import { LinkPredictionController } from "src/linkPrediction/linkPrediction.controller";
-import { ReplyDto } from "src/Replies/replies.model";
-import { RepliesService } from "src/Replies/replies.service";
-import { UsersHelper } from "src/users/users.helper.";
+import { FilesService } from "../files/files.service";
+import { LinkPredictionController } from "../linkPrediction/linkPrediction.controller";
+import { ReplyDto } from "../Replies/replies.model";
+import { RepliesService } from "../Replies/replies.service";
+import { UsersHelper } from "../users/users.helper.";
 import { resourceLimits } from "worker_threads";
 import { UsersService } from "../users/users.service";
 import { UsersValidator } from "../users/users.validator";
