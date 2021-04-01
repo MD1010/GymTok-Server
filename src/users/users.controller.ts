@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query } from "@nestjs/common";
 import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
 import { ChallengesValidator } from "../challenges/challenges.validator";
-import { CreateUserDto } from './dto/create-user.dto';
-import { LoginUserDto } from './dto/login-user.dto';
+import { CreateUserDto } from "./dto/create-user.dto";
+import { LoginUserDto } from "./dto/login-user.dto";
 import { UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 import { AuthService } from "../auth/auth.service";
@@ -12,16 +12,19 @@ import { ChallengeDto } from '../challenges/challenge.model';
 import { LinkPredictionHelper } from '../linkPrediction/linkPrediction.helper';
 import { ChallengesService } from '../challenges/challenges.service';
 
+
 @Controller("users")
 @ApiTags("Users")
 export class UserController {
-  constructor(private usersService: UsersService,
+  constructor(
+    private usersService: UsersService,
     private usersValidator: UsersValidator,
     private challengesValidator: ChallengesValidator,
     private challengesService: ChallengesService,
     private authService: AuthService,
     private linkPredictionService: LinkPredictionService,
-    private linkPredictionHelper: LinkPredictionHelper) { }
+    private linkPredictionHelper: LinkPredictionHelper
+  ) {}
 
   @Get()
   @ApiOkResponse({
@@ -29,11 +32,11 @@ export class UserController {
     description: "Get all users",
     type: [UserDto],
   })
-  async getAllUsers() {
-    return this.usersService.findAllUsers();
+  async getAllUsers(@Query("searchTerm") searchTerm: string) {
+    return this.usersService.findAllUsers(searchTerm);
   }
 
-  @Post('register')
+  @Post("register")
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
     status: 200,
@@ -76,22 +79,29 @@ export class UserController {
     description: "Adds to the challenge id to the recommended challenges of the user ids",
     type: [ChallengeDto],
   })
-  async getRecommendChallengeByUserId(@Param('username') username: string, @Query("page") page: number, @Query("size") size: number) {
+  async getRecommendChallengeByUserId(
+    @Param("username") username: string,
+    @Query("page") page: number,
+    @Query("size") size: number
+  ) {
     const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(username);
     try {
-      const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(user._id);
-      const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedChallenges(challengesAndTheirRecommendPercent);
+      const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
+        user._id
+      );
+      const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedChallenges(
+        challengesAndTheirRecommendPercent
+      );
       const recommendedChallenges = await this.challengesService.findChallengesByIds(recommendedChallengesIds);
 
       return recommendedChallenges.slice(page * size, (page + 1) * size);
-    }
-    catch (err) {
+    } catch (err) {
       const d = await this.challengesService.getComplementChallengesOfChallengesIds(user.acceptedChallenges);
       return d.slice(page * size, (page + 1) * size);
     }
   }
 
-  @Post('login')
+  @Post("login")
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({
     status: 200,
@@ -103,7 +113,7 @@ export class UserController {
     return await this.usersService.login(loginUserDto);
   }
 
-  @Post('/refresh')
+  @Post("/refresh")
   @ApiOkResponse({
     status: 200,
   })

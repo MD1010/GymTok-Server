@@ -15,8 +15,10 @@ export class UsersService {
     this.basicUsersService = new GenericDalService<User, UserDto>(usersModel);
   }
 
-  async findAllUsers() {
-    return this.basicUsersService.findAll();
+  async findAllUsers(searchTerm: string) {
+    return searchTerm
+      ? this.usersModel.find({ username: new RegExp(searchTerm, "i") })
+      : this.basicUsersService.findAll();
   }
 
   async addUser(user: UserDto) {
@@ -53,7 +55,8 @@ export class UsersService {
   }
 
   async getUserByUserName(username: string) {
-    return this.basicUsersService.findWithFilter({ username })[0];
+    const [result] = await this.basicUsersService.findWithFilter({ username });
+    return result;
   }
 
   async getUserByEmail(email: string) : Promise<User>{
