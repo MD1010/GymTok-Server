@@ -15,9 +15,9 @@ export class UsersService {
     this.basicUsersService = new GenericDalService<User, UserDto>(usersModel);
   }
 
-  async findAllUsers(searchTerm: string) {
+  async findAllUsers(searchTerm: string, excludedIds: string[]) {
     return searchTerm
-      ? this.usersModel.find({ username: new RegExp(searchTerm, "i") })
+      ? this.usersModel.find({ username: new RegExp(searchTerm, "i"), _id: { $nin: excludedIds } })
       : this.basicUsersService.findAll();
   }
 
