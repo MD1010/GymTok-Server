@@ -49,7 +49,7 @@ export class UsersService {
 
     if(createUserDto.photoUrl != null && user.image !== createUserDto.photoUrl) {
       user.image = createUserDto.photoUrl;
-      await user.update();
+      await user.save();
     }
     
     return {
