@@ -32,8 +32,8 @@ export class UserController {
     description: "Get all users",
     type: [UserDto],
   })
-  async getAllUsers(@Query("searchTerm") searchTerm: string) {
-    return this.usersService.findAllUsers(searchTerm);
+  async getAllUsers(@Query("searchTerm") searchTerm: string, @Query("excludedIds") excludedIds: string[]) {
+    return this.usersService.findAllUsers(searchTerm, excludedIds);
   }
 
   @Post("register")
