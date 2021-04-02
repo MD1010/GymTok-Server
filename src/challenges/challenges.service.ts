@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { Connection, Model } from "mongoose";
+import { Connection, FilterQuery, Model } from "mongoose";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
 import { GenericDalService } from "../common/genericDalService.service";
+import { User } from "../users/user.model";
 
 @Injectable()
 export class ChallengesService {
@@ -17,9 +18,11 @@ export class ChallengesService {
     this.basicChallengesService = new GenericDalService<Challenge, ChallengeDto>(challengesModel);
   }
 
-  async findAllChallenges(pageNumber?: number, pageSize?: number) {
-    return this.challengesModel
-      .find()
+  async findAllChallenges(pageNumber?: number, pageSize?: number, userId?: string) {
+    const data = userId
+      ? this.challengesModel.find({ createdBy: userId } as FilterQuery<Challenge>)
+      : this.challengesModel.find();
+    return data
       .skip(pageSize * pageNumber)
       .limit(pageSize)
       .sort({

@@ -5,8 +5,8 @@ import { IsNumber, IsString } from "class-validator";
 import * as mongoose from "mongoose";
 
 import { BasicEntityDto } from "../common/basicEntity.dto";
-import { User } from "src/users/user.model";
-import { Challenge } from "src/challenges/challenge.model";
+import { User } from "../users/user.model";
+import { Challenge } from "../challenges/challenge.model";
 
 export class ReplyDto extends BasicEntityDto {
   @ApiResponseProperty()

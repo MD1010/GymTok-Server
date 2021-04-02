@@ -12,6 +12,10 @@ export class UserDto extends BasicEntityDto {
 
   @ApiProperty()
   @IsString()
+  email: string;
+
+  @ApiProperty()
+  @IsString()
   username: string;
 
   @ApiProperty()
@@ -40,6 +44,10 @@ export class UserDto extends BasicEntityDto {
 
 @Schema()
 export class User extends Document {
+
+  @Prop()
+  email: string;
+
   @Prop()
   username: string;
 

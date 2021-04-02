@@ -15,8 +15,10 @@ export class UsersService {
     this.basicUsersService = new GenericDalService<User, UserDto>(usersModel);
   }
 
-  async findAllUsers() {
-    return this.basicUsersService.findAll();
+  async findAllUsers(searchTerm: string, excludedIds: string[]) {
+    return searchTerm
+      ? this.usersModel.find({ username: new RegExp(searchTerm, "i"), _id: { $nin: excludedIds } })
+      : this.basicUsersService.findAll();
   }
 
   async addUser(user: UserDto) {
@@ -25,6 +27,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     await this.isUserNameUnique(createUserDto.username);
+    await this.isEmailUnique(createUserDto.email);
 
     const newUser = await this.createUserDto(createUserDto);
     const user = await this.basicUsersService.createEntity(newUser);
@@ -36,8 +39,33 @@ export class UsersService {
     };
   }
 
+  async getOrCreate(createUserDto: CreateUserDto) {
+    let user = await this.getUserByEmail(createUserDto.email);
+
+    if(user == null) {
+      const newUser = await this.createUserDto(createUserDto); 
+      user = await this.basicUsersService.createEntity(newUser);
+    }
+
+    if(createUserDto.photoUrl != null && user.image !== createUserDto.photoUrl) {
+      user.image = createUserDto.photoUrl;
+      await user.save();
+    }
+    
+    return {
+      user,
+      accessToken: await this.authService.createAccessToken(user.id),
+      refreshToken: await this.authService.createRefreshToken(user.id),
+    };
+  }
+
   async getUserByUserName(username: string) {
-    return this.basicUsersService.findPropertyWithSpecificValue("username", username);
+    const [result] = await this.basicUsersService.findWithFilter({ username });
+    return result;
+  }
+
+  async getUserByEmail(email: string) : Promise<User>{
+    return await this.usersModel.findOne({ email });
   }
 
   async login(loginUserDto: LoginUserDto) {
@@ -52,6 +80,7 @@ export class UsersService {
 
   private async createUserDto(createUserDto: CreateUserDto) {
     const newUser = new UserDto();
+    newUser.email = createUserDto.email;
     newUser.username = createUserDto.username;
     newUser.fullName = createUserDto.fullName;
     newUser.acceptedChallenges = [];
@@ -66,7 +95,14 @@ export class UsersService {
   private async isUserNameUnique(username: string) {
     const user = await this.usersModel.findOne({ username });
     if (user) {
-      throw new BadRequestException("User name most be unique.");
+      throw new BadRequestException("User name must be unique.");
+    }
+  }
+
+  private async isEmailUnique(email: string) {
+    const user = await this.usersModel.findOne({ email });
+    if (user) {
+      throw new BadRequestException("Email must be unique.");
     }
   }
 

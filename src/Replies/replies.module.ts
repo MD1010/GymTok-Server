@@ -3,11 +3,11 @@ import { RepliesService } from "./replies.service";
 import { RepliesController } from "./replies.controller";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Reply, ReplySchema } from "./replies.model";
-import { FilesModule } from "src/files/files.module";
+import { FilesModule } from "../files/files.module";
 import { RepliesParser } from "./replies.parser";
-import { ChallengesModule } from "src/challenges/challenges.module";
-import { UserModule } from "src/users/user.module";
-import { LinkPredictionModule } from "src/linkPrediction/linkPrediction.module";
+import { ChallengesModule } from "../challenges/challenges.module";
+import { UserModule } from "../users/user.module";
+import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
 
 @Module({
   imports: [

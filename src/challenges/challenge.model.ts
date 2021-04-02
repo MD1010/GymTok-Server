@@ -3,10 +3,10 @@ import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 import { IsArray, IsString } from "class-validator";
 import { Document } from "mongoose";
 import { BasicEntityDto } from "../common/basicEntity.dto";
-import { Reply } from "src/Replies/replies.model";
+import { Reply } from "../Replies/replies.model";
 
 import * as mongoose from "mongoose";
-import { User } from "src/users/user.model";
+import { User } from "../users/user.model";
 export class ChallengeDto extends BasicEntityDto {
   // @ApiResponseProperty()
   // _id: string;
