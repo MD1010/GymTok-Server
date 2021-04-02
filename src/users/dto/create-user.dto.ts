@@ -29,4 +29,9 @@ export class CreateUserDto {
     @MaxLength(1024)
     @ApiProperty()
     readonly password: string;
+
+    // Password
+    @IsString()
+    @ApiProperty()
+    readonly photoUrl: string;
   }

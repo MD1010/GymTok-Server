@@ -47,6 +47,11 @@ export class UsersService {
       user = await this.basicUsersService.createEntity(newUser);
     }
 
+    if(createUserDto.photoUrl != null && user.image !== createUserDto.photoUrl) {
+      user.image = createUserDto.photoUrl;
+      await user.update();
+    }
+    
     return {
       user,
       accessToken: await this.authService.createAccessToken(user.id),
