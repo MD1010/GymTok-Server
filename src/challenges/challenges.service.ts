@@ -18,9 +18,9 @@ export class ChallengesService {
     this.basicChallengesService = new GenericDalService<Challenge, ChallengeDto>(challengesModel);
   }
 
-  async findAllChallenges(pageNumber?: number, pageSize?: number, userId?: string) {
-    const data = userId
-      ? this.challengesModel.find({ createdBy: userId } as FilterQuery<Challenge>)
+  async findAllChallenges(pageNumber?: number, pageSize?: number, createdBy?: string) {
+    const data = createdBy
+      ? this.challengesModel.find({ createdBy } as FilterQuery<Challenge>)
       : this.challengesModel.find();
     return data
       .skip(pageSize * pageNumber)
