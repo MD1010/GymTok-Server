@@ -42,6 +42,24 @@ export class ChallengesController {
     return challenges;
   }
 
+  @Get("hashtags")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get all hashtags",
+  })
+  async getAllHashtags(@Query("searchTerm") searchTerm: string, @Query("excludedIds") excludedIds: string[]) {
+    return this.challengesService.findAllHashtags(searchTerm, excludedIds);
+  }
+
+  //   @Get("hashtags")
+  // @ApiOkResponse({
+  //   status: 200,
+  //   description: "Get all hashtags",
+  // })
+  // async getAllHashtags() {
+  //   return this.challengesService.findAllHashtags();
+  // }
+
   // @Post()
   // @ApiOkResponse({
   //   status: 201,
