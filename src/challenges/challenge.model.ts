@@ -27,6 +27,10 @@ export class ChallengeDto extends BasicEntityDto {
   @IsArray()
   selectedFriends: string[];
 
+  @ApiProperty()
+  @IsArray()
+  hashtags: string[];
+
   // @ApiProperty()
   // @IsString()
   // score: string;
@@ -48,6 +52,9 @@ export class Challenge extends Document {
 
   @Prop({ default: [] })
   likes: string[];
+
+  @Prop({ default: [] })
+  hashtags: string[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] })
   selectedFriends: User[];
