@@ -47,12 +47,13 @@ export class ChallengesService {
     const description = challengeFields.description;
     const parsedSelectedFriends = JSON.parse(challengeFields.selectedFriends);
     const selectedFriends = parsedSelectedFriends.map((f) => f._id);
+    const hashtags = challengeFields.hashtags !== 'undefined' ? JSON.parse(challengeFields.hashtags) : [];
     return {
       createdBy: userId,
       description,
       selectedFriends,
       video: videoLocation,
-      hashtags: [],
+      hashtags,
     };
   }
 
