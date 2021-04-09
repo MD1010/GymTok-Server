@@ -45,7 +45,7 @@ export class ChallengesService {
   createChallengeObject(challengeFields: any, videoLocation: string): ChallengeDto {
     const userId = challengeFields.userId;
     const description = challengeFields.description;
-    const parsedSelectedFriends = JSON.parse(challengeFields.selectedFriends);
+    const parsedSelectedFriends = JSON.parse(challengeFields.selectedFriends || []);
     const selectedFriends = parsedSelectedFriends.map((f) => f._id);
     const hashtags = challengeFields.hashtags !== 'undefined' ? JSON.parse(challengeFields.hashtags) : [];
     return {
