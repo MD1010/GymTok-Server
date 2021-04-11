@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Connection, FilterQuery, Model } from "mongoose";
+import { Connection, FilterQuery, Model, Types } from "mongoose";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
 import { GenericDalService } from "../common/genericDalService.service";
@@ -61,41 +61,49 @@ export class ChallengesService {
     return this.challengesModel.where("_id").nin(challengesIds).exec();
   }
 
+  async addLike(challengeId: string, userId: string) {
+    return this.challengesModel.findByIdAndUpdate(challengeId, { $push: { likes: userId } });
+  }
+
+  async removeLike(challengeId: string, userId: string) {
+    return this.challengesModel.findByIdAndUpdate(challengeId, { $pull: { likes: userId } });
+  }
+
   async findAllHashtags(searchTerm: string, excludedIds: string[]) {
 
     excludedIds = excludedIds ? excludedIds : [];
-    
+
     const results = await this.challengesModel.aggregate([
       {
-          "$group": {
-              "_id": 0,
-              "hashtags": { "$push": "$hashtags" },
-          }
+        "$group": {
+          "_id": 0,
+          "hashtags": { "$push": "$hashtags" },
+        }
       },
       {
-          "$project": {
-              "hashtags": {
-                  "$reduce": {
-                      "input": "$hashtags",
-                      "initialValue": [],
-                      "in": { "$setUnion": ["$$value", "$$this"] },
-                  }
-              }
+        "$project": {
+          "hashtags": {
+            "$reduce": {
+              "input": "$hashtags",
+              "initialValue": [],
+              "in": { "$setUnion": ["$$value", "$$this"] },
+            }
           }
+        }
       }
     ]);
 
     let hashtags = results[0].hashtags;
 
-    if(searchTerm) {
+    if (searchTerm) {
       hashtags = hashtags.filter(
-        function(e) {
+        function (e) {
           return this.indexOf(e) < 0;
         },
         excludedIds
       ).filter(tag => tag.match(new RegExp(searchTerm, "i")));
     }
-    
-    return {hashtags};
+
+    return { hashtags };
   }
 }

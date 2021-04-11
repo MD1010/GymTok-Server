@@ -43,8 +43,8 @@ export class RepliesController {
   async addReply(@UploadedFiles() filesToUpload, @Body() fields: any) {
     try {
       const reply = this.repliesParser.getReplyPropertiesFileFormDataFields(fields);
-      await this.usersValidator.throwErrorIfIdIsNotNotExist(reply.replierId);
-      await this.challengesValidator.throwErrorIfIdIsNotNotExist(reply.challengeId);
+      await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(reply.replierId);
+      await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(reply.challengeId);
       const videoLocation = await this.filesService.uploadFile(filesToUpload.video[0].buffer);
       reply.video = videoLocation.data;
       const returnedReply = await this.repliesService.basicRepliesService.createEntity(reply);
