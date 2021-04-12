@@ -62,11 +62,11 @@ export class ChallengesService {
   }
 
   async addLike(challengeId: string, userId: string) {
-    return this.challengesModel.findByIdAndUpdate(challengeId, { $push: { likes: userId } });
+    return this.challengesModel.updateOne({ _id: challengeId }, { $push: { likes: Types.ObjectId(userId) } });
   }
 
   async removeLike(challengeId: string, userId: string) {
-    return this.challengesModel.findByIdAndUpdate(challengeId, { $pull: { likes: userId } });
+    return this.challengesModel.updateOne({ _id: challengeId }, { $pull: { likes: Types.ObjectId(userId) } });
   }
 
   async findAllHashtags(searchTerm: string, excludedIds: string[]) {

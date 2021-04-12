@@ -11,6 +11,7 @@ import { LinkPredictionService } from '../linkPrediction/linkPrediction.service'
 import { ChallengeDto } from '../challenges/challenge.model';
 import { LinkPredictionHelper } from '../linkPrediction/linkPrediction.helper';
 import { ChallengesService } from '../challenges/challenges.service';
+import { Types } from 'mongoose'
 
 
 @Controller("users")
@@ -132,7 +133,7 @@ export class UserController {
     const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
     const challenge = await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
 
-    if (!challenge.likes.includes(userId)) {
+    if (!challenge.likes.includes(user._id)) {
       await this.challengesService.addLike(challengeId, userId);
     }
 
@@ -149,7 +150,7 @@ export class UserController {
     const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
     const challenge = await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
 
-    if (challenge.likes.includes(userId)) {
+    if (challenge.likes.includes(user._id)) {
       await this.challengesService.removeLike(challengeId, userId);
     }
 

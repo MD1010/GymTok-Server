@@ -51,7 +51,7 @@ export class Challenge extends Document {
   video: string;
 
   @Prop({ default: [] })
-  likes: string[];
+  likes: mongoose.Types.ObjectId[];
 
   @Prop({ default: [] })
   hashtags: string[];
