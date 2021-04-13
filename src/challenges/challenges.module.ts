@@ -1,5 +1,6 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
+import { HashtagsModule } from "src/Hashtag/hashtags.module";
 import { FilesModule } from "../files/files.module";
 import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
 import { RepliesModule } from "../Replies/replies.module";
@@ -16,6 +17,7 @@ import { ChallengesValidator } from "./challenges.validator";
     ]),
     forwardRef(() => UserModule),
     FilesModule,
+    HashtagsModule,
     forwardRef(() => LinkPredictionModule),
     forwardRef(() => RepliesModule)
   ],
