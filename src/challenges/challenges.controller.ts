@@ -25,7 +25,7 @@ export class ChallengesController {
     private linkPredictionController: LinkPredictionController,
     private usersHelper: UsersHelper,
     private repliesService: RepliesService
-  ) {}
+  ) { }
 
   @Get()
   // @UseGuards(AuthGuard("jwt"))
@@ -41,17 +41,6 @@ export class ChallengesController {
 
     return challenges;
   }
-
-
-  // @Post()
-  // @ApiOkResponse({
-  //   status: 201,
-  //   description: "Adds new challenge",
-  //   type: ChallengeDto,
-  // })
-  // async addChallenge(@Body() challenge: ChallengeDto) {
-  //   return this.challengesService.addChallenge(challenge);
-  // }
 
   @Post("upload")
   // @ApiConsumes("multipart/form-data")

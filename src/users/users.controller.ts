@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query } from "@nestjs/common";
+import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query, Delete } from "@nestjs/common";
 import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
 import { ChallengesValidator } from "../challenges/challenges.validator";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -11,6 +11,7 @@ import { LinkPredictionService } from '../linkPrediction/linkPrediction.service'
 import { ChallengeDto } from '../challenges/challenge.model';
 import { LinkPredictionHelper } from '../linkPrediction/linkPrediction.helper';
 import { ChallengesService } from '../challenges/challenges.service';
+import { Types } from 'mongoose'
 
 
 @Controller("users")
@@ -24,7 +25,7 @@ export class UserController {
     private authService: AuthService,
     private linkPredictionService: LinkPredictionService,
     private linkPredictionHelper: LinkPredictionHelper
-  ) {}
+  ) { }
 
   @Get()
   @ApiOkResponse({
@@ -120,5 +121,39 @@ export class UserController {
   @ApiBearerAuth()
   async refresh(@Headers() headers) {
     return await this.authService.createAccessTokenFromRefreshToken(headers);
+  }
+
+  @Post("/:userId/challenges/:challengeId/like")
+  @ApiOkResponse({
+    status: 200,
+    description: "User like challenge",
+    type: [UserDto],
+  })
+  async likeChallenge(@Param("userId") userId: string, @Param("challengeId") challengeId: string) {
+    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    const challenge = await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
+
+    if (!challenge.likes.includes(user._id)) {
+      await this.challengesService.addLike(challengeId, userId);
+    }
+
+    return user;
+  }
+
+  @Delete("/:userId/challenges/:challengeId/like")
+  @ApiOkResponse({
+    status: 200,
+    description: "User remove like for challenge",
+    type: [UserDto],
+  })
+  async removeLike(@Param("userId") userId: string, @Param("challengeId") challengeId: string) {
+    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    const challenge = await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
+
+    if (challenge.likes.includes(user._id)) {
+      await this.challengesService.removeLike(challengeId, userId);
+    }
+
+    return user;
   }
 }

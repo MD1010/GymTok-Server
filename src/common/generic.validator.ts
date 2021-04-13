@@ -16,10 +16,12 @@ export class GenericValidator<T extends Document, D extends BasicEntityDto> {
     return entities;
   }
 
-  async throwErrorIfIdIsNotNotExist(entityId: string) {
+  async getOrThrowErrorIfIdIsNotNotExist(entityId: string) {
     const entity = await this.entityService.findById(entityId);
     if (!entity) {
       throw new NotFoundException(`The id ${entityId} is not exist`);
     }
+
+    return entity;
   }
 }
