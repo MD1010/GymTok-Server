@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Connection, FilterQuery, Model } from "mongoose";
+import { Connection, FilterQuery, Model, Types } from "mongoose";
 import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
 import { GenericDalService } from "../common/genericDalService.service";
@@ -58,6 +58,13 @@ export class ChallengesService {
       video: videoLocation,
       hashtags: hashtagsIds,
     };
+  }
+  async addLike(challengeId: string, userId: string) {
+    return this.challengesModel.updateOne({ _id: challengeId }, { $push: { likes: Types.ObjectId(userId) } });
+  }
+
+  async removeLike(challengeId: string, userId: string) {
+    return this.challengesModel.updateOne({ _id: challengeId }, { $pull: { likes: Types.ObjectId(userId) } });
   }
 
    async getOrCreateHashtags(hashtags: string[]) : Promise<string[]> {

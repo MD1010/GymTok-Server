@@ -42,6 +42,26 @@ export class ChallengesController {
     return challenges;
   }
 
+  @Get(":challengeId")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get challenge by id",
+    type: [ChallengeDto],
+  })
+  async getChallengeById(@Param("challengeId") challengeId: string) {
+    return this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
+  }
+
+  // @Post()
+  // @ApiOkResponse({
+  //   status: 201,
+  //   description: "Adds new challenge",
+  //   type: ChallengeDto,
+  // })
+  // async addChallenge(@Body() challenge: ChallengeDto) {
+  //   return this.challengesService.addChallenge(challenge);
+  // }
+
   @Post("upload")
   // @ApiConsumes("multipart/form-data")
   @ApiOkResponse({
@@ -75,7 +95,7 @@ export class ChallengesController {
     type: [String],
   })
   async addRecommendChallengeForUsers(@Param("challengeId") challengeId: string, @Body() usersIds: string[]) {
-    await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
+    await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
     const users = await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
     this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(users, challengeId);
 
@@ -91,7 +111,7 @@ export class ChallengesController {
     type: [String],
   })
   async addAcceptChallengeForUsers(@Param("challengeId") challengeId: string, @Body() usersIds: string[]) {
-    await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
+    await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
     await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
 
     await this.usersService.addAcceptChallengeToUsers(challengeId, usersIds);
@@ -110,7 +130,7 @@ export class ChallengesController {
     type: [ReplyDto],
   })
   async getAllRepliesOfChallengeId(@Param("challengeId") challengeId: string) {
-    await this.challengesValidator.throwErrorIfIdIsNotNotExist(challengeId);
+    await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
     return this.repliesService.findAllRepliesOfChallengeId(challengeId);
   }
 }
