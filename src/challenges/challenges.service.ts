@@ -50,7 +50,7 @@ export class ChallengesService {
     const parsedSelectedFriends = JSON.parse(challengeFields.selectedFriends);
     const selectedFriends = parsedSelectedFriends.map((f) => f._id);
     const hashtags = challengeFields.hashtags !== 'undefined' ? JSON.parse(challengeFields.hashtags) : [];
-    const hashtagsIds = await this.getOrCreateHashtags(hashtags);
+    const hashtagsIds = await this.hashtagsService.getOrCreateHashtags(hashtags);
     return {
       createdBy: userId,
       description,
@@ -59,33 +59,13 @@ export class ChallengesService {
       hashtags: hashtagsIds,
     };
   }
+  
   async addLike(challengeId: string, userId: string) {
     return this.challengesModel.updateOne({ _id: challengeId }, { $push: { likes: Types.ObjectId(userId) } });
   }
 
   async removeLike(challengeId: string, userId: string) {
     return this.challengesModel.updateOne({ _id: challengeId }, { $pull: { likes: Types.ObjectId(userId) } });
-  }
-
-   async getOrCreateHashtags(hashtags: string[]) : Promise<string[]> {
-
-    let hashtagsIds = [];
-
-    for(let i=0; i < hashtags.length; i++) {
-      try {
-        const hashtag = hashtags[i];
-        let tag = await this.hashtagsService.findHashtagByName(hashtag);
-        if(!tag) {
-          tag = await this.hashtagsService.createHashtag(hashtag);
-        }
-
-        hashtagsIds.push(tag.id);
-      } catch(err) {
-        console.log(err);
-      }
-    }
-
-    return hashtagsIds;
   }
 
   async getComplementChallengesOfChallengesIds(challengesIds: string[]) {

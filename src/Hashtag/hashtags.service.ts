@@ -17,6 +17,27 @@ export class HashtagsService {
     return this.basicHashtagsService.findAll();
   }
 
+  async getOrCreateHashtags(hashtags: string[]) : Promise<string[]> {
+
+    let hashtagsIds = [];
+
+    for(let i=0; i < hashtags.length; i++) {
+      try {
+        const hashtag = hashtags[i];
+        let tag = await this.findHashtagByName(hashtag);
+        if(!tag) {
+          tag = await this.createHashtag(hashtag);
+        }
+
+        hashtagsIds.push(tag.id);
+      } catch(err) {
+        console.log(err);
+      }
+    }
+
+    return hashtagsIds;
+  }
+
   async findHashtagByName(hashtag: string) {
     try{
       const hash = await this.hashtagsModel.findOne({hashtag});
