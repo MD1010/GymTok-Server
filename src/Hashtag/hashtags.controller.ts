@@ -1,11 +1,6 @@
-import { Body, Controller, Get, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
+import { Controller, Get } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
-import { ChallengesValidator } from '../challenges/challenges.validator';
-import { FilesService } from '../files/files.service';
-import { LinkPredictionController } from '../linkPrediction/linkPrediction.controller';
-import { UsersValidator } from '../users/users.validator';
-import { Hashtag, HashtagDto } from './hashtags.model';
+import { HashtagDto } from './hashtags.model';
 import { HashtagsService } from './hashtags.service';
 
 
@@ -20,7 +15,7 @@ export class HashtagsController {
     description: "Get all hashtags",
     type: [HashtagDto],
   })
-  async getAllReplies() {
+  async getAllHashtags() {
     return this.hashtagsService.findAllHashtags();
   }
 }
