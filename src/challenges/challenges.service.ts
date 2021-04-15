@@ -4,6 +4,7 @@ import { InjectConnection, InjectModel } from "@nestjs/mongoose";
 import { Challenge, ChallengeDto } from "./challenge.model";
 import { GenericDalService } from "../common/genericDalService.service";
 import { User } from "../users/user.model";
+import { HashtagsService } from "src/Hashtag/hashtags.service";
 
 @Injectable()
 export class ChallengesService {
@@ -12,6 +13,7 @@ export class ChallengesService {
   constructor(
     @InjectModel(Challenge.name)
     private readonly challengesModel: Model<Challenge>,
+    private hashtagsService: HashtagsService,
 
     @InjectConnection() private readonly connection: Connection
   ) {
@@ -42,25 +44,22 @@ export class ChallengesService {
     return this.basicChallengesService.findByIds(challengesIds);
   }
 
-  createChallengeObject(challengeFields: any, videoLocation: string): ChallengeDto {
+  async createChallengeObject(challengeFields: any, videoLocation: string): Promise<ChallengeDto> {
     const userId = challengeFields.userId;
     const description = challengeFields.description;
-    const parsedSelectedFriends = JSON.parse(challengeFields.selectedFriends || []);
+    const parsedSelectedFriends = JSON.parse(challengeFields.selectedFriends);
     const selectedFriends = parsedSelectedFriends.map((f) => f._id);
     const hashtags = challengeFields.hashtags !== 'undefined' ? JSON.parse(challengeFields.hashtags) : [];
+    const hashtagsIds = await this.hashtagsService.getOrCreateHashtags(hashtags);
     return {
       createdBy: userId,
       description,
       selectedFriends,
       video: videoLocation,
-      hashtags,
+      hashtags: hashtagsIds,
     };
   }
-
-  async getComplementChallengesOfChallengesIds(challengesIds: string[]) {
-    return this.challengesModel.where("_id").nin(challengesIds).exec();
-  }
-
+  
   async addLike(challengeId: string, userId: string) {
     return this.challengesModel.updateOne({ _id: challengeId }, { $push: { likes: Types.ObjectId(userId) } });
   }
@@ -69,41 +68,7 @@ export class ChallengesService {
     return this.challengesModel.updateOne({ _id: challengeId }, { $pull: { likes: Types.ObjectId(userId) } });
   }
 
-  async findAllHashtags(searchTerm: string, excludedIds: string[]) {
-
-    excludedIds = excludedIds ? excludedIds : [];
-
-    const results = await this.challengesModel.aggregate([
-      {
-        "$group": {
-          "_id": 0,
-          "hashtags": { "$push": "$hashtags" },
-        }
-      },
-      {
-        "$project": {
-          "hashtags": {
-            "$reduce": {
-              "input": "$hashtags",
-              "initialValue": [],
-              "in": { "$setUnion": ["$$value", "$$this"] },
-            }
-          }
-        }
-      }
-    ]);
-
-    let hashtags = results[0].hashtags;
-
-    if (searchTerm) {
-      hashtags = hashtags.filter(
-        function (e) {
-          return this.indexOf(e) < 0;
-        },
-        excludedIds
-      ).filter(tag => tag.match(new RegExp(searchTerm, "i")));
-    }
-
-    return { hashtags };
+  async getComplementChallengesOfChallengesIds(challengesIds: string[]) {
+    return this.challengesModel.where("_id").nin(challengesIds).exec();
   }
 }
