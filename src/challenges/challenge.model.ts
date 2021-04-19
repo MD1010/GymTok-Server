@@ -51,7 +51,7 @@ export class Challenge extends Document {
   likes: mongoose.Types.ObjectId[];
 
   @Prop({ default: [] })
-  hashtags: string[];
+  hashtags: mongoose.Types.ObjectId[];
 
   @Prop({ type: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] })
   selectedFriends: User[];

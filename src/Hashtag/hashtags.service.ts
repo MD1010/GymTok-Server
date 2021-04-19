@@ -29,7 +29,7 @@ export class HashtagsService {
           tag = await this.createHashtag(hashtag);
         }
 
-        hashtagsIds.push(tag.id);
+        hashtagsIds.push(tag._id);
       } catch(err) {
         console.log(err);
       }
