@@ -8,9 +8,6 @@ import { Reply } from "../Replies/replies.model";
 import * as mongoose from "mongoose";
 import { User } from "../users/user.model";
 export class ChallengeDto extends BasicEntityDto {
-  // @ApiResponseProperty()
-  // _id: string;
-
   @ApiProperty()
   @IsString()
   createdBy: string;

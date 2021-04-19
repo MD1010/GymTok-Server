@@ -1,10 +1,8 @@
-import { HttpService, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import axios from "axios";
 import * as FormData from "form-data";
-import multer from "multer";
 import { v4 as uuidv4 } from "uuid";
 
-// const MovieParser = require("node-video-lib").MovieParser;
 @Injectable()
 export class FilesService {
   constructor() {}
@@ -24,7 +22,7 @@ export class FilesService {
       maxContentLength: Number.MAX_SAFE_INTEGER,
       maxBodyLength: Number.MAX_SAFE_INTEGER,
     });
-    console.log("-- upload succes ---");
+    console.log("-- upload success ---");
     return videoLocation;
   }
 }

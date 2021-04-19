@@ -46,10 +46,11 @@ export class ChallengesService {
 
   async createChallengeObject(challengeFields: any, videoLocation: string): Promise<ChallengeDto> {
     const userId = challengeFields.userId;
-    const description = challengeFields.description;
-    const parsedSelectedFriends = JSON.parse(challengeFields.selectedFriends);
+    const description = challengeFields.description !== "undefined" ? challengeFields.description : null;
+    const parsedSelectedFriends =
+      challengeFields.selectedFriends !== "undefined" ? JSON.parse(challengeFields.selectedFriends) : [];
     const selectedFriends = parsedSelectedFriends.map((f) => f._id);
-    const hashtags = challengeFields.hashtags !== 'undefined' ? JSON.parse(challengeFields.hashtags) : [];
+    const hashtags = challengeFields.hashtags !== "undefined" ? JSON.parse(challengeFields.hashtags) : [];
     const hashtagsIds = await this.hashtagsService.getOrCreateHashtags(hashtags);
     return {
       createdBy: userId,
@@ -59,7 +60,7 @@ export class ChallengesService {
       hashtags: hashtagsIds,
     };
   }
-  
+
   async addLike(challengeId: string, userId: string) {
     return this.challengesModel.updateOne({ _id: challengeId }, { $push: { likes: Types.ObjectId(userId) } });
   }
