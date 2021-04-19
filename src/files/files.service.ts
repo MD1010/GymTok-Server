@@ -24,6 +24,7 @@ export class FilesService {
       maxContentLength: Number.MAX_SAFE_INTEGER,
       maxBodyLength: Number.MAX_SAFE_INTEGER,
     });
+    console.log("-- upload succes ---");
     return videoLocation;
   }
 }

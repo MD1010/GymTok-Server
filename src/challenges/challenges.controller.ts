@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Post, Query, Req, Res, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Param,
+  Post,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+} from "@nestjs/common";
 import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { FilesService } from "../files/files.service";
@@ -6,7 +16,6 @@ import { LinkPredictionController } from "../linkPrediction/linkPrediction.contr
 import { ReplyDto } from "../Replies/replies.model";
 import { RepliesService } from "../Replies/replies.service";
 import { UsersHelper } from "../users/users.helper.";
-import { resourceLimits } from "worker_threads";
 import { UsersService } from "../users/users.service";
 import { UsersValidator } from "../users/users.validator";
 import { ChallengeDto } from "./challenge.model";
@@ -25,7 +34,7 @@ export class ChallengesController {
     private linkPredictionController: LinkPredictionController,
     private usersHelper: UsersHelper,
     private repliesService: RepliesService
-  ) { }
+  ) {}
 
   @Get()
   // @UseGuards(AuthGuard("jwt"))
@@ -78,6 +87,7 @@ export class ChallengesController {
       const videoLocation = await this.fileService.uploadFile(filesToUpload.video[0].buffer);
       const challenge = await this.challengesService.createChallengeObject(fields, videoLocation.data);
       await this.challengesService.addChallenge(challenge);
+      console.log("new challenge added", challenge);
 
       setTimeout(() => {
         this.linkPredictionController.initModelTraining();
@@ -85,6 +95,7 @@ export class ChallengesController {
       return 201;
     } catch (error) {
       console.log(error);
+      throw new InternalServerErrorException(error);
     }
   }
 
