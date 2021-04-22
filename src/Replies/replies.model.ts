@@ -27,6 +27,10 @@ export class ReplyDto extends BasicEntityDto {
   @ApiProperty()
   @IsString()
   video: string;
+
+  @ApiProperty()
+  @IsString()
+  gif: string;
 }
 
 @Schema()
@@ -45,6 +49,9 @@ export class Reply extends mongoose.Document {
 
   @Prop()
   video: string;
+
+  @Prop()
+  gif: string;
 }
 
 export const ReplySchema = SchemaFactory.createForClass(Reply);

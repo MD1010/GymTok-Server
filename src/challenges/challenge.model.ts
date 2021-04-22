@@ -21,6 +21,10 @@ export class ChallengeDto extends BasicEntityDto {
   video: string;
 
   @ApiProperty()
+  @IsString()
+  gif: string;
+
+  @ApiProperty()
   @IsArray()
   selectedFriends: string[];
 
@@ -46,6 +50,9 @@ export class Challenge extends Document {
 
   @Prop()
   video: string;
+
+  @Prop()
+  gif: string;
 
   @Prop({ default: [] })
   likes: mongoose.Types.ObjectId[];
