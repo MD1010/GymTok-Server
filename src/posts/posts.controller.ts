@@ -29,11 +29,23 @@ export class PostsController {
   @Get(":postId")
   @ApiOkResponse({
     status: 200,
-    description: "Get all posts",
+    description: "Get post by id",
     type: PostDto,
   })
   async getPostById(@Param("postId") postId: string) {
     return this.postsService.getPostById(postId);
+  }
+
+  @Get(":postId/replies")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get replies of post id",
+    type: [PostDto],
+  })
+  async getRepliesOfPostId(@Param("postId") postId: string) {
+    const post = await this.postsService.getPostById(postId);
+
+    return await this.postsService.getPostsByIds(post.replies.map(reply => reply._id))
   }
 
   // @Post("recommend/:challengeId/users")

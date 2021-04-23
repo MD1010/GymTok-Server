@@ -25,6 +25,10 @@ export class PostsService {
     return this.postsModel.find({ createdBy: userId } as FilterQuery<Post>);
   }
 
+  async getPostsByIds(postsId: string[]) {
+    return this.postsModel.find({ _id: { $in: postsId } } as FilterQuery<Post>);
+  }
+
   async addLike(postId: string, userId: string) {
     return this.postsModel.updateOne({ _id: postId }, { $push: { likes: Types.ObjectId(userId) } });
   }
