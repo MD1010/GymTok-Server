@@ -6,6 +6,7 @@ import { ChallengesModule } from "./challenges/challenges.module";
 import { ConfigModule } from "@nestjs/config";
 import { FilesModule } from "./files/files.module";
 import { RepliesModule } from "./Replies/replies.module";
+import { PostsModule } from "./posts/posts.module";
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { RepliesModule } from "./Replies/replies.module";
     ChallengesModule,
     FilesModule,
     ConfigModule.forRoot(),
-    RepliesModule
+    RepliesModule,
+    PostsModule
   ],
 })
 export class AppModule { }
