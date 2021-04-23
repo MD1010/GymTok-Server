@@ -12,6 +12,8 @@ import { ChallengeDto } from '../challenges/challenge.model';
 import { LinkPredictionHelper } from '../linkPrediction/linkPrediction.helper';
 import { ChallengesService } from '../challenges/challenges.service';
 import { Types } from 'mongoose'
+import { ReplyDto } from "src/Replies/replies.model";
+import { RepliesService } from "src/Replies/replies.service";
 
 
 @Controller("users")
@@ -22,6 +24,7 @@ export class UserController {
     private usersValidator: UsersValidator,
     private challengesValidator: ChallengesValidator,
     private challengesService: ChallengesService,
+    private repliesService: RepliesService,
     private authService: AuthService,
     private linkPredictionService: LinkPredictionService,
     private linkPredictionHelper: LinkPredictionHelper
@@ -155,5 +158,28 @@ export class UserController {
     }
 
     return user;
+  }
+
+
+  @Get("/:userId/challenges")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get challenges of user id",
+    type: [ChallengeDto],
+  })
+  async getChallengesOfUserId(@Param("userId") userId: string) {
+    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    return await this.challengesService.findChallengeByUserId(userId);
+  }
+
+  @Get("/:userId/replies")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get replies of user id",
+    type: [ReplyDto],
+  })
+  async getRepliesOfUserId(@Param("userId") userId: string) {
+    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    return await this.repliesService.getRepliesOfUserId(userId);
   }
 }
