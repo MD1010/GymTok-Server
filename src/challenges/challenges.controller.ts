@@ -144,4 +144,15 @@ export class ChallengesController {
     await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
     return this.repliesService.findAllRepliesOfChallengeId(challengeId);
   }
+
+  @Get("hashtag/:hashtagId")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get challenges by given hashtag",
+  })
+  async getChallengesByHashtag(@Param("hashtagId") hashtagId: string) {
+    const challenges = await this.challengesService.findChallengesByHashtag(hashtagId);
+
+    return challenges;
+  }
 }

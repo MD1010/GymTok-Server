@@ -32,6 +32,22 @@ export class ChallengesService {
       });
   }
 
+  async findChallengesByHashtag(hashtagId: string) {
+
+    let challenges = [];
+    const data = await this.challengesModel.find({ hashtags: Types.ObjectId(hashtagId) } as FilterQuery<Challenge>).limit(4)
+    .sort({
+      creationTime: "desc",
+    });
+    
+    for(let i=0; i<data.length; i++) {
+      const challenge = data[i];
+      challenges.push({_id: challenge.id, url: challenge.video, numOfLikes: challenge.likes?.length});
+    }
+
+    return challenges;
+  }
+
   async findChallengeById(challengeId: string) {
     return this.basicChallengesService.findById(challengeId);
   }

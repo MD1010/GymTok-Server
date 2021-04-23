@@ -13,8 +13,10 @@ export class HashtagsService {
     this.basicHashtagsService = new GenericDalService<Hashtag, HashtagDto>(hashtagsModel);
   }
 
-  async findAllHashtags() {
-    return this.basicHashtagsService.findAll();
+  async findAllHashtags(searchTerm: string) {
+    return searchTerm
+    ? this.hashtagsModel.find({ hashtag: new RegExp(searchTerm, "i")})
+    : this.basicHashtagsService.findAll();
   }
 
   async getOrCreateHashtags(hashtags: string[]) : Promise<string[]> {
