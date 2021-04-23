@@ -36,6 +36,10 @@ export class ChallengesService {
     return this.basicChallengesService.findById(challengeId);
   }
 
+  async findChallengeByUserId(userId: string) {
+    return this.challengesModel.find({ createdBy: userId } as FilterQuery<Challenge>);
+  }
+
   async addChallenge(challenge: ChallengeDto) {
     return this.basicChallengesService.createEntity(challenge);
   }
