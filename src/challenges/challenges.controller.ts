@@ -34,7 +34,7 @@ export class ChallengesController {
     private linkPredictionController: LinkPredictionController,
     private usersHelper: UsersHelper,
     private repliesService: RepliesService
-  ) {}
+  ) { }
 
   @Get()
   // @UseGuards(AuthGuard("jwt"))

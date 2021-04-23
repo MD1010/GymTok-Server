@@ -9,13 +9,15 @@ import { AuthModule } from "../auth/auth.module";
 import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
 import { UsersHelper } from "./users.helper.";
 import { RepliesModule } from "src/Replies/replies.module";
+import { PostsModule } from "src/posts/posts.module";
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), forwardRef(() => ChallengesModule),
     AuthModule,
     forwardRef(() => LinkPredictionModule),
-    RepliesModule
+    RepliesModule,
+    PostsModule
   ],
   controllers: [UserController],
   providers: [UsersService, UsersValidator, UsersHelper],

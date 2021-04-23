@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query, Delete } from "@nestjs/common";
 import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
-import { ChallengesValidator } from "../challenges/challenges.validator";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { UserDto } from "./user.model";
@@ -14,6 +13,9 @@ import { ChallengesService } from '../challenges/challenges.service';
 import { Types } from 'mongoose'
 import { ReplyDto } from "src/Replies/replies.model";
 import { RepliesService } from "src/Replies/replies.service";
+import { PostsService } from "src/posts/posts.service";
+import { ChallengesValidator } from "src/challenges/challenges.validator";
+import { PostsValidator } from "src/posts/posts.validator";
 
 
 @Controller("users")
@@ -23,9 +25,11 @@ export class UserController {
     private usersService: UsersService,
     private usersValidator: UsersValidator,
     private challengesValidator: ChallengesValidator,
+    private postsValidator: PostsValidator,
     private challengesService: ChallengesService,
     private repliesService: RepliesService,
     private authService: AuthService,
+    private postsService: PostsService,
     private linkPredictionService: LinkPredictionService,
     private linkPredictionHelper: LinkPredictionHelper
   ) { }
@@ -126,35 +130,35 @@ export class UserController {
     return await this.authService.createAccessTokenFromRefreshToken(headers);
   }
 
-  @Post("/:userId/challenges/:challengeId/like")
+  @Post("/:userId/posts/:postId/like")
   @ApiOkResponse({
     status: 200,
     description: "User like challenge",
     type: [UserDto],
   })
-  async likeChallenge(@Param("userId") userId: string, @Param("challengeId") challengeId: string) {
+  async likePost(@Param("userId") userId: string, @Param("postId") postId: string) {
     const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
-    const challenge = await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
+    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
 
-    if (!challenge.likes.includes(user._id)) {
-      await this.challengesService.addLike(challengeId, userId);
+    if (!post.likes.includes(user._id)) {
+      await this.postsService.addLike(postId, userId);
     }
 
     return user;
   }
 
-  @Delete("/:userId/challenges/:challengeId/like")
+  @Delete("/:userId/posts/:postId/like")
   @ApiOkResponse({
     status: 200,
     description: "User remove like for challenge",
     type: [UserDto],
   })
-  async removeLike(@Param("userId") userId: string, @Param("challengeId") challengeId: string) {
+  async dislikePost(@Param("userId") userId: string, @Param("postId") postId: string) {
     const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
-    const challenge = await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
+    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
 
-    if (challenge.likes.includes(user._id)) {
-      await this.challengesService.removeLike(challengeId, userId);
+    if (post.likes.includes(user._id)) {
+      await this.postsService.removeLike(postId, userId);
     }
 
     return user;
@@ -168,7 +172,7 @@ export class UserController {
     type: [ChallengeDto],
   })
   async getChallengesOfUserId(@Param("userId") userId: string) {
-    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
     return await this.challengesService.findChallengeByUserId(userId);
   }
 
@@ -179,7 +183,18 @@ export class UserController {
     type: [ReplyDto],
   })
   async getRepliesOfUserId(@Param("userId") userId: string) {
-    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
     return await this.repliesService.getRepliesOfUserId(userId);
+  }
+
+  @Get("/:userId/posts")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get replies of user id",
+    type: [ReplyDto],
+  })
+  async getPostsOfUserId(@Param("userId") userId: string) {
+    await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    return await this.postsService.getPostsOfUserId(userId);
   }
 }

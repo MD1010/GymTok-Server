@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { ChallengesValidator } from '../challenges/challenges.validator';
@@ -25,6 +25,32 @@ export class PostsController {
   async getAllPosts() {
     return this.postsService.findAllPosts();
   }
+
+  @Get(":postId")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get all posts",
+    type: PostDto,
+  })
+  async getPostById(@Param("postId") postId: string) {
+    return this.postsService.getPostById(postId);
+  }
+
+  // @Post("recommend/:challengeId/users")
+  // @ApiOkResponse({
+  //   status: 201,
+  //   description: "Adds to the challenge id to the recommended challenges of the user ids",
+  //   type: [String],
+  // })
+  // async addRecommendChallengeForUsers(@Param("challengeId") challengeId: string, @Body() usersIds: string[]) {
+  //   await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
+  //   const users = await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
+  //   this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(users, challengeId);
+
+  //   await this.usersService.addRecommendChallengeToUsers(challengeId, usersIds);
+
+  //   return usersIds;
+  // }
 
   // @Post("/upload")
   // // @ApiConsumes("multipart/form-data")

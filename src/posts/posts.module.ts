@@ -5,8 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Post, PostSchema } from "./posts.model";
 import { FilesModule } from "../files/files.module";
 import { RepliesParser } from "./posts.parser";
-import { ChallengesModule } from "../challenges/challenges.module";
-import { UserModule } from "../users/user.module";
+import { PostsValidator } from "./posts.validator";
 import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
 
 @Module({
@@ -15,7 +14,7 @@ import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
     //  forwardRef(() => LinkPredictionModule)
   ],
   controllers: [PostsController],
-  providers: [PostsService, RepliesParser],
-  exports: [PostsService]
+  providers: [PostsService, RepliesParser, PostsValidator],
+  exports: [PostsService, PostsValidator]
 })
 export class PostsModule { }
