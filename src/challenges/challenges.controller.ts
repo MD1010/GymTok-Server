@@ -84,8 +84,8 @@ export class ChallengesController {
   async addChallenge(@UploadedFiles() filesToUpload, @Body() fields: any) {
     console.log("here finished");
     try {
-      const videoLocation = await this.fileService.uploadFile(filesToUpload.video[0].buffer);
-      const challenge = await this.challengesService.createChallengeObject(fields, videoLocation.data);
+      const locations = await this.fileService.uploadFile(filesToUpload.video[0].buffer);
+      const challenge = await this.challengesService.createChallengeObject(fields, locations);
       await this.challengesService.addChallenge(challenge);
       console.log("new challenge added", challenge);
 
