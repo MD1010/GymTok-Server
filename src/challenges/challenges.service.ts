@@ -48,7 +48,7 @@ export class ChallengesService {
     return this.basicChallengesService.findByIds(challengesIds);
   }
 
-  async createChallengeObject(challengeFields: any, videoLocation: string): Promise<ChallengeDto> {
+  async createChallengeObject(challengeFields: any, locations: any): Promise<ChallengeDto> {
     const userId = challengeFields.userId;
     const description = challengeFields.description !== "undefined" ? challengeFields.description : null;
     const parsedSelectedFriends =
@@ -60,8 +60,9 @@ export class ChallengesService {
       createdBy: userId,
       description,
       selectedFriends,
-      video: videoLocation,
+      video: locations.videoID,
       hashtags: hashtagsIds,
+      gif: locations.gifID,
     };
   }
 

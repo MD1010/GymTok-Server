@@ -17,12 +17,12 @@ export class FilesService {
       "Content-Length": formData.getLengthSync(),
       "Content-Type": "multipart/form-data",
     };
-    let videoLocation = await axios.post(`${process.env.STREAMING_SERVER_ENPOINT}/upload-video`, formData, {
+    let locations = await axios.post(`${process.env.STREAMING_SERVER_ENPOINT}/upload-video`, formData, {
       headers,
       maxContentLength: Number.MAX_SAFE_INTEGER,
       maxBodyLength: Number.MAX_SAFE_INTEGER,
     });
     console.log("-- upload success ---");
-    return videoLocation;
+    return locations.data;
   }
 }
