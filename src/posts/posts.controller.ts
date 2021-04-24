@@ -73,7 +73,7 @@ export class PostsController {
     type: PostDto,
   })
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "videoURI" }, { name: "taggedUsers" }, { name: "likes" },
+    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "video" }, { name: "taggedUsers" }, { name: "likes" },
     { name: "hashtags" }])
   )
   async addPost(@UploadedFiles() filesToUpload, @Body() formDataFields: any) {
@@ -98,7 +98,7 @@ export class PostsController {
     type: PostDto,
   })
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "videoURI" }, { name: "taggedUsers" }, { name: "likes" },
+    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "video" }, { name: "taggedUsers" }, { name: "likes" },
     { name: "hashtags" }])
   )
   async addReplyToPost(@Param("postId") postId: string, @UploadedFiles() filesToUpload, @Body() formDataFields: any) {
@@ -106,7 +106,7 @@ export class PostsController {
       await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
       const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, true);
 
-      await this.postsService.addReplyToPost(postId, returnedPost.id);
+      await this.postsService.addReplyToPost(postId, returnedPost._id);
 
 
 

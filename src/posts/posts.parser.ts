@@ -1,8 +1,4 @@
-import { Injectable, HttpService } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { Challenge } from "src/challenges/challenge.model";
-import { Reply, ReplyDto } from "src/Replies/replies.model";
-import { User } from "src/users/user.model";
+import { Injectable } from "@nestjs/common";
 import { PostDto } from "./posts.model";
 
 @Injectable()
@@ -11,11 +7,11 @@ export class PostsParser {
     const parsedPost = {
       description: formDataFields.description,
       createdBy: formDataFields.createdBy,
-      videoURI: formDataFields.videoURI,
       taggedUsers: formDataFields.taggedUsers !== "undefined" ? JSON.parse(formDataFields.taggedUsers) : [],
-      likes: formDataFields.likes !== "undefined" ? JSON.parse(formDataFields.likes) : [],
+      likes: [],
       hashtags: formDataFields.hashtags !== "undefined" ? JSON.parse(formDataFields.hashtags) : [],
       isReply,
+      videoURI: "",
       gif: "",
       replies: [],
     };
