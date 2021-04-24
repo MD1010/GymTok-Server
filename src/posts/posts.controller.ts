@@ -1,20 +1,29 @@
-import { Body, Controller, Get, Param, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
-import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { HashtagsService } from 'src/Hashtag/hashtags.service';
+import { UsersHelper } from 'src/users/users.helper.';
 import { ChallengesValidator } from '../challenges/challenges.validator';
 import { FilesService } from '../files/files.service';
 import { LinkPredictionController } from '../linkPrediction/linkPrediction.controller';
 import { UsersValidator } from '../users/users.validator';
 import { PostDto } from './posts.model';
-import { RepliesParser } from './posts.parser';
+import { PostsParser } from './posts.parser';
 import { PostsService } from "./posts.service";
+import { PostsValidator } from './posts.validator';
 
 @Controller("posts")
 @ApiTags("Posts")
 export class PostsController {
   constructor(
-    private postsService: PostsService
+    private postsService: PostsService,
+    private postsParser: PostsParser,
+    private usersValidator: UsersValidator,
+    private postsValidator: PostsValidator,
+    private filesService: FilesService,
+    private hashtagsService: HashtagsService,
   ) { }
+
 
   @Get()
   @ApiOkResponse({
@@ -22,8 +31,11 @@ export class PostsController {
     description: "Get all posts",
     type: [PostDto],
   })
-  async getAllPosts() {
-    return this.postsService.findAllPosts();
+  @ApiQuery({ name: 'page', type: String, required: false })
+  @ApiQuery({ name: 'size', type: String, required: false })
+  @ApiQuery({ name: 'uid', type: String, required: false })
+  async getAllPosts(@Query("page") page, @Query("size") size, @Query("uid") userId) {
+    return await this.postsService.findPostsByPaging(+page, +size, userId);
   }
 
   @Get(":postId")
@@ -45,7 +57,81 @@ export class PostsController {
   async getRepliesOfPostId(@Param("postId") postId: string) {
     const post = await this.postsService.getPostById(postId);
 
-    return await this.postsService.getPostsByIds(post.replies.map(reply => reply._id))
+    return await this.postsService.getPostsByIds(post.replies.map(reply => reply.toString()))
+  }
+
+  @Post("/upload")
+  // @ApiConsumes("multipart/form-data")
+  @ApiCreatedResponse({
+    description: "Adds new post",
+    type: PostDto,
+  })
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "videoURI" }, { name: "taggedUsers" }, { name: "likes" },
+    { name: "hashtags" }])
+  )
+  async addPost(@UploadedFiles() filesToUpload, @Body() formDataFields: any) {
+    try {
+      const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, false)
+      // const parsedPost = this.postsParser.parsePostFileDataToPost(formDataFields, false);
+      // await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(parsedPost.createdBy);
+      // await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(parsedPost.likes);
+      // await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(parsedPost.taggedUsers);
+      // parsedPost.hashtags = await this.hashtagsService.getOrCreateHashtags(parsedPost.hashtags);
+
+      // const locations = await this.filesService.uploadFile(filesToUpload.video[0].buffer);
+      // this.postsParser.addFilesFieldsToPost(parsedPost, locations);
+      // const returnedPost = await this.postsService.basicPostsService.createEntity(parsedPost);
+
+
+
+
+
+
+      // setTimeout(() => {
+      //   this.linkPredictionController.initModelTraining();
+      // }, 0);
+      return returnedPost;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  @Post(":postId/reply/upload")
+  // @ApiConsumes("multipart/form-data")
+  @ApiCreatedResponse({
+    description: "Adds new post",
+    type: PostDto,
+  })
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "videoURI" }, { name: "taggedUsers" }, { name: "likes" },
+    { name: "hashtags" }])
+  )
+  async addReplyToPost(@Param("postId") postId: string, @UploadedFiles() filesToUpload, @Body() formDataFields: any) {
+    try {
+      await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
+      const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, true);
+
+      await this.postsService.addReplyToPost(postId, returnedPost.id);
+      // setTimeout(() => {
+      //   this.linkPredictionController.initModelTraining();
+      // }, 0);
+      return returnedPost;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  private async validateAndAddNewPost(filesToUpload: any, formDataFields: any, isReply: boolean) {
+    const parsedPost = this.postsParser.parsePostFileDataToPost(formDataFields, isReply);
+    await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(parsedPost.createdBy);
+    await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(parsedPost.likes);
+    await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(parsedPost.taggedUsers);
+    parsedPost.hashtags = await this.hashtagsService.getOrCreateHashtags(parsedPost.hashtags);
+
+    const locations = await this.filesService.uploadFile(filesToUpload.video[0].buffer);
+    this.postsParser.addFilesFieldsToPost(parsedPost, locations);
+    return await this.postsService.basicPostsService.createEntity(parsedPost);
   }
 
   // @Post("recommend/:challengeId/users")
@@ -62,33 +148,5 @@ export class PostsController {
   //   await this.usersService.addRecommendChallengeToUsers(challengeId, usersIds);
 
   //   return usersIds;
-  // }
-
-  // @Post("/upload")
-  // // @ApiConsumes("multipart/form-data")
-  // @ApiOkResponse({
-  //   status: 201,
-  //   description: "Adds new reply",
-  //   type: PostDto,
-  // })
-  // @UseInterceptors(
-  //   FileFieldsInterceptor([{ name: "description" }, { name: "video" }, { name: "challengeId" }, { name: "replierId" }])
-  // )
-  // async addReply(@UploadedFiles() filesToUpload, @Body() fields: any) {
-  //   try {
-  //     const reply = this.repliesParser.getReplyPropertiesFileFormDataFields(fields);
-  //     await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(reply.replierId);
-  //     await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(reply.challengeId);
-  //     const videoLocation = await this.filesService.uploadFile(filesToUpload.video[0].buffer);
-  //     reply.video = videoLocation.data;
-  //     const returnedReply = await this.repliesService.basicRepliesService.createEntity(reply);
-
-  //     setTimeout(() => {
-  //       this.linkPredictionController.initModelTraining();
-  //     }, 0);
-  //     return returnedReply;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
   // }
 }

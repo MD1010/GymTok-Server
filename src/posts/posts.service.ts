@@ -17,6 +17,18 @@ export class PostsService {
     return this.basicPostsService.findAll();
   }
 
+  async findPostsByPaging(pageNumber?: number, pageSize?: number, createdBy?: string) {
+    const data = createdBy
+      ? this.postsModel.find({ createdBy } as FilterQuery<Post>)
+      : this.postsModel.find();
+    return data
+      .skip(pageSize * pageNumber)
+      .limit(pageSize)
+      .sort({
+        creationTime: "desc",
+      });
+  }
+
   async getPostById(postId: string) {
     return this.basicPostsService.findById(postId);
   }
@@ -31,6 +43,10 @@ export class PostsService {
 
   async addLike(postId: string, userId: string) {
     return this.postsModel.updateOne({ _id: postId }, { $push: { likes: Types.ObjectId(userId) } });
+  }
+
+  async addReplyToPost(postId: string, replyId: string) {
+    return this.postsModel.updateOne({ _id: postId }, { $push: { replies: Types.ObjectId(replyId) } });
   }
 
   async removeLike(postId: string, userId: string) {

@@ -22,7 +22,7 @@ export class PostDto extends BasicEntityDto {
 
   @ApiResponseProperty()
   @IsDate()
-  publishDate: Date;
+  publishDate?: Date;
 
   @ApiProperty()
   @IsString()
@@ -31,6 +31,11 @@ export class PostDto extends BasicEntityDto {
   @ApiProperty()
   @IsString()
   gif: string;
+
+  @ApiProperty()
+  @ValidateNested({ each: true })
+  @Type(() => String)
+  taggedUsers: string[];
 
   @ApiProperty()
   @ValidateNested({ each: true })
@@ -57,8 +62,8 @@ export class Post extends mongoose.Document {
   @Prop()
   description: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: "User" })
-  createdBy: User;
+  @Prop({})
+  createdBy: mongoose.Types.ObjectId;
 
   @Prop({ default: new Date() })
   publishDate: Date;
@@ -69,8 +74,11 @@ export class Post extends mongoose.Document {
   @Prop()
   gif: string;
 
-  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: Post.name, default: [] })
-  replies: Post[];
+  @Prop({ default: [] })
+  taggedUsers: mongoose.Types.ObjectId[];
+
+  @Prop({ default: [] })
+  replies: mongoose.Types.ObjectId[];
 
   @Prop({ default: [] })
   likes: mongoose.Types.ObjectId[];

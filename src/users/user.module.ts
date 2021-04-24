@@ -17,7 +17,7 @@ import { PostsModule } from "src/posts/posts.module";
     AuthModule,
     forwardRef(() => LinkPredictionModule),
     RepliesModule,
-    PostsModule
+    forwardRef(() => PostsModule)
   ],
   controllers: [UserController],
   providers: [UsersService, UsersValidator, UsersHelper],

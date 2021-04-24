@@ -4,17 +4,20 @@ import { PostsController } from "./posts.controller";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Post, PostSchema } from "./posts.model";
 import { FilesModule } from "../files/files.module";
-import { RepliesParser } from "./posts.parser";
+import { PostsParser } from "./posts.parser";
 import { PostsValidator } from "./posts.validator";
 import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
+import { UserModule } from "src/users/user.module";
+import { HashtagsModule } from "src/Hashtag/hashtags.module";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), FilesModule,
+    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), FilesModule, HashtagsModule,
+    forwardRef(() => UserModule)
     //  forwardRef(() => LinkPredictionModule)
   ],
   controllers: [PostsController],
-  providers: [PostsService, RepliesParser, PostsValidator],
+  providers: [PostsService, PostsParser, PostsValidator],
   exports: [PostsService, PostsValidator]
 })
 export class PostsModule { }
