@@ -49,15 +49,15 @@ export class PostsService {
     return this.postsModel.updateOne({ _id: postId }, { $push: { replies: Types.ObjectId(replyId) } });
   }
 
+  async findPostsByIds(postsIds: string[]) {
+    return this.basicPostsService.findByIds(postsIds);
+  }
+
   async removeLike(postId: string, userId: string) {
     return this.postsModel.updateOne({ _id: postId }, { $pull: { likes: Types.ObjectId(userId) } });
   }
 
-  // async findAllRepliesOfChallengeId(challengeId: string) {
-  //   return this.postsModel.where({ challengeId });
-  // }
-
-  // async getRepliesOfUserId(userId: string) {
-  //   return this.postsModel.find({ replierId: userId } as FilterQuery<Post>);
-  // }
+  async getComplementPostsOfPostsIds(challengesIds: string[]) {
+    return this.postsModel.where("_id").nin(challengesIds).exec();
+  }
 }

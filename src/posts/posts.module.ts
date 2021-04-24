@@ -13,8 +13,8 @@ import { HashtagsModule } from "src/Hashtag/hashtags.module";
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), FilesModule, HashtagsModule,
-    forwardRef(() => UserModule)
-    //  forwardRef(() => LinkPredictionModule)
+    forwardRef(() => UserModule),
+    forwardRef(() => LinkPredictionModule)
   ],
   controllers: [PostsController],
   providers: [PostsService, PostsParser, PostsValidator],

@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query, Delete } from "@nestjs/common";
-import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth } from "@nestjs/swagger";
+import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query, Delete, ParseIntPipe } from "@nestjs/common";
+import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { UserDto } from "./user.model";
@@ -97,7 +97,7 @@ export class UserController {
       const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
         user._id
       );
-      const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedChallenges(
+      const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedPosts(
         challengesAndTheirRecommendPercent
       );
       const recommendedChallenges = await this.challengesService.findChallengesByIds(recommendedChallengesIds);
@@ -196,5 +196,36 @@ export class UserController {
   async getPostsOfUserId(@Param("userId") userId: string) {
     await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
     return await this.postsService.getPostsOfUserId(userId);
+  }
+
+
+  @Get(":username/recommendedPosts")
+  @ApiOkResponse({
+    status: 200,
+    description: "Adds to the challenge id to the recommended challenges of the user ids",
+    type: [ChallengeDto],
+  })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'size', type: Number, required: false })
+  async getRecommendPostsByUserId(
+    @Param("username") username: string,
+    @Query("page", ParseIntPipe) page: number,
+    @Query("size", ParseIntPipe) size: number
+  ) {
+    const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(username);
+    try {
+      const postsAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
+        user._id
+      );
+      const allRecommendedPostsIds = this.linkPredictionHelper.getMostRecommendedPosts(
+        postsAndTheirRecommendPercent
+      );
+
+      const currentPostsIdsPage = allRecommendedPostsIds.slice(page * size, (page + 1) * size);
+      return await this.postsService.findPostsByIds(currentPostsIdsPage);
+    } catch (err) {
+      const d = await this.postsService.getComplementPostsOfPostsIds(user.acceptedChallenges);
+      return d.slice(page * size, (page + 1) * size);
+    }
   }
 }

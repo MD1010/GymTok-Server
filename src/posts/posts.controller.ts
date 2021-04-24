@@ -22,6 +22,7 @@ export class PostsController {
     private postsValidator: PostsValidator,
     private filesService: FilesService,
     private hashtagsService: HashtagsService,
+    private linkPredictionController: LinkPredictionController
   ) { }
 
 
@@ -31,8 +32,8 @@ export class PostsController {
     description: "Get all posts",
     type: [PostDto],
   })
-  @ApiQuery({ name: 'page', type: String, required: false })
-  @ApiQuery({ name: 'size', type: String, required: false })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'size', type: Number, required: false })
   @ApiQuery({ name: 'uid', type: String, required: false })
   async getAllPosts(@Query("page") page, @Query("size") size, @Query("uid") userId) {
     return await this.postsService.findPostsByPaging(+page, +size, userId);
@@ -73,24 +74,12 @@ export class PostsController {
   async addPost(@UploadedFiles() filesToUpload, @Body() formDataFields: any) {
     try {
       const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, false)
-      // const parsedPost = this.postsParser.parsePostFileDataToPost(formDataFields, false);
-      // await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(parsedPost.createdBy);
-      // await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(parsedPost.likes);
-      // await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(parsedPost.taggedUsers);
-      // parsedPost.hashtags = await this.hashtagsService.getOrCreateHashtags(parsedPost.hashtags);
-
-      // const locations = await this.filesService.uploadFile(filesToUpload.video[0].buffer);
-      // this.postsParser.addFilesFieldsToPost(parsedPost, locations);
-      // const returnedPost = await this.postsService.basicPostsService.createEntity(parsedPost);
 
 
 
-
-
-
-      // setTimeout(() => {
-      //   this.linkPredictionController.initModelTraining();
-      // }, 0);
+      setTimeout(() => {
+        this.linkPredictionController.initModelTraining();
+      }, 0);
       return returnedPost;
     } catch (error) {
       console.log(error);
@@ -113,9 +102,12 @@ export class PostsController {
       const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, true);
 
       await this.postsService.addReplyToPost(postId, returnedPost.id);
-      // setTimeout(() => {
-      //   this.linkPredictionController.initModelTraining();
-      // }, 0);
+
+
+
+      setTimeout(() => {
+        this.linkPredictionController.initModelTraining();
+      }, 0);
       return returnedPost;
     } catch (error) {
       console.log(error);
@@ -133,20 +125,4 @@ export class PostsController {
     this.postsParser.addFilesFieldsToPost(parsedPost, locations);
     return await this.postsService.basicPostsService.createEntity(parsedPost);
   }
-
-  // @Post("recommend/:challengeId/users")
-  // @ApiOkResponse({
-  //   status: 201,
-  //   description: "Adds to the challenge id to the recommended challenges of the user ids",
-  //   type: [String],
-  // })
-  // async addRecommendChallengeForUsers(@Param("challengeId") challengeId: string, @Body() usersIds: string[]) {
-  //   await this.challengesValidator.getOrThrowErrorIfIdIsNotNotExist(challengeId);
-  //   const users = await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(usersIds);
-  //   this.usersValidator.throwErrorIfRecommendedChallengeWasAcceptedForUsers(users, challengeId);
-
-  //   await this.usersService.addRecommendChallengeToUsers(challengeId, usersIds);
-
-  //   return usersIds;
-  // }
 }
