@@ -3,6 +3,7 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 import { ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { HashtagsService } from 'src/Hashtag/hashtags.service';
 import { UsersHelper } from 'src/users/users.helper.';
+import { UsersService } from 'src/users/users.service';
 import { ChallengesValidator } from '../challenges/challenges.validator';
 import { FilesService } from '../files/files.service';
 import { LinkPredictionController } from '../linkPrediction/linkPrediction.controller';
@@ -19,6 +20,7 @@ export class PostsController {
     private postsService: PostsService,
     private postsParser: PostsParser,
     private usersValidator: UsersValidator,
+    private usersHelper: UsersHelper,
     private postsValidator: PostsValidator,
     private filesService: FilesService,
     private hashtagsService: HashtagsService,
@@ -36,7 +38,10 @@ export class PostsController {
   @ApiQuery({ name: 'size', type: Number, required: false })
   @ApiQuery({ name: 'uid', type: String, required: false })
   async getAllPosts(@Query("page") page, @Query("size") size, @Query("uid") userId) {
-    return await this.postsService.findPostsByPaging(+page, +size, userId);
+    const posts = await this.postsService.findPostsByPaging(+page, +size, userId);
+    await this.usersHelper.addCreatedUserToPosts(posts);
+
+    return posts;
   }
 
   @Get(":postId")

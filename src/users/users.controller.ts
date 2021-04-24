@@ -16,6 +16,8 @@ import { RepliesService } from "src/Replies/replies.service";
 import { PostsService } from "src/posts/posts.service";
 import { ChallengesValidator } from "src/challenges/challenges.validator";
 import { PostsValidator } from "src/posts/posts.validator";
+import { PostDto } from "src/posts/posts.model";
+import { UsersHelper } from "./users.helper.";
 
 
 @Controller("users")
@@ -28,6 +30,7 @@ export class UserController {
     private postsValidator: PostsValidator,
     private challengesService: ChallengesService,
     private repliesService: RepliesService,
+    private usersHelper: UsersHelper,
     private authService: AuthService,
     private postsService: PostsService,
     private linkPredictionService: LinkPredictionService,
@@ -137,6 +140,7 @@ export class UserController {
     type: [UserDto],
   })
   async likePost(@Param("userId") userId: string, @Param("postId") postId: string) {
+    console.log("5555555555555555555")
     const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
     const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
 
@@ -203,7 +207,7 @@ export class UserController {
   @ApiOkResponse({
     status: 200,
     description: "Adds to the challenge id to the recommended challenges of the user ids",
-    type: [ChallengeDto],
+    type: [PostDto],
   })
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'size', type: Number, required: false })
@@ -222,7 +226,11 @@ export class UserController {
       );
 
       const currentPostsIdsPage = allRecommendedPostsIds.slice(page * size, (page + 1) * size);
-      return await this.postsService.findPostsByIds(currentPostsIdsPage);
+      const posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
+
+      await this.usersHelper.addCreatedUserToPosts(posts);
+
+      return posts;
     } catch (err) {
       const d = await this.postsService.getComplementPostsOfPostsIds(user.acceptedChallenges);
       return d.slice(page * size, (page + 1) * size);
