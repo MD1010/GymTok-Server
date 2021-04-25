@@ -42,7 +42,7 @@ export class ChallengesService {
     
     for(let i=0; i<data.length; i++) {
       const challenge = data[i];
-      challenges.push({_id: challenge.id, url: challenge.video, numOfLikes: challenge.likes?.length});
+      challenges.push({_id: challenge.id, url: challenge.video, numOfLikes: challenge.likes?.length, gif: challenge.gif, description: challenge.description});
     }
 
     return challenges;
