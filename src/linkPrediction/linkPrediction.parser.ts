@@ -1,9 +1,5 @@
 import { Injectable, HttpService } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Challenge } from 'src/challenges/challenge.model';
 import { Post } from 'src/posts/posts.model';
-import { Reply } from 'src/Replies/replies.model';
-import { User } from 'src/users/user.model';
 
 @Injectable()
 export class LinkPredictionParser {

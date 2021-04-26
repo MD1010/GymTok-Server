@@ -4,19 +4,16 @@ import { UserController } from "./users.controller";
 import { MongooseModule } from "@nestjs/mongoose";
 import { User, UserSchema } from "./user.model";
 import { UsersValidator } from "./users.validator";
-import { ChallengesModule } from "../challenges/challenges.module";
 import { AuthModule } from "../auth/auth.module";
 import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
 import { UsersHelper } from "./users.helper.";
-import { RepliesModule } from "src/Replies/replies.module";
 import { PostsModule } from "src/posts/posts.module";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]), forwardRef(() => ChallengesModule),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     AuthModule,
     forwardRef(() => LinkPredictionModule),
-    RepliesModule,
     forwardRef(() => PostsModule)
   ],
   controllers: [UserController],

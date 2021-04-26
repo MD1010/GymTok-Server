@@ -1,12 +1,10 @@
 import { Schema, Prop, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
-import { IsArray, IsBoolean, isBoolean, IsDate, IsNumber, IsString, ValidateNested } from "class-validator";
+import { IsBoolean, IsDate, IsNumber, IsString, ValidateNested } from "class-validator";
 import * as mongoose from "mongoose";
 import { BasicEntityDto } from "../common/basicEntity.dto";
 import { User } from "../users/user.model";
-import { Challenge } from "../challenges/challenge.model";
 import { Type } from "class-transformer";
-import { Hashtag } from "src/Hashtag/hashtags.model";
 
 export class PostDto extends BasicEntityDto {
   @ApiResponseProperty()

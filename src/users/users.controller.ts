@@ -7,14 +7,8 @@ import { UsersService } from "./users.service";
 import { AuthService } from "../auth/auth.service";
 import { UsersValidator } from "./users.validator";
 import { LinkPredictionService } from '../linkPrediction/linkPrediction.service';
-import { ChallengeDto } from '../challenges/challenge.model';
 import { LinkPredictionHelper } from '../linkPrediction/linkPrediction.helper';
-import { ChallengesService } from '../challenges/challenges.service';
-import { Types } from 'mongoose'
-import { ReplyDto } from "src/Replies/replies.model";
-import { RepliesService } from "src/Replies/replies.service";
 import { PostsService } from "src/posts/posts.service";
-import { ChallengesValidator } from "src/challenges/challenges.validator";
 import { PostsValidator } from "src/posts/posts.validator";
 import { PostDto } from "src/posts/posts.model";
 import { UsersHelper } from "./users.helper.";
@@ -26,12 +20,9 @@ export class UserController {
   constructor(
     private usersService: UsersService,
     private usersValidator: UsersValidator,
-    private challengesValidator: ChallengesValidator,
     private postsValidator: PostsValidator,
-    private challengesService: ChallengesService,
-    private repliesService: RepliesService,
-    private usersHelper: UsersHelper,
     private authService: AuthService,
+    private usersHelper: UsersHelper,
     private postsService: PostsService,
     private linkPredictionService: LinkPredictionService,
     private linkPredictionHelper: LinkPredictionHelper
@@ -68,48 +59,6 @@ export class UserController {
   })
   async registerIfNeed(@Body() createUserDto: CreateUserDto) {
     return await this.usersService.getOrCreate(createUserDto);
-  }
-
-  @Post()
-  @ApiOkResponse({
-    status: 201,
-    description: "Adds new challenge",
-    type: UserDto,
-  })
-  async addUser(@Body() user: UserDto) {
-    await this.usersValidator.throwErrorIfUserNameIsExist(user.username);
-    await this.challengesValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(user.recommendedChallenges);
-    await this.challengesValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(user.acceptedChallenges);
-
-    return this.usersService.addUser(user);
-  }
-
-  @Get(":username/recommendedChallenges")
-  @ApiOkResponse({
-    status: 200,
-    description: "Adds to the challenge id to the recommended challenges of the user ids",
-    type: [ChallengeDto],
-  })
-  async getRecommendChallengeByUserId(
-    @Param("username") username: string,
-    @Query("page") page: number,
-    @Query("size") size: number
-  ) {
-    const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(username);
-    try {
-      const challengesAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
-        user._id
-      );
-      const recommendedChallengesIds = this.linkPredictionHelper.getMostRecommendedPosts(
-        challengesAndTheirRecommendPercent
-      );
-      const recommendedChallenges = await this.challengesService.findChallengesByIds(recommendedChallengesIds);
-
-      return recommendedChallenges.slice(page * size, (page + 1) * size);
-    } catch (err) {
-      const d = await this.challengesService.getComplementChallengesOfChallengesIds(user.acceptedChallenges);
-      return d.slice(page * size, (page + 1) * size);
-    }
   }
 
   @Post("login")
@@ -166,41 +115,6 @@ export class UserController {
 
     return user;
   }
-
-
-  @Get("/:userId/challenges")
-  @ApiOkResponse({
-    status: 200,
-    description: "Get challenges of user id",
-    type: [ChallengeDto],
-  })
-  async getChallengesOfUserId(@Param("userId") userId: string) {
-    await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
-    return await this.challengesService.findChallengeByUserId(userId);
-  }
-
-  @Get("/:userId/replies")
-  @ApiOkResponse({
-    status: 200,
-    description: "Get replies of user id",
-    type: [ReplyDto],
-  })
-  async getRepliesOfUserId(@Param("userId") userId: string) {
-    await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
-    return await this.repliesService.getRepliesOfUserId(userId);
-  }
-
-  @Get("/:userId/posts")
-  @ApiOkResponse({
-    status: 200,
-    description: "Get replies of user id",
-    type: [ReplyDto],
-  })
-  async getPostsOfUserId(@Param("userId") userId: string) {
-    await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
-    return await this.postsService.getPostsOfUserId(userId);
-  }
-
 
   @Get(":username/recommendedPosts")
   @ApiOkResponse({
