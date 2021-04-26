@@ -3,8 +3,6 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 import { ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
 import { HashtagsService } from 'src/Hashtag/hashtags.service';
 import { UsersHelper } from 'src/users/users.helper.';
-import { UsersService } from 'src/users/users.service';
-import { ChallengesValidator } from '../challenges/challenges.validator';
 import { FilesService } from '../files/files.service';
 import { LinkPredictionController } from '../linkPrediction/linkPrediction.controller';
 import { UsersValidator } from '../users/users.validator';
@@ -80,8 +78,6 @@ export class PostsController {
     try {
       const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, false)
 
-
-
       setTimeout(() => {
         this.linkPredictionController.initModelTraining();
       }, 0);
@@ -98,17 +94,13 @@ export class PostsController {
     type: PostDto,
   })
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "video" }, { name: "taggedUsers" }, { name: "likes" },
-    { name: "hashtags" }])
+    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "video" }])
   )
   async addReplyToPost(@Param("postId") postId: string, @UploadedFiles() filesToUpload, @Body() formDataFields: any) {
     try {
       await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
       const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, true);
-
       await this.postsService.addReplyToPost(postId, returnedPost._id);
-
-
 
       setTimeout(() => {
         this.linkPredictionController.initModelTraining();

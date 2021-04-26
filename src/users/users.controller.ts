@@ -140,7 +140,6 @@ export class UserController {
     type: [UserDto],
   })
   async likePost(@Param("userId") userId: string, @Param("postId") postId: string) {
-    console.log("5555555555555555555")
     const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
     const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
 

@@ -7,9 +7,9 @@ export class PostsParser {
     const parsedPost = {
       description: formDataFields.description,
       createdBy: formDataFields.createdBy,
-      taggedUsers: formDataFields.taggedUsers !== "undefined" ? JSON.parse(formDataFields.taggedUsers) : [],
+      taggedUsers: formDataFields.taggedUsers && formDataFields.taggedUsers !== "undefined" ? JSON.parse(formDataFields.taggedUsers) : [],
       likes: [],
-      hashtags: formDataFields.hashtags !== "undefined" ? JSON.parse(formDataFields.hashtags) : [],
+      hashtags: formDataFields.hashtags && formDataFields.hashtags !== "undefined" ? JSON.parse(formDataFields.hashtags) : [],
       isReply,
       videoURI: "",
       gif: "",
