@@ -57,7 +57,7 @@ export class PostsService {
     return this.postsModel.updateOne({ _id: postId }, { $pull: { likes: Types.ObjectId(userId) } });
   }
 
-  async getComplementPostsOfPostsIds(challengesIds: string[]) {
-    return this.postsModel.where("_id").nin(challengesIds).exec();
+  async getNotReplyPosts() {
+    return this.postsModel.find({ isReply: false });
   }
 }

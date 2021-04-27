@@ -145,8 +145,9 @@ export class UserController {
 
       return posts;
     } catch (err) {
-      const d = await this.postsService.getComplementPostsOfPostsIds(user.acceptedChallenges);
-      return d.slice(page * size, (page + 1) * size);
+      const posts = await this.postsService.getNotReplyPosts();
+      await this.usersHelper.addCreatedUserToPosts(posts);
+      return posts.slice(page * size, (page + 1) * size);
     }
   }
 }
