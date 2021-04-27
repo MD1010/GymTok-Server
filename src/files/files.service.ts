@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 
 @Injectable()
 export class FilesService {
-  constructor() {}
+  constructor() { }
 
   async uploadFile(fileBuffer) {
     const formData = new FormData();
