@@ -1,18 +1,37 @@
-import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query, Delete, ParseIntPipe } from "@nestjs/common";
-import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Query,
+  Delete,
+  ParseIntPipe,
+} from "@nestjs/common";
+import {
+  ApiOkResponse,
+  ApiTags,
+  ApiCreatedResponse,
+  ApiHeader,
+  ApiBearerAuth,
+  ApiQuery,
+} from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 import { AuthService } from "../auth/auth.service";
 import { UsersValidator } from "./users.validator";
-import { LinkPredictionService } from '../linkPrediction/linkPrediction.service';
-import { LinkPredictionHelper } from '../linkPrediction/linkPrediction.helper';
+import { LinkPredictionService } from "../linkPrediction/linkPrediction.service";
+import { LinkPredictionHelper } from "../linkPrediction/linkPrediction.helper";
 import { PostsService } from "src/posts/posts.service";
 import { PostsValidator } from "src/posts/posts.validator";
 import { PostDto } from "src/posts/posts.model";
 import { UsersHelper } from "./users.helper.";
-
 
 @Controller("users")
 @ApiTags("Users")
@@ -26,15 +45,27 @@ export class UserController {
     private postsService: PostsService,
     private linkPredictionService: LinkPredictionService,
     private linkPredictionHelper: LinkPredictionHelper
-  ) { }
+  ) {}
 
+  @Get(":userId/profileDetails")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get profile details (num of: challenges, replies, likes)",
+    // type: [UserDto],
+  })
+  async getProfileDetails(@Query("userId") userId: string) {
+    null;
+  }
   @Get()
   @ApiOkResponse({
     status: 200,
     description: "Get all users",
     type: [UserDto],
   })
-  async getAllUsers(@Query("searchTerm") searchTerm: string, @Query("excludedIds") excludedIds: string[]) {
+  async getAllUsers(
+    @Query("searchTerm") searchTerm: string,
+    @Query("excludedIds") excludedIds: string[]
+  ) {
     return this.usersService.findAllUsers(searchTerm, excludedIds);
   }
 
@@ -46,11 +77,13 @@ export class UserController {
     type: [CreateUserDto],
   })
   async register(@Body() createUserDto: CreateUserDto) {
-    await this.usersValidator.throwErrorIfUserNameIsExist(createUserDto.username);
+    await this.usersValidator.throwErrorIfUserNameIsExist(
+      createUserDto.username
+    );
     return await this.usersService.create(createUserDto);
   }
 
-  @Post('registerIfNeed')
+  @Post("registerIfNeed")
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
     status: 200,
@@ -69,7 +102,9 @@ export class UserController {
     type: [LoginUserDto],
   })
   async login(@Body() loginUserDto: LoginUserDto) {
-    await this.usersValidator.throwErrorIfUserNameIsNotExist(loginUserDto.username);
+    await this.usersValidator.throwErrorIfUserNameIsNotExist(
+      loginUserDto.username
+    );
     return await this.usersService.login(loginUserDto);
   }
 
@@ -88,9 +123,16 @@ export class UserController {
     description: "User like challenge",
     type: [UserDto],
   })
-  async likePost(@Param("userId") userId: string, @Param("postId") postId: string) {
-    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
-    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
+  async likePost(
+    @Param("userId") userId: string,
+    @Param("postId") postId: string
+  ) {
+    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(
+      userId
+    );
+    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(
+      postId
+    );
 
     if (!post.likes.includes(user._id)) {
       await this.postsService.addLike(postId, userId);
@@ -105,9 +147,16 @@ export class UserController {
     description: "User remove like for challenge",
     type: [UserDto],
   })
-  async dislikePost(@Param("userId") userId: string, @Param("postId") postId: string) {
-    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
-    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
+  async dislikePost(
+    @Param("userId") userId: string,
+    @Param("postId") postId: string
+  ) {
+    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(
+      userId
+    );
+    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(
+      postId
+    );
 
     if (post.likes.includes(user._id)) {
       await this.postsService.removeLike(postId, userId);
@@ -119,17 +168,20 @@ export class UserController {
   @Get(":username/recommendedPosts")
   @ApiOkResponse({
     status: 200,
-    description: "Adds to the challenge id to the recommended challenges of the user ids",
+    description:
+      "Adds to the challenge id to the recommended challenges of the user ids",
     type: [PostDto],
   })
-  @ApiQuery({ name: 'page', type: Number, required: false })
-  @ApiQuery({ name: 'size', type: Number, required: false })
+  @ApiQuery({ name: "page", type: Number, required: false })
+  @ApiQuery({ name: "size", type: Number, required: false })
   async getRecommendPostsByUserId(
     @Param("username") username: string,
     @Query("page", ParseIntPipe) page: number,
     @Query("size", ParseIntPipe) size: number
   ) {
-    const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(username);
+    const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(
+      username
+    );
     try {
       const postsAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
         user._id
@@ -138,7 +190,10 @@ export class UserController {
         postsAndTheirRecommendPercent
       );
 
-      const currentPostsIdsPage = allRecommendedPostsIds.slice(page * size, (page + 1) * size);
+      const currentPostsIdsPage = allRecommendedPostsIds.slice(
+        page * size,
+        (page + 1) * size
+      );
       const posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
 
       await this.usersHelper.addCreatedUserToPosts(posts);

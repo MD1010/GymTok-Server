@@ -1,14 +1,20 @@
-import { Injectable, UnauthorizedException, NotFoundException, BadRequestException, Get } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  NotFoundException,
+  BadRequestException,
+  Get,
+} from "@nestjs/common";
 import { FilterQuery, Model, Types } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { GenericDalService } from "../common/genericDalService.service";
-import { Post, PostDto } from './posts.model';
+import { Post, PostDto } from "./posts.model";
 
 @Injectable()
 export class PostsService {
   public basicPostsService: GenericDalService<Post, PostDto>;
   constructor(
-    @InjectModel(Post.name) private readonly postsModel: Model<Post>,
+    @InjectModel(Post.name) private readonly postsModel: Model<Post>
   ) {
     this.basicPostsService = new GenericDalService<Post, PostDto>(postsModel);
   }
@@ -17,10 +23,15 @@ export class PostsService {
     return this.basicPostsService.findAll();
   }
 
-  async findPostsByPaging(pageNumber?: number, pageSize?: number, createdBy?: string) {
+  async findPostsByPaging(
+    isReply: boolean,
+    pageNumber?: number,
+    pageSize?: number,
+    createdBy?: string
+  ) {
     const data = createdBy
-      ? this.postsModel.find({ createdBy } as FilterQuery<Post>)
-      : this.postsModel.find();
+      ? this.postsModel.find({ createdBy, isReply } as FilterQuery<Post>)
+      : this.postsModel.find({ isReply });
     return data
       .skip(pageSize * pageNumber)
       .limit(pageSize)
@@ -42,11 +53,17 @@ export class PostsService {
   }
 
   async addLike(postId: string, userId: string) {
-    return this.postsModel.updateOne({ _id: postId }, { $push: { likes: Types.ObjectId(userId) } });
+    return this.postsModel.updateOne(
+      { _id: postId },
+      { $push: { likes: Types.ObjectId(userId) } }
+    );
   }
 
   async addReplyToPost(postId: string, replyId: string) {
-    return this.postsModel.updateOne({ _id: postId }, { $push: { replies: Types.ObjectId(replyId) } });
+    return this.postsModel.updateOne(
+      { _id: postId },
+      { $push: { replies: Types.ObjectId(replyId) } }
+    );
   }
 
   async findPostsByIds(postsIds: string[]) {
@@ -54,7 +71,10 @@ export class PostsService {
   }
 
   async removeLike(postId: string, userId: string) {
-    return this.postsModel.updateOne({ _id: postId }, { $pull: { likes: Types.ObjectId(userId) } });
+    return this.postsModel.updateOne(
+      { _id: postId },
+      { $pull: { likes: Types.ObjectId(userId) } }
+    );
   }
 
   async getNotReplyPosts() {
