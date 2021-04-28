@@ -25,7 +25,7 @@ export class PostsService {
       .skip(pageSize * pageNumber)
       .limit(pageSize)
       .sort({
-        creationTime: "desc",
+        publishDate: "desc",
       });
   }
 
