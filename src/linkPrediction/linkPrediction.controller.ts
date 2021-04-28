@@ -1,23 +1,17 @@
 import { Controller, Post } from "@nestjs/common";
-import { fstat } from "fs";
-import { UsersService } from "../users/users.service";
 import { LinkPredictionParser } from "./linkPrediction.parser";
 import { LinkPredictionService } from "./linkPrediction.service";
-import { readFile, writeFile } from 'fs'
-import { ChallengesService } from "../challenges/challenges.service";
-import { RepliesService } from "../Replies/replies.service";
+import { PostsService } from "src/posts/posts.service";
 
 @Controller("LinkPrediction")
 export class LinkPredictionController {
     constructor(private linkPredictionService: LinkPredictionService,
-        private challengesService: ChallengesService,
-        private repliesService: RepliesService,
+        private postsService: PostsService,
         private linkPredictionParser: LinkPredictionParser) { }
 
     async initModelTraining() {
-        const challenges = await this.challengesService.findAllChallenges();
-        const replies = await this.repliesService.findAllReplies();
-        const bipartiteGraph = this.linkPredictionParser.parseUsersAndChallengesToLinkPredictionFormat(challenges, replies);
+        const posts = await this.postsService.findAllPosts();
+        const bipartiteGraph = this.linkPredictionParser.postsToLinkPredictionFormat(posts);
 
         this.linkPredictionService.initModelTraining(bipartiteGraph);
     }
