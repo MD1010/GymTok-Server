@@ -47,14 +47,29 @@ export class UserController {
     private linkPredictionHelper: LinkPredictionHelper
   ) {}
 
-  @Get(":userId/profileDetails")
+  @Get("/profileDetails")
   @ApiOkResponse({
     status: 200,
     description: "Get profile details (num of: challenges, replies, likes)",
     // type: [UserDto],
   })
   async getProfileDetails(@Query("userId") userId: string) {
-    null;
+    let challengesLenght = await (
+      await this.postsService.getPostsOfUserId(userId, false)
+    ).length;
+    let repliesLenght = await (
+      await this.postsService.getPostsOfUserId(userId, true)
+    ).length;
+    let postsOfCurrentUser = await this.postsService.getPostsOfUserId(userId);
+    let totalLikes = 0;
+    postsOfCurrentUser.forEach((post) => {
+      totalLikes += post.likes.length;
+    });
+    return {
+      challenges: challengesLenght,
+      replies: repliesLenght,
+      likes: totalLikes,
+    };
   }
   @Get()
   @ApiOkResponse({
