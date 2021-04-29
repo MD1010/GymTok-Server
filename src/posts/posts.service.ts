@@ -32,6 +32,7 @@ export class PostsService {
     const data = createdBy
       ? this.postsModel.find({ createdBy, isReply } as FilterQuery<Post>)
       : this.postsModel.find({ isReply });
+
     return data
       .skip(pageSize * pageNumber)
       .limit(pageSize)
@@ -44,8 +45,11 @@ export class PostsService {
     return this.basicPostsService.findById(postId);
   }
 
-  async getPostsOfUserId(userId: string) {
-    return this.postsModel.find({ createdBy: userId } as FilterQuery<Post>);
+  async getPostsOfUserId(userId: string, isReply?: boolean) {
+    let query = isReply
+      ? { createdBy: userId, isReply }
+      : { createdBy: userId };
+    return this.postsModel.find(query as FilterQuery<Post>);
   }
 
   async getPostsByIds(postsId: string[]) {
