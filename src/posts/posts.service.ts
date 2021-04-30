@@ -66,17 +66,17 @@ export class PostsService {
         creationTime: "desc",
       });
 
-    for (let i = 0; i < data.length; i++) {
-      const post = data[i];
-      posts.push({
-        _id: post.id,
-        video: post.videoURI,
-        numOfLikes: post.likes?.length,
-        gif: post.gif,
-        description: post.description,
-      });
-    }
+    // for (let i = 0; i < data.length; i++) {
+    //   const post = data[i];
+    //   posts.push({
+    //     _id: post.id,
+    //     video: post.videoURI,
+    //     numOfLikes: post.likes?.length,
+    //     gif: post.gif,
+    //     description: post.description,
+    //   });
+    // }
 
-    return posts;
+    return data;
   }
 }
