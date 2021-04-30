@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Param, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
 import { ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
+import { HashtagsHelper } from 'src/Hashtag/hashtags.helper';
 import { HashtagsService } from 'src/Hashtag/hashtags.service';
 import { UsersHelper } from 'src/users/users.helper.';
 import { FilesService } from '../files/files.service';
@@ -19,6 +20,7 @@ export class PostsController {
     private postsParser: PostsParser,
     private usersValidator: UsersValidator,
     private usersHelper: UsersHelper,
+    private hashtagsHelper: HashtagsHelper,
     private postsValidator: PostsValidator,
     private filesService: FilesService,
     private hashtagsService: HashtagsService,
@@ -38,6 +40,7 @@ export class PostsController {
   async getAllPosts(@Query("page") page, @Query("size") size, @Query("uid") userId) {
     const posts = await this.postsService.findPostsByPaging(+page, +size, userId);
     await this.usersHelper.addCreatedUserToPosts(posts);
+    await this.hashtagsHelper.addHashtagsToPosts(posts);
 
     return posts;
   }
