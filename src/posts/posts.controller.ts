@@ -125,4 +125,15 @@ export class PostsController {
     this.postsParser.addFilesFieldsToPost(parsedPost, locations);
     return await this.postsService.basicPostsService.createEntity(parsedPost);
   }
+
+  @Get("hashtag/:hashtagId")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get challenges by given hashtag",
+  })
+  async getChallengesByHashtag(@Param("hashtagId") hashtagId: string) {
+    const challenges = await this.postsService.findPostsByHashtag(hashtagId);
+
+    return challenges;
+  }
 }
