@@ -29,6 +29,7 @@ export class PostsService {
     pageSize?: number,
     createdBy?: string
   ) {
+    console.log(`pageNumber: ${pageNumber} ", pageSize: ${pageSize} `);
     const data = createdBy
       ? this.postsModel.find({ createdBy, isReply } as FilterQuery<Post>)
       : this.postsModel.find({ isReply });

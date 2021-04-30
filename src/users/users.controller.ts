@@ -66,9 +66,9 @@ export class UserController {
       totalLikes += post.likes.length;
     });
     return {
-      challenges: challengesLenght,
-      replies: repliesLenght,
-      likes: totalLikes,
+      numOfChallenges: challengesLenght,
+      numOfReplies: repliesLenght,
+      numOfLikes: totalLikes,
     };
   }
   @Get()
