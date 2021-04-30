@@ -12,7 +12,7 @@ export class UsersHelper {
     const usersIds = _.uniq(posts.map(post => post.createdBy._id));
     const users = await this.usersService.findUsersByIds(usersIds);
     for (const post of posts) {
-      const user = users.find(user => user._id === post.createdBy._id);
+      const user = users.find(user => user._id.equals(post.createdBy._id));
       if (user) {
         post.createdBy = user;
       }
