@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { HashtagDto } from './hashtags.model';
 import { HashtagsService } from './hashtags.service';

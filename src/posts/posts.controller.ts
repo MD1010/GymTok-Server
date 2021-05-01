@@ -11,6 +11,8 @@ import { PostDto } from './posts.model';
 import { PostsParser } from './posts.parser';
 import { PostsService } from "./posts.service";
 import { PostsValidator } from './posts.validator';
+import * as _ from 'lodash'
+import { Types } from 'mongoose';
 
 @Controller("posts")
 @ApiTags("Posts")
@@ -112,6 +114,21 @@ export class PostsController {
     } catch (error) {
       console.log(error);
     }
+  }
+
+
+  @Post(":postId/hashtags")
+  @ApiOkResponse({
+    status: 200,
+    description: "Add hashtag to post",
+    type: [PostDto],
+  })
+  async addHashtagToPost(@Param("postId") postId: string, @Body() hashtags: string[]) {
+    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
+    const hashtagsIds = await this.hashtagsService.getOrCreateHashtags(hashtags);
+    await this.postsService.addHashtagsToPost(postId, hashtagsIds.map(hashtagId => Types.ObjectId(hashtagId)));
+    post.hashtags = _.uniq([...post.hashtags, ...hashtagsIds].map(hashtagId => hashtagId.toString()));
+    return post;
   }
 
   private async validateAndAddNewPost(filesToUpload: any, formDataFields: any, isReply: boolean) {
