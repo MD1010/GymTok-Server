@@ -1,4 +1,4 @@
-import { Controller, Get, Post } from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { HashtagDto } from './hashtags.model';
 import { HashtagsService } from './hashtags.service';
@@ -15,7 +15,7 @@ export class HashtagsController {
     description: "Get all hashtags",
     type: [HashtagDto],
   })
-  async getAllHashtags() {
-    return this.hashtagsService.findAllHashtags();
+  async getAllHashtags(@Query("searchTerm") searchTerm: string) {
+    return this.hashtagsService.findAllHashtags(searchTerm);
   }
 }

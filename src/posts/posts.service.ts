@@ -1,15 +1,13 @@
-import { Injectable, UnauthorizedException, NotFoundException, BadRequestException, Get } from '@nestjs/common';
+import { Injectable, UnauthorizedException, NotFoundException, BadRequestException, Get } from "@nestjs/common";
 import { FilterQuery, Model, Types } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { GenericDalService } from "../common/genericDalService.service";
-import { Post, PostDto } from './posts.model';
+import { Post, PostDto } from "./posts.model";
 
 @Injectable()
 export class PostsService {
   public basicPostsService: GenericDalService<Post, PostDto>;
-  constructor(
-    @InjectModel(Post.name) private readonly postsModel: Model<Post>,
-  ) {
+  constructor(@InjectModel(Post.name) private readonly postsModel: Model<Post>) {
     this.basicPostsService = new GenericDalService<Post, PostDto>(postsModel);
   }
 
@@ -18,9 +16,7 @@ export class PostsService {
   }
 
   async findPostsByPaging(pageNumber?: number, pageSize?: number, createdBy?: string) {
-    const data = createdBy
-      ? this.postsModel.find({ createdBy } as FilterQuery<Post>)
-      : this.postsModel.find();
+    const data = createdBy ? this.postsModel.find({ createdBy } as FilterQuery<Post>) : this.postsModel.find();
     return data
       .skip(pageSize * pageNumber)
       .limit(pageSize)
@@ -63,5 +59,28 @@ export class PostsService {
 
   async getNotReplyPosts() {
     return this.postsModel.find({ isReply: false });
+  }
+
+  async findPostsByHashtag(hashtagId: string) {
+    let posts = [];
+    const data = await this.postsModel
+      .find({ hashtags: Types.ObjectId(hashtagId) } as FilterQuery<Post>)
+      .limit(4)
+      .sort({
+        creationTime: "desc",
+      });
+
+    // for (let i = 0; i < data.length; i++) {
+    //   const post = data[i];
+    //   posts.push({
+    //     _id: post.id,
+    //     video: post.videoURI,
+    //     numOfLikes: post.likes?.length,
+    //     gif: post.gif,
+    //     description: post.description,
+    //   });
+    // }
+
+    return data;
   }
 }

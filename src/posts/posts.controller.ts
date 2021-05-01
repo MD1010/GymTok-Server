@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Param, Post, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
-import { FileFieldsInterceptor } from '@nestjs/platform-express/multer';
+import { Body, Controller, Get, Param, Post, Query, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import { ApiCreatedResponse, ApiOkResponse, ApiQuery, ApiTags } from "@nestjs/swagger";
-import { HashtagsHelper } from 'src/Hashtag/hashtags.helper';
-import { HashtagsService } from 'src/Hashtag/hashtags.service';
-import { UsersHelper } from 'src/users/users.helper.';
-import { FilesService } from '../files/files.service';
-import { LinkPredictionController } from '../linkPrediction/linkPrediction.controller';
-import { UsersValidator } from '../users/users.validator';
-import { PostDto } from './posts.model';
-import { PostsParser } from './posts.parser';
+import { HashtagsHelper } from "src/Hashtag/hashtags.helper";
+import { HashtagsService } from "src/Hashtag/hashtags.service";
+import { UsersHelper } from "src/users/users.helper.";
+import { FilesService } from "../files/files.service";
+import { LinkPredictionController } from "../linkPrediction/linkPrediction.controller";
+import { UsersValidator } from "../users/users.validator";
+import { PostDto } from "./posts.model";
+import { PostsParser } from "./posts.parser";
 import { PostsService } from "./posts.service";
 import { PostsValidator } from './posts.validator';
 import * as _ from 'lodash'
@@ -27,8 +27,7 @@ export class PostsController {
     private filesService: FilesService,
     private hashtagsService: HashtagsService,
     private linkPredictionController: LinkPredictionController
-  ) { }
-
+  ) {}
 
   @Get()
   @ApiOkResponse({
@@ -36,9 +35,9 @@ export class PostsController {
     description: "Get all posts",
     type: [PostDto],
   })
-  @ApiQuery({ name: 'page', type: Number, required: false })
-  @ApiQuery({ name: 'size', type: Number, required: false })
-  @ApiQuery({ name: 'uid', type: String, required: false })
+  @ApiQuery({ name: "page", type: Number, required: false })
+  @ApiQuery({ name: "size", type: Number, required: false })
+  @ApiQuery({ name: "uid", type: String, required: false })
   async getAllPosts(@Query("page") page, @Query("size") size, @Query("uid") userId) {
     const posts = await this.postsService.findPostsByPaging(+page, +size, userId);
     await this.usersHelper.addCreatedUserToPosts(posts);
@@ -66,7 +65,7 @@ export class PostsController {
   async getRepliesOfPostId(@Param("postId") postId: string) {
     const post = await this.postsService.getPostById(postId);
 
-    return await this.postsService.getPostsByIds(post.replies.map(reply => reply.toString()))
+    return await this.postsService.getPostsByIds(post.replies.map((reply) => reply.toString()));
   }
 
   @Post("/upload")
@@ -76,12 +75,18 @@ export class PostsController {
     type: PostDto,
   })
   @UseInterceptors(
-    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "video" }, { name: "taggedUsers" }, { name: "likes" },
-    { name: "hashtags" }])
+    FileFieldsInterceptor([
+      { name: "description" },
+      { name: "createdBy" },
+      { name: "video" },
+      { name: "taggedUsers" },
+      { name: "likes" },
+      { name: "hashtags" },
+    ])
   )
   async addPost(@UploadedFiles() filesToUpload, @Body() formDataFields: any) {
     try {
-      const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, false)
+      const returnedPost = await this.validateAndAddNewPost(filesToUpload, formDataFields, false);
 
       setTimeout(() => {
         this.linkPredictionController.initModelTraining();
@@ -98,9 +103,7 @@ export class PostsController {
     description: "Adds new post",
     type: PostDto,
   })
-  @UseInterceptors(
-    FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "video" }])
-  )
+  @UseInterceptors(FileFieldsInterceptor([{ name: "description" }, { name: "createdBy" }, { name: "video" }]))
   async addReplyToPost(@Param("postId") postId: string, @UploadedFiles() filesToUpload, @Body() formDataFields: any) {
     try {
       await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
@@ -141,5 +144,16 @@ export class PostsController {
     const locations = await this.filesService.uploadFile(filesToUpload.video[0].buffer);
     this.postsParser.addFilesFieldsToPost(parsedPost, locations);
     return await this.postsService.basicPostsService.createEntity(parsedPost);
+  }
+
+  @Get("hashtag/:hashtagId")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get challenges by given hashtag",
+  })
+  async getChallengesByHashtag(@Param("hashtagId") hashtagId: string) {
+    const challenges = await this.postsService.findPostsByHashtag(hashtagId);
+    await this.usersHelper.addCreatedUserToPosts(challenges);
+    return challenges;
   }
 }

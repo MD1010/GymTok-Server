@@ -1,4 +1,17 @@
-import { Controller, Get, Post, Body, UseGuards, Headers, HttpCode, HttpStatus, Param, Query, Delete, ParseIntPipe } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Headers,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Query,
+  Delete,
+  ParseIntPipe,
+} from "@nestjs/common";
 import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
@@ -6,13 +19,12 @@ import { UserDto } from "./user.model";
 import { UsersService } from "./users.service";
 import { AuthService } from "../auth/auth.service";
 import { UsersValidator } from "./users.validator";
-import { LinkPredictionService } from '../linkPrediction/linkPrediction.service';
-import { LinkPredictionHelper } from '../linkPrediction/linkPrediction.helper';
+import { LinkPredictionService } from "../linkPrediction/linkPrediction.service";
+import { LinkPredictionHelper } from "../linkPrediction/linkPrediction.helper";
 import { PostsService } from "src/posts/posts.service";
 import { PostsValidator } from "src/posts/posts.validator";
 import { PostDto } from "src/posts/posts.model";
 import { UsersHelper } from "./users.helper.";
-
 
 @Controller("users")
 @ApiTags("Users")
@@ -26,7 +38,7 @@ export class UserController {
     private postsService: PostsService,
     private linkPredictionService: LinkPredictionService,
     private linkPredictionHelper: LinkPredictionHelper
-  ) { }
+  ) {}
 
   @Get()
   @ApiOkResponse({
@@ -50,7 +62,7 @@ export class UserController {
     return await this.usersService.create(createUserDto);
   }
 
-  @Post('registerIfNeed')
+  @Post("registerIfNeed")
   @HttpCode(HttpStatus.CREATED)
   @ApiCreatedResponse({
     status: 200,
@@ -122,8 +134,8 @@ export class UserController {
     description: "Adds to the challenge id to the recommended challenges of the user ids",
     type: [PostDto],
   })
-  @ApiQuery({ name: 'page', type: Number, required: false })
-  @ApiQuery({ name: 'size', type: Number, required: false })
+  @ApiQuery({ name: "page", type: Number, required: false })
+  @ApiQuery({ name: "size", type: Number, required: false })
   async getRecommendPostsByUserId(
     @Param("username") username: string,
     @Query("page", ParseIntPipe) page: number,
@@ -134,9 +146,7 @@ export class UserController {
       const postsAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
         user._id
       );
-      const allRecommendedPostsIds = this.linkPredictionHelper.getMostRecommendedPosts(
-        postsAndTheirRecommendPercent
-      );
+      const allRecommendedPostsIds = this.linkPredictionHelper.getMostRecommendedPosts(postsAndTheirRecommendPercent);
 
       const currentPostsIdsPage = allRecommendedPostsIds.slice(page * size, (page + 1) * size);
       const posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
