@@ -85,4 +85,27 @@ export class PostsService {
   async getNotReplyPosts() {
     return this.postsModel.find({ isReply: false });
   }
+
+  async findPostsByHashtag(hashtagId: string) {
+    let posts = [];
+    const data = await this.postsModel
+      .find({ hashtags: Types.ObjectId(hashtagId) } as FilterQuery<Post>)
+      .limit(4)
+      .sort({
+        creationTime: "desc",
+      });
+
+    // for (let i = 0; i < data.length; i++) {
+    //   const post = data[i];
+    //   posts.push({
+    //     _id: post.id,
+    //     video: post.videoURI,
+    //     numOfLikes: post.likes?.length,
+    //     gif: post.gif,
+    //     description: post.description,
+    //   });
+    // }
+
+    return data;
+  }
 }

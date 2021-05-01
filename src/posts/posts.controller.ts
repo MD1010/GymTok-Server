@@ -15,6 +15,7 @@ import {
   ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
+import { HashtagsHelper } from "src/Hashtag/hashtags.helper";
 import { HashtagsService } from "src/Hashtag/hashtags.service";
 import { UsersHelper } from "src/users/users.helper.";
 import { FilesService } from "../files/files.service";
@@ -33,6 +34,7 @@ export class PostsController {
     private postsParser: PostsParser,
     private usersValidator: UsersValidator,
     private usersHelper: UsersHelper,
+    private hashtagsHelper: HashtagsHelper,
     private postsValidator: PostsValidator,
     private filesService: FilesService,
     private hashtagsService: HashtagsService,
@@ -62,6 +64,7 @@ export class PostsController {
       userId
     );
     await this.usersHelper.addCreatedUserToPosts(posts);
+    await this.hashtagsHelper.addHashtagsToPosts(posts);
 
     return posts;
   }
@@ -186,5 +189,16 @@ export class PostsController {
     );
     this.postsParser.addFilesFieldsToPost(parsedPost, locations);
     return await this.postsService.basicPostsService.createEntity(parsedPost);
+  }
+
+  @Get("hashtag/:hashtagId")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get challenges by given hashtag",
+  })
+  async getChallengesByHashtag(@Param("hashtagId") hashtagId: string) {
+    const challenges = await this.postsService.findPostsByHashtag(hashtagId);
+    await this.usersHelper.addCreatedUserToPosts(challenges);
+    return challenges;
   }
 }
