@@ -61,14 +61,14 @@ export class UserController {
       await this.postsService.getPostsOfUserId(userId, true)
     ).length;
     let postsOfCurrentUser = await this.postsService.getPostsOfUserId(userId);
-    let totalLikes = 0;
-    postsOfCurrentUser.forEach((post) => {
-      totalLikes += post.likes.length;
-    });
+    // let totalLikes = 0;
+    // postsOfCurrentUser.forEach((post) => {
+    //   totalLikes += post.likes.length;
+    // });
     return {
       numOfChallenges: challengesLenght,
       numOfReplies: repliesLenght,
-      numOfLikes: totalLikes,
+      // numOfLikes: totalLikes,
     };
   }
   @Get()
