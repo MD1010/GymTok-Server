@@ -5,6 +5,7 @@ import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 import { FilesModule } from "./files/files.module";
 import { PostsModule } from "./posts/posts.module";
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { PostsModule } from "./posts/posts.module";
     UserModule,
     FilesModule,
     ConfigModule.forRoot(),
-    PostsModule
+    PostsModule,
+    NotificationsModule
   ],
 })
 export class AppModule { }

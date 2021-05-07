@@ -14,10 +14,15 @@ import { PostsModule } from "src/posts/posts.module";
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     AuthModule,
     forwardRef(() => LinkPredictionModule),
-    forwardRef(() => PostsModule)
+    forwardRef(() => PostsModule),
   ],
   controllers: [UserController],
   providers: [UsersService, UsersValidator, UsersHelper],
-  exports: [UsersService, UsersValidator, UsersHelper]
+  exports: [
+    UsersService,
+    UsersValidator,
+    UsersHelper,
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+  ],
 })
-export class UserModule { }
+export class UserModule {}

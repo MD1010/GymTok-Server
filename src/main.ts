@@ -12,12 +12,12 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const linkPredictionController = app.get(LinkPredictionController);
-  linkPredictionController.initModelTraining();
+  // linkPredictionController.initModelTraining();
 
   const options = new DocumentBuilder()
     .setTitle("GymTok server - until when???")
     .setDescription("Best API ever")
-    .setVersion("1.0")
+    .setVersion("3.0")
     .addBearerAuth()
     .build();
 

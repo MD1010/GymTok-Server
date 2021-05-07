@@ -44,7 +44,6 @@ export class UserDto extends BasicEntityDto {
 
 @Schema()
 export class User extends Document {
-
   @Prop()
   email: string;
 
@@ -61,6 +60,9 @@ export class User extends Document {
   image: string;
 
   @Prop()
+  pushToken: string;
+
+  @Prop()
   recommendedChallenges: string[];
 
   @Prop()
@@ -68,9 +70,6 @@ export class User extends Document {
 
   @Prop({ default: 0 })
   totalScore: number;
-
-  // @Prop([{ type: mongoose.Schema.Types.ObjectId, ref: "Challenge" }])
-  // notifications: INotification;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
