@@ -12,7 +12,6 @@ export class NotificationsService {
     @InjectModel(User.name) private readonly usersModel: Model<User>,
     private readonly userService: UsersService
   ) {}
-  // todo handle date
   async getUserNotifications(userId: string, isRead: boolean) {
     if (!userId) {
       return await this.notificationsModel.find();
@@ -44,7 +43,7 @@ export class NotificationsService {
       throw new HttpException({}, HttpStatus.NO_CONTENT);
     } else {
       const res = await this.notificationsModel.updateMany({ notifiedUsers: userId } as any, {
-        $pull: { notifiedUsers: userId } as any,
+        $pull: { notifiedUsers: userId, readBy: userId as any } as any,
       });
       if (res.n) {
         return res;
@@ -61,8 +60,9 @@ export class NotificationsService {
     } else {
       const res = await this.notificationsModel.updateOne(
         { _id: notificationId },
-        { $pull: { notifiedUsers: userId as any } }
+        { $pull: { notifiedUsers: userId as any, readBy: userId as any } }
       );
+
       if (res.n) {
         return res;
       } else {
@@ -70,7 +70,22 @@ export class NotificationsService {
       }
     }
   }
-  markNotificationAsRead(userId: string, notificationId: string) {}
+  async markNotificationAsRead(userId: string, notificationId: string) {
+    const user = await this.userService.findUserById(userId);
+    if (!user) {
+      throw new BadRequestException("Failed to mark notification as read");
+    } else {
+      const res = await this.notificationsModel.updateOne(
+        { _id: notificationId },
+        { $push: { readBy: userId as any } }
+      );
+      if (res.n) {
+        return res;
+      } else {
+        throw new BadRequestException("Failed to mark notification as read");
+      }
+    }
+  }
   sendPushNotification(recipientPushToken: string, title: string, body?: string, data?: string) {}
   getNotificationCounter(userId: string) {}
 

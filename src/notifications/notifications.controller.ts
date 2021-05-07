@@ -77,4 +77,17 @@ export class NotificationsController {
   async deleteUserNotification(@Param("notificationId") notificationId: string, @Param("userId") userId: string) {
     return await this.notificationsService.deleteUserNotification(userId, notificationId);
   }
+
+  @Put("/:notificationId/:userId")
+  @ApiAcceptedResponse({
+    description: "Notification deleted successfully",
+    type: [NotificationDto],
+  })
+  @ApiBadRequestResponse({
+    description: "Failed to mark notification as read by user",
+    type: [NotificationDto],
+  })
+  async markNotificationAsRead(@Param("notificationId") notificationId: string, @Param("userId") userId: string) {
+    return await this.notificationsService.markNotificationAsRead(userId, notificationId);
+  }
 }
