@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  UseGuards,
   Headers,
   HttpCode,
   HttpStatus,
@@ -16,7 +15,6 @@ import {
   ApiOkResponse,
   ApiTags,
   ApiCreatedResponse,
-  ApiHeader,
   ApiBearerAuth,
   ApiQuery,
 } from "@nestjs/swagger";
@@ -32,6 +30,7 @@ import { PostsService } from "src/posts/posts.service";
 import { PostsValidator } from "src/posts/posts.validator";
 import { PostDto } from "src/posts/posts.model";
 import { UsersHelper } from "./users.helper.";
+import { PostsHelper } from "src/posts/posts.helper.";
 
 @Controller("users")
 @ApiTags("Users")
@@ -44,8 +43,9 @@ export class UserController {
     private usersHelper: UsersHelper,
     private postsService: PostsService,
     private linkPredictionService: LinkPredictionService,
-    private linkPredictionHelper: LinkPredictionHelper
-  ) {}
+    private linkPredictionHelper: LinkPredictionHelper,
+    private postsHelper: PostsHelper
+  ) { }
 
   @Get("/profileDetails")
   @ApiOkResponse({
@@ -211,13 +211,15 @@ export class UserController {
       );
       const posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
 
-      await this.usersHelper.addCreatedUserToPosts(posts);
+      await this.postsHelper.addParamsToPosts(posts);
 
       return posts;
     } catch (err) {
       const posts = await this.postsService.getNotReplyPosts();
-      await this.usersHelper.addCreatedUserToPosts(posts);
-      return posts.slice(page * size, (page + 1) * size);
+      const slicedPosts = posts.slice(page * size, (page + 1) * size);
+      await this.postsHelper.addParamsToPosts(slicedPosts);
+
+      return slicedPosts;
     }
   }
 }
