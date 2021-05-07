@@ -8,6 +8,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { parseQueryParam } from "src/common/booleanQueryParam";
+import { UsersService } from "src/users/users.service";
 import { NotificationDto } from "./notification.model";
 import { NotificationsService } from "./notification.service";
 
@@ -29,13 +30,20 @@ export class NotificationsController {
     return notifications;
   }
 
-  @Post()
-  @ApiOkResponse({
-    description: "Creates new notification",
+  @Post("/send/:userId")
+  @ApiAcceptedResponse({
+    description: "Notification sent successfully",
     type: [NotificationDto],
   })
-  async createNotifications(@Body() notificationDto: NotificationDto) {
-    return await this.notificationsService.createNotification(notificationDto);
+  @ApiBadRequestResponse({
+    description: "Failed to send notification to user",
+    type: [NotificationDto],
+  })
+  async sendPushNotification(@Body() notificationDto: NotificationDto, @Param("userId") userId: string) {
+    const notification = await this.notificationsService.createNotification(notificationDto);
+    const recipientPushToken = await this.notificationsService.getPushToken(userId);
+    await this.notificationsService.sendPushNotification(recipientPushToken, notification);
+    return notification;
   }
 
   @Put("/pushToken")

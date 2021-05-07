@@ -1,9 +1,18 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+  ServiceUnavailableException,
+} from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { FilterQuery, Model } from "mongoose";
 import { User } from "src/users/user.model";
 import { UsersService } from "src/users/users.service";
 import { Notification, NotificationDto } from "./notification.model";
+import axios from "axios";
+import { EXPO_PUSH_ENDPOINT } from "./consts";
 
 @Injectable()
 export class NotificationsService {
@@ -91,8 +100,25 @@ export class NotificationsService {
       }
     }
   }
-  sendPushNotification(recipientPushToken: string, title: string, body?: string, data?: string) {}
-  getNotificationCounter(userId: string) {}
+  async sendPushNotification(recipientPushToken: string, notification: Notification) {
+    const { title, body, data } = notification;
+    const notificationPayload = { to: recipientPushToken, sound: "default", title, body, data };
 
-  // todo create endpoint in users model to get push token
+    return await axios.post(EXPO_PUSH_ENDPOINT, notificationPayload, {
+      headers: {
+        Accept: "application/json",
+        "Accept-encoding": "gzip, deflate",
+        "Content-Type": "application/json",
+      },
+    });
+  }
+
+  async getPushToken(userId: string) {
+    const user = await this.userService.findUserById(userId);
+    if (!user.pushToken) {
+      throw new ServiceUnavailableException();
+    } else {
+      return user.pushToken;
+    }
+  }
 }
