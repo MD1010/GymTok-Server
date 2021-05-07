@@ -31,13 +31,13 @@ export class NotificationDto extends BasicEntityDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  readBy?: string[];
+  readBy: string[];
 
   @ApiProperty()
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  notifiedUsers?: string[];
+  notifiedUsers: string[];
 }
 
 @Schema()

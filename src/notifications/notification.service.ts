@@ -15,6 +15,9 @@ export class NotificationsService {
       ? await this.notificationsModel.find({ notifiedUsers: userId } as FilterQuery<Notification[]>)
       : this.notificationsModel.find();
   }
+  createNotification(notification: NotificationDto) {
+    return this.notificationsModel.create(notification);
+  }
   async setUserPushToken(userId: string, token: string) {
     const res = await this.usersModel.updateOne({ _id: userId }, { pushToken: token });
     if (res.nModified) {
@@ -24,18 +27,17 @@ export class NotificationsService {
     }
   }
   async deleteAllNotifications(userId: string) {
-    // const res = await this.notificationsModel.deleteMany({ notifiedUsers: userId });
-    // if (res.n) {
-    //   return res;
-    // } else {
-    //   throw new HttpException({}, HttpStatus.NO_CONTENT);
-    // }
+    const res = await this.notificationsModel.updateMany({ notifiedUsers: userId } as any, {
+      $pull: { notifiedUsers: userId } as any,
+    });
+    if (res.n) {
+      return res;
+    } else {
+      throw new HttpException({}, HttpStatus.NO_CONTENT);
+    }
   }
   deleteNotification(userId: string, notificationId: string) {}
   markNotificationAsRead(userId: string, notificationId: string) {}
-  createNotification(notification: NotificationDto) {
-    return this.notificationsModel.create(notification);
-  }
   sendPushNotification(recipientPushToken: string, title: string, body?: string, data?: string) {}
   getNotificationCounter(userId: string) {}
   // todo create endpoint in users model to get push token
