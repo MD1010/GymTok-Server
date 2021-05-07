@@ -12,7 +12,7 @@ export class NotificationsService {
     @InjectModel(User.name) private readonly usersModel: Model<User>,
     private readonly userService: UsersService
   ) {}
-  async getUserNotifications(userId: string, isRead: boolean) {
+  async getUserNotifications(userId: string, isRead?: boolean) {
     if (!userId) {
       return await this.notificationsModel.find();
     }
@@ -23,7 +23,7 @@ export class NotificationsService {
       return userNotifications;
     }
     return userNotifications.filter((notification) =>
-      isRead ? notification.readBy?.includes(userId as any) : !notification.readBy?.includes(userId as any)
+      isRead ? notification?.readBy?.includes(userId as any) : !notification?.readBy?.includes(userId as any)
     );
   }
   createNotification(notification: NotificationDto) {
@@ -54,8 +54,10 @@ export class NotificationsService {
   }
   async deleteUserNotification(userId: string, notificationId: string) {
     // remove the user from the notifiers array
-    const user = await this.userService.findUserById(userId);
-    if (!user) {
+    const userNotifications = await this.getUserNotifications(userId);
+    const isUserNotification = userNotifications.find((x) => x._id == notificationId);
+
+    if (!userNotifications.length || !isUserNotification) {
       throw new HttpException({}, HttpStatus.NO_CONTENT);
     } else {
       const res = await this.notificationsModel.updateOne(
@@ -71,8 +73,11 @@ export class NotificationsService {
     }
   }
   async markNotificationAsRead(userId: string, notificationId: string) {
-    const user = await this.userService.findUserById(userId);
-    if (!user) {
+    const userNotifications = await this.getUserNotifications(userId);
+    const userNotification = userNotifications.find((x) => x._id == notificationId);
+    const isNotificationRead = userNotification?.readBy?.includes(userId as any);
+
+    if (!userNotifications.length || !userNotification || isNotificationRead) {
       throw new BadRequestException("Failed to mark notification as read");
     } else {
       const res = await this.notificationsModel.updateOne(
