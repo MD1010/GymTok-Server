@@ -21,6 +21,7 @@ import { UsersHelper } from "src/users/users.helper.";
 import { FilesService } from "../files/files.service";
 import { LinkPredictionController } from "../linkPrediction/linkPrediction.controller";
 import { UsersValidator } from "../users/users.validator";
+import { PostsHelper } from "./posts.helper.";
 import { PostDto } from "./posts.model";
 import { PostsParser } from "./posts.parser";
 import { PostsService } from "./posts.service";
@@ -38,8 +39,9 @@ export class PostsController {
     private postsValidator: PostsValidator,
     private filesService: FilesService,
     private hashtagsService: HashtagsService,
-    private linkPredictionController: LinkPredictionController
-  ) {}
+    private linkPredictionController: LinkPredictionController,
+    private postsHelper: PostsHelper
+  ) { }
 
   @Get()
   @ApiOkResponse({
@@ -63,8 +65,8 @@ export class PostsController {
       +size,
       userId
     );
-    await this.usersHelper.addCreatedUserToPosts(posts);
-    await this.hashtagsHelper.addHashtagsToPosts(posts);
+
+    await this.postsHelper.addParamsToPosts(posts);
 
     return posts;
   }
