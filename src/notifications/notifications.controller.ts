@@ -12,7 +12,12 @@ import {
 } from "@nestjs/swagger";
 import { NotificationDto } from "./notification.model";
 import { NotificationsService } from "./notification.service";
-
+import { Transform } from "class-transformer";
+import { isBoolean } from "class-validator";
+import { parseQueryParam } from "src/common/booleanQueryParam";
+// export function ToBoolean() {
+//   return Transform((v) => ["1", 1, "true", true].includes(v));
+// }
 @Controller("notifications")
 @ApiTags("Notifications")
 export class NotificationsController {
@@ -25,8 +30,9 @@ export class NotificationsController {
     type: [NotificationDto],
   })
   @ApiQuery({ name: "uid", type: String, required: false })
-  async getAllnotifications(@Query("uid") userId) {
-    const notifications = await this.notificationsService.getUserNotifications(userId);
+  @ApiQuery({ name: "isRead", type: Boolean, required: false })
+  async getAllnotifications(@Query("uid") userId, @Query("isRead") isRead) {
+    const notifications = await this.notificationsService.getUserNotifications(userId, parseQueryParam(isRead));
     return notifications;
   }
 
