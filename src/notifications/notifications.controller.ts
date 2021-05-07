@@ -1,23 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
 import {
   ApiAcceptedResponse,
   ApiBadRequestResponse,
-  ApiCreatedResponse,
   ApiNoContentResponse,
-  ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
+import { parseQueryParam } from "src/common/booleanQueryParam";
 import { NotificationDto } from "./notification.model";
 import { NotificationsService } from "./notification.service";
-import { Transform } from "class-transformer";
-import { isBoolean } from "class-validator";
-import { parseQueryParam } from "src/common/booleanQueryParam";
-// export function ToBoolean() {
-//   return Transform((v) => ["1", 1, "true", true].includes(v));
-// }
+
 @Controller("notifications")
 @ApiTags("Notifications")
 export class NotificationsController {

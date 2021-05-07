@@ -12,7 +12,6 @@ export class NotificationsService {
     @InjectModel(User.name) private readonly usersModel: Model<User>,
     private userService: UsersService
   ) {}
-  // todo add readby notifications
   async getUserNotifications(userId: string, isRead: boolean) {
     if (!userId) {
       return await this.notificationsModel.find();
@@ -20,13 +19,13 @@ export class NotificationsService {
     const userNotifications = await this.notificationsModel.find({ notifiedUsers: userId } as FilterQuery<
       Notification[]
     >);
-
-    if (isRead !== undefined) {
-      const readByUser = userNotifications.filter((notification) =>
-        isRead ? notification.readBy?.includes(userId as any) : !notification.readBy?.includes(userId as any)
-      );
-      return readByUser;
-    } else return userNotifications;
+    console.log(isRead);
+    if (isRead === undefined) {
+      return userNotifications;
+    }
+    return userNotifications.filter((notification) =>
+      isRead ? notification.readBy?.includes(userId as any) : !notification.readBy?.includes(userId as any)
+    );
   }
   createNotification(notification: NotificationDto) {
     return this.notificationsModel.create(notification);
