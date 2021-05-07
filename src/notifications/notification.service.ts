@@ -10,8 +10,9 @@ export class NotificationsService {
   constructor(
     @InjectModel(Notification.name) private readonly notificationsModel: Model<Notification>,
     @InjectModel(User.name) private readonly usersModel: Model<User>,
-    private userService: UsersService
+    private readonly userService: UsersService
   ) {}
+  // todo handle date
   async getUserNotifications(userId: string, isRead: boolean) {
     if (!userId) {
       return await this.notificationsModel.find();
@@ -19,7 +20,6 @@ export class NotificationsService {
     const userNotifications = await this.notificationsModel.find({ notifiedUsers: userId } as FilterQuery<
       Notification[]
     >);
-    console.log(isRead);
     if (isRead === undefined) {
       return userNotifications;
     }
@@ -53,7 +53,23 @@ export class NotificationsService {
       }
     }
   }
-  deleteNotification(userId: string, notificationId: string) {}
+  async deleteUserNotification(userId: string, notificationId: string) {
+    // remove the user from the notifiers array
+    const user = await this.userService.findUserById(userId);
+    if (!user) {
+      throw new HttpException({}, HttpStatus.NO_CONTENT);
+    } else {
+      const res = await this.notificationsModel.updateOne(
+        { _id: notificationId },
+        { $pull: { notifiedUsers: userId as any } }
+      );
+      if (res.n) {
+        return res;
+      } else {
+        throw new HttpException({}, HttpStatus.NO_CONTENT);
+      }
+    }
+  }
   markNotificationAsRead(userId: string, notificationId: string) {}
   sendPushNotification(recipientPushToken: string, title: string, body?: string, data?: string) {}
   getNotificationCounter(userId: string) {}

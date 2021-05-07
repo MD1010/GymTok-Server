@@ -64,4 +64,17 @@ export class NotificationsController {
   async deleteUserNotifications(@Param("userId") userId: string) {
     return await this.notificationsService.deleteAllNotifications(userId);
   }
+
+  @Delete("/:notificationId/:userId")
+  @ApiAcceptedResponse({
+    description: "Notification deleted successfully",
+    type: [NotificationDto],
+  })
+  @ApiNoContentResponse({
+    description: "Failed to delete notification",
+    type: [NotificationDto],
+  })
+  async deleteUserNotification(@Param("notificationId") notificationId: string, @Param("userId") userId: string) {
+    return await this.notificationsService.deleteUserNotification(userId, notificationId);
+  }
 }

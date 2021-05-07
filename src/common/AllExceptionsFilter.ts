@@ -12,8 +12,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(status).json({
       statusCode: status,
       path: request.url,
-      name: exception.name || "Error",
-      message: exception.response.message || exception.message || exception,
+      name: exception?.name || "Error",
+      message: exception?.response?.message || exception?.message || exception,
     });
   }
 }
