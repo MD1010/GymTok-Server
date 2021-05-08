@@ -38,7 +38,7 @@ export class NotificationsController {
     const { notifiedUsers } = notificationDto;
     const notification = await this.notificationsService.createNotification(notificationDto);
     const recipientPushTokens = await this.notificationsService.getPushTokens(notifiedUsers);
-    await this.notificationsService.sendPushNotification(recipientPushTokens, notificationDto, notification);
+    await this.notificationsService.sendPushNotification(recipientPushTokens, notification);
     return notification;
   }
 
@@ -70,15 +70,15 @@ export class NotificationsController {
     return await this.notificationsService.deleteAllNotifications(userId);
   }
 
-  @Get("/:notificationId/:userId")
-  @ApiOkResponse({
-    status: 200,
-    description: "Gets specific notification received by user",
-    type: [NotificationDto],
-  })
-  async getNotification(@Param("notificationId") notificationId: string, @Param("userId") userId: string) {
-    return await this.notificationsService.getNotification(notificationId, userId);
-  }
+  // @Get("/:notificationId/:userId")
+  // @ApiOkResponse({
+  //   status: 200,
+  //   description: "Gets specific notification received by user",
+  //   type: [NotificationDto],
+  // })
+  // async getNotification(@Param("notificationId") notificationId: string, @Param("userId") userId: string) {
+  //   return await this.notificationsService.getNotification(notificationId, userId);
+  // }
 
   @Delete("/:notificationId/:userId")
   @ApiAcceptedResponse({

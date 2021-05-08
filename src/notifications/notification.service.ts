@@ -99,9 +99,8 @@ export class NotificationsService {
       }
     }
   }
-  async sendPushNotification(recipientPushTokens: {}, notificationDto: NotificationDto, notification: Notification) {
-    const { title, body, data } = notificationDto;
-    const { date, _id } = notification;
+  async sendPushNotification(recipientPushTokens: {}, notification: Notification) {
+    const { date, _id, title, body, data } = notification;
     let notificationPayload = [];
     Object.keys(recipientPushTokens).map((key) => {
       const recipient = recipientPushTokens[key];
