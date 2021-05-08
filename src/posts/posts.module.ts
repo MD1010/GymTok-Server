@@ -13,7 +13,8 @@ import { PostsHelper } from "./posts.helper.";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), FilesModule, HashtagsModule,
+    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), FilesModule,
+    forwardRef(() => HashtagsModule),
     forwardRef(() => UserModule),
     forwardRef(() => LinkPredictionModule)
   ],
