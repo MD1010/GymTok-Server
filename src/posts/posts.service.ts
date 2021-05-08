@@ -70,6 +70,10 @@ export class PostsService {
     return this.basicPostsService.findByIds(postsIds);
   }
 
+  async addHashtagsToPost(postId: string, hashtagsIds: Types.ObjectId[]) {
+    return this.postsModel.updateOne({ _id: postId }, { $addToSet: { hashtags: { $each: hashtagsIds } } });
+  }
+
   async removeLike(postId: string, userId: string) {
     return this.postsModel.updateOne({ _id: postId }, { $pull: { likes: Types.ObjectId(userId) } });
   }
