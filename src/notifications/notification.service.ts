@@ -21,22 +21,28 @@ export class NotificationsService {
     @InjectModel(User.name) private readonly usersModel: Model<User>,
     private readonly userService: UsersService
   ) {}
-  async getUserNotifications(userId: string, isRead?: boolean) {
+  async getUserNotifications(userId: string) {
     if (!userId) {
       return await this.notificationsModel.find();
     }
     const userNotifications = await this.notificationsModel.find({ notifiedUsers: userId } as FilterQuery<
       Notification[]
     >);
-    if (isRead === undefined) {
-      return userNotifications;
-    }
-    return userNotifications.filter((notification) =>
-      isRead ? notification?.readBy?.includes(userId as any) : !notification?.readBy?.includes(userId as any)
-    );
+    return userNotifications.map((notification) => {
+      const { date, data, title, body, _id } = notification;
+      const notificationResponse: any = { date, data, title, body, _id };
+      notificationResponse.isRead = notification.readBy.includes(userId as any);
+      return notificationResponse;
+    });
+    // if (isRead === undefined) {
+    //   return userNotifications;
+    // }
+    // return userNotifications.filter((notification) =>
+    //   isRead ? notification?.readBy?.includes(userId as any) : !notification?.readBy?.includes(userId as any)
+    // );
   }
-  createNotification(notification: NotificationDto) {
-    return this.notificationsModel.create(notification);
+  async createNotification(notification: NotificationDto) {
+    return await this.notificationsModel.create(notification);
   }
   async setUserPushToken(userId: string, token: string) {
     const res = await this.usersModel.updateOne({ _id: userId }, { pushToken: token });
@@ -84,7 +90,7 @@ export class NotificationsService {
   async markNotificationAsRead(userId: string, notificationId: string) {
     const userNotifications = await this.getUserNotifications(userId);
     const userNotification = userNotifications.find((x) => x._id == notificationId);
-    const isNotificationRead = userNotification?.readBy?.includes(userId as any);
+    const isNotificationRead = userNotification?.isRead;
 
     if (!userNotifications.length || !userNotification || isNotificationRead) {
       throw new BadRequestException("Failed to mark notification as read");
@@ -100,9 +106,15 @@ export class NotificationsService {
       }
     }
   }
-  async sendPushNotification(recipientPushToken: string, notification: Notification) {
+  async sendPushNotification(recipientPushTokens: {}, notification: NotificationDto) {
     const { title, body, data } = notification;
-    const notificationPayload = { to: recipientPushToken, sound: "default", title, body, data };
+    let notificationPayload = [];
+    Object.keys(recipientPushTokens).map((key) => {
+      const recipient = recipientPushTokens[key];
+      if (recipient) {
+        notificationPayload.push({ to: recipient, sound: "default", title, body, data });
+      }
+    });
 
     return await axios.post(EXPO_PUSH_ENDPOINT, notificationPayload, {
       headers: {
@@ -113,12 +125,14 @@ export class NotificationsService {
     });
   }
 
-  async getPushToken(userId: string) {
-    const user = await this.userService.findUserById(userId);
-    if (!user.pushToken) {
-      throw new ServiceUnavailableException();
-    } else {
-      return user.pushToken;
-    }
+  async getPushTokens(notifiedUsers: string[]) {
+    const pushTokensRes = {};
+    await Promise.all(
+      notifiedUsers.map(async (user) => {
+        const foundUser = await this.userService.findUserById(user);
+        pushTokensRes[user] = foundUser?.pushToken;
+      })
+    );
+    return pushTokensRes;
   }
 }

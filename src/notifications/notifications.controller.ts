@@ -8,7 +8,6 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { parseQueryParam } from "src/common/booleanQueryParam";
-import { UsersService } from "src/users/users.service";
 import { NotificationDto } from "./notification.model";
 import { NotificationsService } from "./notification.service";
 
@@ -24,25 +23,22 @@ export class NotificationsController {
     type: [NotificationDto],
   })
   @ApiQuery({ name: "uid", type: String, required: false })
-  @ApiQuery({ name: "isRead", type: Boolean, required: false })
-  async getAllnotifications(@Query("uid") userId, @Query("isRead") isRead) {
-    const notifications = await this.notificationsService.getUserNotifications(userId, parseQueryParam(isRead));
+  // @ApiQuery({ name: "isRead", type: Boolean, required: false })
+  async getAllnotifications(@Query("uid") userId) {
+    const notifications = await this.notificationsService.getUserNotifications(userId);
     return notifications;
   }
 
-  @Post("/send/:userId")
+  @Post("/send")
   @ApiAcceptedResponse({
     description: "Notification sent successfully",
     type: [NotificationDto],
   })
-  @ApiBadRequestResponse({
-    description: "Failed to send notification to user",
-    type: [NotificationDto],
-  })
-  async sendPushNotification(@Body() notificationDto: NotificationDto, @Param("userId") userId: string) {
+  async sendPushNotifications(@Body() notificationDto: NotificationDto) {
+    const { notifiedUsers } = notificationDto;
     const notification = await this.notificationsService.createNotification(notificationDto);
-    const recipientPushToken = await this.notificationsService.getPushToken(userId);
-    await this.notificationsService.sendPushNotification(recipientPushToken, notification);
+    const recipientPushTokens = await this.notificationsService.getPushTokens(notifiedUsers);
+    await this.notificationsService.sendPushNotification(recipientPushTokens, notificationDto);
     return notification;
   }
 
@@ -88,7 +84,7 @@ export class NotificationsController {
 
   @Put("/:notificationId/:userId")
   @ApiAcceptedResponse({
-    description: "Notification deleted successfully",
+    description: "Notification marked as read successfully",
     type: [NotificationDto],
   })
   @ApiBadRequestResponse({
