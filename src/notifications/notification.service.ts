@@ -99,8 +99,9 @@ export class NotificationsService {
       }
     }
   }
-  async sendPushNotification(recipientPushTokens: {}, notification: NotificationDto, notificationId: string) {
-    const { title, body, data } = notification;
+  async sendPushNotification(recipientPushTokens: {}, notificationDto: NotificationDto, notification: Notification) {
+    const { title, body, data } = notificationDto;
+    const { date, _id } = notification;
     let notificationPayload = [];
     Object.keys(recipientPushTokens).map((key) => {
       const recipient = recipientPushTokens[key];
@@ -111,7 +112,7 @@ export class NotificationsService {
           sound: "default",
           title,
           body,
-          data: { ...data, notificationId },
+          data: { ...data, notificationId: _id, date },
         });
       }
     });
