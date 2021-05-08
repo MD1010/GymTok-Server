@@ -27,11 +27,13 @@ export class PostsService {
     const data = createdBy
       ? this.postsModel.find({
           createdBy,
-          isReply: { $eq: isReply ? isReply : false },
+          // isReply: { $eq: isReply ? isReply : false },
+          isReply: isReply ? { $eq: isReply } : { $exists: true, $ne: null },
           publishDate: { $gte: currentMaxDate ? currentMaxDate : new Date(null) },
         } as FilterQuery<Post>)
       : this.postsModel.find({
-          isReply: { $eq: isReply ? isReply : false },
+          // isReply: { $eq: isReply ? isReply : false },
+          isReply: isReply ? { $eq: isReply } : { $exists: true, $ne: null },
           publishDate: { $gte: currentMaxDate ? currentMaxDate : new Date(null) },
         });
 

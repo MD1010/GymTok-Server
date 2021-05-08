@@ -174,8 +174,9 @@ export class UserController {
 
       const currentPostsIdsPage = allRecommendedPostsIds.slice(page * size, (page + 1) * size);
       const posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
+      let tempPosts = posts.filter((post, i) => post.publishDate > currentMaxDate);
 
-      await this.postsHelper.addParamsToPosts(posts);
+      await this.postsHelper.addParamsToPosts(tempPosts);
 
       return posts;
     } catch (err) {
