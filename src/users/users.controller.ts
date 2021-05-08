@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  UseGuards,
   Headers,
   HttpCode,
   HttpStatus,
@@ -12,7 +11,7 @@ import {
   Delete,
   ParseIntPipe,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiHeader, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
+import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { UserDto } from "./user.model";
@@ -25,6 +24,7 @@ import { PostsService } from "src/posts/posts.service";
 import { PostsValidator } from "src/posts/posts.validator";
 import { PostDto } from "src/posts/posts.model";
 import { UsersHelper } from "./users.helper.";
+import { PostsHelper } from "src/posts/posts.helper.";
 
 @Controller("users")
 @ApiTags("Users")
@@ -37,9 +37,30 @@ export class UserController {
     private usersHelper: UsersHelper,
     private postsService: PostsService,
     private linkPredictionService: LinkPredictionService,
-    private linkPredictionHelper: LinkPredictionHelper
+    private linkPredictionHelper: LinkPredictionHelper,
+    private postsHelper: PostsHelper
   ) {}
 
+  @Get("/profileDetails")
+  @ApiOkResponse({
+    status: 200,
+    description: "Get profile details (num of: challenges, replies, likes)",
+    // type: [UserDto],
+  })
+  async getProfileDetails(@Query("userId") userId: string) {
+    let challengesLenght = await (await this.postsService.getPostsOfUserId(userId, false)).length;
+    let repliesLenght = await (await this.postsService.getPostsOfUserId(userId, true)).length;
+    let postsOfCurrentUser = await this.postsService.getPostsOfUserId(userId);
+    // let totalLikes = 0;
+    // postsOfCurrentUser.forEach((post) => {
+    //   totalLikes += post.likes.length;
+    // });
+    return {
+      numOfChallenges: challengesLenght,
+      numOfReplies: repliesLenght,
+      // numOfLikes: totalLikes,
+    };
+  }
   @Get()
   @ApiOkResponse({
     status: 200,
@@ -136,11 +157,14 @@ export class UserController {
   })
   @ApiQuery({ name: "page", type: Number, required: false })
   @ApiQuery({ name: "size", type: Number, required: false })
+  @ApiQuery({ name: "currentMaxDate", type: Date, required: false })
   async getRecommendPostsByUserId(
     @Param("username") username: string,
     @Query("page", ParseIntPipe) page: number,
-    @Query("size", ParseIntPipe) size: number
+    @Query("size", ParseIntPipe) size: number,
+    @Query("currentMaxDate") currentMaxDate: Date
   ) {
+    console.log("max dateeeeee!!!", currentMaxDate);
     const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(username);
     try {
       const postsAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
@@ -151,13 +175,15 @@ export class UserController {
       const currentPostsIdsPage = allRecommendedPostsIds.slice(page * size, (page + 1) * size);
       const posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
 
-      await this.usersHelper.addCreatedUserToPosts(posts);
+      await this.postsHelper.addParamsToPosts(posts);
 
       return posts;
     } catch (err) {
       const posts = await this.postsService.getNotReplyPosts();
-      await this.usersHelper.addCreatedUserToPosts(posts);
-      return posts.slice(page * size, (page + 1) * size);
+      const slicedPosts = posts.slice(page * size, (page + 1) * size);
+      await this.postsHelper.addParamsToPosts(slicedPosts);
+
+      return slicedPosts;
     }
   }
 }

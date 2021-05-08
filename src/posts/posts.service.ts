@@ -15,8 +15,26 @@ export class PostsService {
     return this.basicPostsService.findAll();
   }
 
-  async findPostsByPaging(pageNumber?: number, pageSize?: number, createdBy?: string) {
-    const data = createdBy ? this.postsModel.find({ createdBy } as FilterQuery<Post>) : this.postsModel.find();
+  async findPostsByPaging(
+    isReply: boolean,
+    pageNumber?: number,
+    pageSize?: number,
+    createdBy?: string,
+    currentMaxDate?: Date
+  ) {
+    console.log(`pageNumber: ${pageNumber} ", pageSize: ${pageSize} `);
+
+    const data = createdBy
+      ? this.postsModel.find({
+          createdBy,
+          isReply: { $eq: isReply ? isReply : false },
+          publishDate: { $gte: currentMaxDate ? currentMaxDate : new Date(null) },
+        } as FilterQuery<Post>)
+      : this.postsModel.find({
+          isReply: { $eq: isReply ? isReply : false },
+          publishDate: { $gte: currentMaxDate ? currentMaxDate : new Date(null) },
+        });
+
     return data
       .skip(pageSize * pageNumber)
       .limit(pageSize)
@@ -29,8 +47,9 @@ export class PostsService {
     return this.basicPostsService.findById(postId);
   }
 
-  async getPostsOfUserId(userId: string) {
-    return this.postsModel.find({ createdBy: userId } as FilterQuery<Post>);
+  async getPostsOfUserId(userId: string, isReply?: boolean) {
+    let query = isReply ? { createdBy: userId, isReply } : { createdBy: userId };
+    return this.postsModel.find(query as FilterQuery<Post>);
   }
 
   async getPostsByIds(postsId: string[]) {

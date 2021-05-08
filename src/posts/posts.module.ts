@@ -9,6 +9,7 @@ import { PostsValidator } from "./posts.validator";
 import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
 import { UserModule } from "src/users/user.module";
 import { HashtagsModule } from "src/Hashtag/hashtags.module";
+import { PostsHelper } from "./posts.helper.";
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { HashtagsModule } from "src/Hashtag/hashtags.module";
     forwardRef(() => LinkPredictionModule)
   ],
   controllers: [PostsController],
-  providers: [PostsService, PostsParser, PostsValidator],
-  exports: [PostsService, PostsValidator]
+  providers: [PostsService, PostsParser, PostsValidator, PostsHelper],
+  exports: [PostsService, PostsValidator, PostsHelper]
 })
 export class PostsModule { }

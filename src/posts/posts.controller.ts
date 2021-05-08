@@ -7,6 +7,7 @@ import { UsersHelper } from "src/users/users.helper.";
 import { FilesService } from "../files/files.service";
 import { LinkPredictionController } from "../linkPrediction/linkPrediction.controller";
 import { UsersValidator } from "../users/users.validator";
+import { PostsHelper } from "./posts.helper.";
 import { PostDto } from "./posts.model";
 import { PostsParser } from "./posts.parser";
 import { PostsService } from "./posts.service";
@@ -26,7 +27,8 @@ export class PostsController {
     private postsValidator: PostsValidator,
     private filesService: FilesService,
     private hashtagsService: HashtagsService,
-    private linkPredictionController: LinkPredictionController
+    private linkPredictionController: LinkPredictionController,
+    private postsHelper: PostsHelper
   ) {}
 
   @Get()
@@ -38,10 +40,19 @@ export class PostsController {
   @ApiQuery({ name: "page", type: Number, required: false })
   @ApiQuery({ name: "size", type: Number, required: false })
   @ApiQuery({ name: "uid", type: String, required: false })
-  async getAllPosts(@Query("page") page, @Query("size") size, @Query("uid") userId) {
-    const posts = await this.postsService.findPostsByPaging(+page, +size, userId);
-    await this.usersHelper.addCreatedUserToPosts(posts);
-    await this.hashtagsHelper.addHashtagsToPosts(posts);
+  @ApiQuery({ name: "isReply", type: Boolean, required: true })
+  @ApiQuery({ name: "currentMaxDate", type: Date, required: false })
+  async getAllPosts(
+    @Query("isReply") isReply,
+    @Query("page") page,
+    @Query("size") size,
+    @Query("uid") userId,
+    @Query("currentMaxDate") currentMaxDate
+  ) {
+    const posts = await this.postsService.findPostsByPaging(isReply, +page, +size, userId, currentMaxDate);
+    if (posts.length > 0) {
+      await this.postsHelper.addParamsToPosts(posts);
+    }
 
     return posts;
   }
