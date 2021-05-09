@@ -36,7 +36,7 @@ export class NotificationsController {
   })
   async sendPushNotifications(@Body() notificationDto: NotificationDto) {
     const { notifiedUsers } = notificationDto;
-    const notification = await this.notificationsService.createNotification(notificationDto);
+    const notification = await await this.notificationsService.createNotification(notificationDto);
     const recipientPushTokens = await this.notificationsService.getPushTokens(notifiedUsers);
     await this.notificationsService.sendPushNotification(recipientPushTokens, notification);
     return notification;

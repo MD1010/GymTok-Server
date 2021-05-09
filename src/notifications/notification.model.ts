@@ -17,6 +17,10 @@ export class NotificationDto extends BasicEntityDto {
 
   @ApiProperty()
   @IsString()
+  sender: string;
+
+  @ApiProperty()
+  @IsString()
   body: string;
 
   @ApiResponseProperty()
@@ -47,6 +51,9 @@ export class Notification extends mongoose.Document {
 
   @Prop()
   title: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+  sender: User;
 
   @Prop()
   body: string;

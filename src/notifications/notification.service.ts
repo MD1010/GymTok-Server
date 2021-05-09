@@ -23,18 +23,18 @@ export class NotificationsService {
     private readonly userService: UsersService
   ) {}
   async getUserNotifications(userId: string) {
-    if (!userId) {
-      return await this.notificationsModel.find();
-    }
-    const userNotifications = await this.notificationsModel.find({ notifiedUsers: userId } as FilterQuery<
-      Notification[]
-    >);
+    const userNotifications = await this.notificationsModel
+      .find(!!userId ? { notifiedUsers: userId } : ({} as FilterQuery<Notification[]>))
+      .populate("sender", { _id: 1, username: 1, fullName: 1, email: 1, image: 1 })
+      .exec();
     return userNotifications.map((notification) => {
       return normalizeNotificationObject(notification, userId);
     });
   }
   async createNotification(notification: NotificationDto) {
-    return await this.notificationsModel.create(notification);
+    return await (await this.notificationsModel.create(notification))
+      .populate("sender", { _id: 1, username: 1, fullName: 1, email: 1, image: 1 } as any)
+      .execPopulate();
   }
   async setUserPushToken(userId: string, token: string) {
     return await this.usersModel.updateOne({ _id: userId }, { pushToken: token });
@@ -100,18 +100,17 @@ export class NotificationsService {
     }
   }
   async sendPushNotification(recipientPushTokens: {}, notification: Notification) {
-    const { date, _id, title, body, data } = notification;
+    const { date, _id, title, body, data, sender } = notification;
     let notificationPayload = [];
     Object.keys(recipientPushTokens).map((key) => {
       const recipient = recipientPushTokens[key];
-
       if (recipient) {
         notificationPayload.push({
           to: recipient,
           sound: "default",
           title,
           body,
-          data: { ...data, _id, date },
+          data: { ...data, _id, date, sender: sender.toJSON() },
         });
       }
     });
