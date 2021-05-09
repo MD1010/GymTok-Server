@@ -63,7 +63,7 @@ export class Post extends mongoose.Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
   createdBy: User;
 
-  @Prop({ default: new Date() })
+  @Prop({ default: Date.now })
   publishDate: Date;
 
   @Prop()

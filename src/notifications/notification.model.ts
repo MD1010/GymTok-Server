@@ -42,7 +42,7 @@ export class NotificationDto extends BasicEntityDto {
 
 @Schema()
 export class Notification extends mongoose.Document {
-  @Prop({ default: new Date() })
+  @Prop({ type: Date, default: Date.now })
   date: Date;
 
   @Prop()

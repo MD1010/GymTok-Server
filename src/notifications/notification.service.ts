@@ -111,7 +111,7 @@ export class NotificationsService {
           sound: "default",
           title,
           body,
-          data: { ...data, notificationId: _id, date },
+          data: { ...data, _id, date },
         });
       }
     });
