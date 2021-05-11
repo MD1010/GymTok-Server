@@ -63,9 +63,9 @@ export class NotificationsService {
   async deleteUserNotification(userId: string, notificationId: string) {
     // remove the user from the notifiers array
     const userNotifications = await this.getUserNotifications(userId);
-    const isUserNotification = userNotifications.find((x) => x._id == notificationId);
+    const userNotification = userNotifications.find((x) => x._id == notificationId);
 
-    if (!userNotifications.length || !isUserNotification) {
+    if (!userNotifications.length || !userNotification) {
       throw new HttpException({}, HttpStatus.NO_CONTENT);
     } else {
       const res = await this.notificationsModel.updateOne(
@@ -74,7 +74,7 @@ export class NotificationsService {
       );
 
       if (res.n) {
-        return res;
+        return userNotification;
       } else {
         throw new HttpException({}, HttpStatus.NO_CONTENT);
       }
@@ -93,7 +93,7 @@ export class NotificationsService {
         { $push: { readBy: userId as any } }
       );
       if (res.n) {
-        return res;
+        return userNotification;
       } else {
         throw new BadRequestException("Failed to mark notification as read");
       }
