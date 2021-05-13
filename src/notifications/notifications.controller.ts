@@ -7,7 +7,6 @@ import {
   ApiQuery,
   ApiTags,
 } from "@nestjs/swagger";
-import { parseQueryParam } from "src/common/booleanQueryParam";
 import { NotificationDto } from "./notification.model";
 import { NotificationsService } from "./notification.service";
 
@@ -69,16 +68,6 @@ export class NotificationsController {
   async deleteUserNotifications(@Param("userId") userId: string) {
     return await this.notificationsService.deleteAllNotifications(userId);
   }
-
-  // @Get("/:notificationId/:userId")
-  // @ApiOkResponse({
-  //   status: 200,
-  //   description: "Gets specific notification received by user",
-  //   type: [NotificationDto],
-  // })
-  // async getNotification(@Param("notificationId") notificationId: string, @Param("userId") userId: string) {
-  //   return await this.notificationsService.getNotification(notificationId, userId);
-  // }
 
   @Delete("/:notificationId/:userId")
   @ApiAcceptedResponse({

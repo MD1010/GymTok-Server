@@ -1,18 +1,11 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-  ServiceUnavailableException,
-} from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
+import axios from "axios";
 import { FilterQuery, Model } from "mongoose";
 import { User } from "src/users/user.model";
 import { UsersService } from "src/users/users.service";
-import { Notification, NotificationDto } from "./notification.model";
-import axios from "axios";
 import { EXPO_PUSH_ENDPOINT } from "./consts";
+import { Notification, NotificationDto } from "./notification.model";
 import { normalizeNotificationObject } from "./notification.parser";
 
 @Injectable()

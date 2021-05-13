@@ -1,8 +1,6 @@
-import { Optional } from "@nestjs/common";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsArray, IsDate, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsDate, IsOptional, IsString } from "class-validator";
 import * as mongoose from "mongoose";
 import { User } from "src/users/user.model";
 import { BasicEntityDto } from "../common/basicEntity.dto";
