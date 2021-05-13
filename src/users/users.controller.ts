@@ -3,7 +3,6 @@ import {
   Get,
   Post,
   Body,
-  UseGuards,
   Headers,
   HttpCode,
   HttpStatus,
@@ -12,14 +11,7 @@ import {
   Delete,
   ParseIntPipe,
 } from "@nestjs/common";
-import {
-  ApiOkResponse,
-  ApiTags,
-  ApiCreatedResponse,
-  ApiHeader,
-  ApiBearerAuth,
-  ApiQuery,
-} from "@nestjs/swagger";
+import { ApiOkResponse, ApiTags, ApiCreatedResponse, ApiBearerAuth, ApiQuery } from "@nestjs/swagger";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { UserDto } from "./user.model";
@@ -32,6 +24,7 @@ import { PostsService } from "src/posts/posts.service";
 import { PostsValidator } from "src/posts/posts.validator";
 import { PostDto } from "src/posts/posts.model";
 import { UsersHelper } from "./users.helper.";
+import { PostsHelper } from "src/posts/posts.helper.";
 
 @Controller("users")
 @ApiTags("Users")
@@ -44,7 +37,8 @@ export class UserController {
     private usersHelper: UsersHelper,
     private postsService: PostsService,
     private linkPredictionService: LinkPredictionService,
-    private linkPredictionHelper: LinkPredictionHelper
+    private linkPredictionHelper: LinkPredictionHelper,
+    private postsHelper: PostsHelper
   ) {}
 
   @Get("/profileDetails")
@@ -54,12 +48,8 @@ export class UserController {
     // type: [UserDto],
   })
   async getProfileDetails(@Query("userId") userId: string) {
-    let challengesLenght = await (
-      await this.postsService.getPostsOfUserId(userId, false)
-    ).length;
-    let repliesLenght = await (
-      await this.postsService.getPostsOfUserId(userId, true)
-    ).length;
+    let challengesLenght = await (await this.postsService.getPostsOfUserId(userId, false)).length;
+    let repliesLenght = await (await this.postsService.getPostsOfUserId(userId, true)).length;
     let postsOfCurrentUser = await this.postsService.getPostsOfUserId(userId);
     // let totalLikes = 0;
     // postsOfCurrentUser.forEach((post) => {
@@ -77,10 +67,7 @@ export class UserController {
     description: "Get all users",
     type: [UserDto],
   })
-  async getAllUsers(
-    @Query("searchTerm") searchTerm: string,
-    @Query("excludedIds") excludedIds: string[]
-  ) {
+  async getAllUsers(@Query("searchTerm") searchTerm: string, @Query("excludedIds") excludedIds: string[]) {
     return this.usersService.findAllUsers(searchTerm, excludedIds);
   }
 
@@ -92,9 +79,7 @@ export class UserController {
     type: [CreateUserDto],
   })
   async register(@Body() createUserDto: CreateUserDto) {
-    await this.usersValidator.throwErrorIfUserNameIsExist(
-      createUserDto.username
-    );
+    await this.usersValidator.throwErrorIfUserNameIsExist(createUserDto.username);
     return await this.usersService.create(createUserDto);
   }
 
@@ -117,9 +102,7 @@ export class UserController {
     type: [LoginUserDto],
   })
   async login(@Body() loginUserDto: LoginUserDto) {
-    await this.usersValidator.throwErrorIfUserNameIsNotExist(
-      loginUserDto.username
-    );
+    await this.usersValidator.throwErrorIfUserNameIsNotExist(loginUserDto.username);
     return await this.usersService.login(loginUserDto);
   }
 
@@ -138,16 +121,9 @@ export class UserController {
     description: "User like challenge",
     type: [UserDto],
   })
-  async likePost(
-    @Param("userId") userId: string,
-    @Param("postId") postId: string
-  ) {
-    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(
-      userId
-    );
-    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(
-      postId
-    );
+  async likePost(@Param("userId") userId: string, @Param("postId") postId: string) {
+    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
 
     if (!post.likes.includes(user._id)) {
       await this.postsService.addLike(postId, userId);
@@ -162,16 +138,9 @@ export class UserController {
     description: "User remove like for challenge",
     type: [UserDto],
   })
-  async dislikePost(
-    @Param("userId") userId: string,
-    @Param("postId") postId: string
-  ) {
-    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(
-      userId
-    );
-    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(
-      postId
-    );
+  async dislikePost(@Param("userId") userId: string, @Param("postId") postId: string) {
+    const user = await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(userId);
+    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
 
     if (post.likes.includes(user._id)) {
       await this.postsService.removeLike(postId, userId);
@@ -183,41 +152,39 @@ export class UserController {
   @Get(":username/recommendedPosts")
   @ApiOkResponse({
     status: 200,
-    description:
-      "Adds to the challenge id to the recommended challenges of the user ids",
+    description: "Adds to the challenge id to the recommended challenges of the user ids",
     type: [PostDto],
   })
   @ApiQuery({ name: "page", type: Number, required: false })
   @ApiQuery({ name: "size", type: Number, required: false })
+  @ApiQuery({ name: "currentMaxDate", type: Date, required: false })
   async getRecommendPostsByUserId(
     @Param("username") username: string,
     @Query("page", ParseIntPipe) page: number,
-    @Query("size", ParseIntPipe) size: number
+    @Query("size", ParseIntPipe) size: number,
+    @Query("currentMaxDate") currentMaxDate: Date
   ) {
-    const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(
-      username
-    );
+    console.log("max dateeeeee!!!", currentMaxDate);
+    const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(username);
     try {
       const postsAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
         user._id
       );
-      const allRecommendedPostsIds = this.linkPredictionHelper.getMostRecommendedPosts(
-        postsAndTheirRecommendPercent
-      );
+      const allRecommendedPostsIds = this.linkPredictionHelper.getMostRecommendedPosts(postsAndTheirRecommendPercent);
 
-      const currentPostsIdsPage = allRecommendedPostsIds.slice(
-        page * size,
-        (page + 1) * size
-      );
+      const currentPostsIdsPage = allRecommendedPostsIds.slice(page * size, (page + 1) * size);
       const posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
+      let tempPosts = posts.filter((post, i) => post.publishDate > currentMaxDate);
 
-      await this.usersHelper.addCreatedUserToPosts(posts);
+      await this.postsHelper.addParamsToPosts(tempPosts);
 
       return posts;
     } catch (err) {
       const posts = await this.postsService.getNotReplyPosts();
-      await this.usersHelper.addCreatedUserToPosts(posts);
-      return posts.slice(page * size, (page + 1) * size);
+      const slicedPosts = posts.slice(page * size, (page + 1) * size);
+      await this.postsHelper.addParamsToPosts(slicedPosts);
+
+      return slicedPosts;
     }
   }
 }

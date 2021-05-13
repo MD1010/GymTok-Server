@@ -7,10 +7,13 @@ import { UsersHelper } from "src/users/users.helper.";
 import { FilesService } from "../files/files.service";
 import { LinkPredictionController } from "../linkPrediction/linkPrediction.controller";
 import { UsersValidator } from "../users/users.validator";
+import { PostsHelper } from "./posts.helper.";
 import { PostDto } from "./posts.model";
 import { PostsParser } from "./posts.parser";
 import { PostsService } from "./posts.service";
 import { PostsValidator } from "./posts.validator";
+import * as _ from "lodash";
+import { Types } from "mongoose";
 
 @Controller("posts")
 @ApiTags("Posts")
@@ -24,7 +27,8 @@ export class PostsController {
     private postsValidator: PostsValidator,
     private filesService: FilesService,
     private hashtagsService: HashtagsService,
-    private linkPredictionController: LinkPredictionController
+    private linkPredictionController: LinkPredictionController,
+    private postsHelper: PostsHelper
   ) {}
 
   @Get()
@@ -37,10 +41,18 @@ export class PostsController {
   @ApiQuery({ name: "size", type: Number, required: false })
   @ApiQuery({ name: "uid", type: String, required: false })
   @ApiQuery({ name: "isReply", type: Boolean, required: true })
-  async getAllPosts(@Query("isReply") isReply, @Query("page") page, @Query("size") size, @Query("uid") userId) {
-    const posts = await this.postsService.findPostsByPaging(isReply, +page, +size, userId);
-    await this.usersHelper.addCreatedUserToPosts(posts);
-    await this.hashtagsHelper.addHashtagsToPosts(posts);
+  @ApiQuery({ name: "currentMaxDate", type: Date, required: false })
+  async getAllPosts(
+    @Query("isReply") isReply,
+    @Query("page") page,
+    @Query("size") size,
+    @Query("uid") userId,
+    @Query("currentMaxDate") currentMaxDate
+  ) {
+    const posts = await this.postsService.findPostsByPaging(isReply, +page, +size, userId, currentMaxDate);
+    if (posts.length > 0) {
+      await this.postsHelper.addParamsToPosts(posts);
+    }
 
     return posts;
   }
@@ -117,6 +129,23 @@ export class PostsController {
       console.log(error);
       throw error;
     }
+  }
+
+  @Post(":postId/hashtags")
+  @ApiOkResponse({
+    status: 200,
+    description: "Add hashtag to post",
+    type: [PostDto],
+  })
+  async addHashtagToPost(@Param("postId") postId: string, @Body() hashtags: string[]) {
+    const post = await this.postsValidator.getOrThrowErrorIfIdIsNotNotExist(postId);
+    const hashtagsIds = await this.hashtagsService.getOrCreateHashtags(hashtags);
+    await this.postsService.addHashtagsToPost(
+      postId,
+      hashtagsIds.map((hashtagId) => Types.ObjectId(hashtagId))
+    );
+    post.hashtags = _.uniq([...post.hashtags, ...hashtagsIds].map((hashtagId) => hashtagId.toString()));
+    return post;
   }
 
   private async validateAndAddNewPost(filesToUpload: any, formDataFields: any, isReply: boolean) {

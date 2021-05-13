@@ -9,15 +9,17 @@ import { PostsValidator } from "./posts.validator";
 import { LinkPredictionModule } from "../linkPrediction/linkPrediction.module";
 import { UserModule } from "src/users/user.module";
 import { HashtagsModule } from "src/Hashtag/hashtags.module";
+import { PostsHelper } from "./posts.helper.";
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), FilesModule, HashtagsModule,
+    MongooseModule.forFeature([{ name: Post.name, schema: PostSchema }]), FilesModule,
+    forwardRef(() => HashtagsModule),
     forwardRef(() => UserModule),
     forwardRef(() => LinkPredictionModule)
   ],
   controllers: [PostsController],
-  providers: [PostsService, PostsParser, PostsValidator],
-  exports: [PostsService, PostsValidator]
+  providers: [PostsService, PostsParser, PostsValidator, PostsHelper],
+  exports: [PostsService, PostsValidator, PostsHelper]
 })
 export class PostsModule { }
