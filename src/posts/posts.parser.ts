@@ -5,11 +5,15 @@ import { PostDto } from "./posts.model";
 export class PostsParser {
   parsePostFileDataToPost(formDataFields: any, isReply: boolean): PostDto {
     const parsedPost = {
-      description: formDataFields.description,
+      description: JSON.parse(formDataFields.description),
       createdBy: formDataFields.createdBy,
-      taggedUsers: formDataFields.taggedUsers && formDataFields.taggedUsers !== "undefined" ? JSON.parse(formDataFields.taggedUsers) : [],
+      taggedUsers:
+        formDataFields.taggedUsers && formDataFields.taggedUsers !== "undefined"
+          ? JSON.parse(formDataFields.taggedUsers)
+          : [],
       likes: [],
-      hashtags: formDataFields.hashtags && formDataFields.hashtags !== "undefined" ? JSON.parse(formDataFields.hashtags) : [],
+      hashtags:
+        formDataFields.hashtags && formDataFields.hashtags !== "undefined" ? JSON.parse(formDataFields.hashtags) : [],
       isReply,
       videoURI: "",
       gif: "",
