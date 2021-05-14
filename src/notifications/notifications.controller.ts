@@ -68,6 +68,21 @@ export class NotificationsController {
     return await this.notificationsService.setUserPushToken(userId, token);
   }
 
+  @Delete("/pushToken")
+  @ApiOkResponse({
+    description: "Push token was removed successfully",
+    type: [NotificationDto],
+  })
+  @ApiBadRequestResponse({
+    description: "Failed to removed push token from this user",
+    type: [NotificationDto],
+  })
+  async removeUserPushToken(@Body() pushTokenDto: { userId: string; token: string }) {
+    const { userId, token } = pushTokenDto;
+    console.log("removing push token from user", pushTokenDto);
+    return await this.notificationsService.removeUserPushToken(userId, token);
+  }
+
   @Delete("/:userId")
   @ApiAcceptedResponse({
     description: "Notifications deleted successfully",

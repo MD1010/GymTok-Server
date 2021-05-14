@@ -59,8 +59,8 @@ export class User extends Document {
   @Prop()
   image: string;
 
-  @Prop()
-  pushToken: string;
+  @Prop({ default: [] })
+  pushTokens: string[];
 
   @Prop()
   recommendedChallenges: string[];

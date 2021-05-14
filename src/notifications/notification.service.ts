@@ -32,7 +32,11 @@ export class NotificationsService {
       .execPopulate();
   }
   async setUserPushToken(userId: string, token: string) {
-    return await this.usersModel.updateOne({ _id: userId }, { pushToken: token });
+    return await this.usersModel.updateOne({ _id: userId }, { $addToSet: { pushTokens: token } });
+  }
+
+  async removeUserPushToken(userId: string, token: string) {
+    return await this.usersModel.updateOne({ _id: userId }, { $pull: { pushTokens: token } });
   }
 
   async getNotification(notificationId: string, userId: string) {
@@ -97,16 +101,20 @@ export class NotificationsService {
   async sendPushNotification(recipientPushTokens: {}, notification: Notification) {
     const { date, _id, title, body, data, sender } = notification;
     let notificationPayload = [];
-    Object.keys(recipientPushTokens).map((key) => {
-      const recipient = recipientPushTokens[key];
-      if (recipient) {
-        notificationPayload.push({
-          to: recipient,
-          sound: "default",
-          title,
-          body,
-          data: { ...data, _id, date, sender: sender.toJSON() },
-        });
+    console.log("reciepent", recipientPushTokens);
+
+    Object.keys(recipientPushTokens).map((userId) => {
+      const recipients = recipientPushTokens[userId];
+      for (const recipient of recipients) {
+        if (recipient) {
+          notificationPayload.push({
+            to: recipient,
+            sound: "default",
+            title,
+            body,
+            data: { ...data, _id, date, sender: sender.toJSON() },
+          });
+        }
       }
     });
 
@@ -124,7 +132,7 @@ export class NotificationsService {
     await Promise.all(
       notifiedUsers.map(async (user) => {
         const foundUser = await this.userService.findUserById(user);
-        pushTokensRes[user] = foundUser?.pushToken;
+        pushTokensRes[user] = foundUser?.pushTokens;
       })
     );
     return pushTokensRes;
