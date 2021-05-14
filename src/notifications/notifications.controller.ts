@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from "@nestjs/common";
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  Query,
+} from "@nestjs/common";
 import {
   ApiAcceptedResponse,
   ApiBadRequestResponse,
@@ -66,7 +78,9 @@ export class NotificationsController {
     type: [NotificationDto],
   })
   async deleteUserNotifications(@Param("userId") userId: string) {
-    return await this.notificationsService.deleteAllNotifications(userId);
+    const res = await this.notificationsService.deleteAllNotifications(userId);
+    if (!res) throw new HttpException({}, HttpStatus.NO_CONTENT);
+    return res;
   }
 
   @Delete("/:notificationId/:userId")
@@ -79,7 +93,9 @@ export class NotificationsController {
     type: [NotificationDto],
   })
   async deleteUserNotification(@Param("notificationId") notificationId: string, @Param("userId") userId: string) {
-    return await this.notificationsService.deleteUserNotification(userId, notificationId);
+    const res = await this.notificationsService.deleteUserNotification(userId, notificationId);
+    if (!res) throw new HttpException({}, HttpStatus.NO_CONTENT);
+    return res;
   }
 
   @Put("/:notificationId/:userId")
@@ -92,6 +108,8 @@ export class NotificationsController {
     type: [NotificationDto],
   })
   async markNotificationAsRead(@Param("notificationId") notificationId: string, @Param("userId") userId: string) {
-    return await this.notificationsService.markNotificationAsRead(userId, notificationId);
+    const res = await this.notificationsService.markNotificationAsRead(userId, notificationId);
+    if (!res) throw new BadRequestException("Failed to mark notification as read");
+    return res;
   }
 }

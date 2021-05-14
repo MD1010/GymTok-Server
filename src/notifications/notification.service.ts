@@ -15,11 +15,12 @@ export class NotificationsService {
     @InjectModel(User.name) private readonly usersModel: Model<User>,
     private readonly userService: UsersService
   ) {}
+  private populatedSenderFields: any = { _id: 1, username: 1, fullName: 1, email: 1, image: 1 };
   async getUserNotifications(userId: string) {
     const userNotifications = await this.notificationsModel
       .find(!!userId ? { notifiedUsers: userId } : ({} as FilterQuery<Notification[]>))
       .sort({ date: -1 })
-      .populate("sender", { _id: 1, username: 1, fullName: 1, email: 1, image: 1 })
+      .populate("sender", this.populatedSenderFields)
       .exec();
     return userNotifications.map((notification) => {
       return normalizeNotificationObject(notification, userId);
@@ -27,7 +28,7 @@ export class NotificationsService {
   }
   async createNotification(notification: NotificationDto) {
     return await (await this.notificationsModel.create(notification))
-      .populate("sender", { _id: 1, username: 1, fullName: 1, email: 1, image: 1 } as any)
+      .populate("sender", this.populatedSenderFields)
       .execPopulate();
   }
   async setUserPushToken(userId: string, token: string) {
@@ -42,7 +43,7 @@ export class NotificationsService {
   async deleteAllNotifications(userId: string) {
     const user = await this.userService.findUserById(userId);
     if (!user) {
-      throw new HttpException({}, HttpStatus.NO_CONTENT);
+      return null;
     } else {
       const res = await this.notificationsModel.updateMany({ notifiedUsers: userId } as any, {
         $pull: { notifiedUsers: userId, readBy: userId as any } as any,
@@ -50,7 +51,7 @@ export class NotificationsService {
       if (res.n) {
         return res;
       } else {
-        throw new HttpException({}, HttpStatus.NO_CONTENT);
+        return null;
       }
     }
   }
@@ -60,7 +61,7 @@ export class NotificationsService {
     const userNotification = userNotifications.find((x) => x._id == notificationId);
 
     if (!userNotifications.length || !userNotification) {
-      throw new HttpException({}, HttpStatus.NO_CONTENT);
+      return null;
     } else {
       const res = await this.notificationsModel.updateOne(
         { _id: notificationId },
@@ -70,7 +71,7 @@ export class NotificationsService {
       if (res.n) {
         return userNotification;
       } else {
-        throw new HttpException({}, HttpStatus.NO_CONTENT);
+        return null;
       }
     }
   }
@@ -80,7 +81,7 @@ export class NotificationsService {
     const isNotificationRead = userNotification?.isRead;
 
     if (!userNotifications.length || !userNotification || isNotificationRead) {
-      throw new BadRequestException("Failed to mark notification as read");
+      return null;
     } else {
       const res = await this.notificationsModel.updateOne(
         { _id: notificationId },
@@ -89,7 +90,7 @@ export class NotificationsService {
       if (res.n) {
         return userNotification;
       } else {
-        throw new BadRequestException("Failed to mark notification as read");
+        return null;
       }
     }
   }
