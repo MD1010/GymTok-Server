@@ -18,6 +18,7 @@ export class NotificationsService {
   async getUserNotifications(userId: string) {
     const userNotifications = await this.notificationsModel
       .find(!!userId ? { notifiedUsers: userId } : ({} as FilterQuery<Notification[]>))
+      .sort({ date: -1 })
       .populate("sender", { _id: 1, username: 1, fullName: 1, email: 1, image: 1 })
       .exec();
     return userNotifications.map((notification) => {
