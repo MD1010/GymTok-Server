@@ -39,7 +39,7 @@ export class UserController {
     private linkPredictionService: LinkPredictionService,
     private linkPredictionHelper: LinkPredictionHelper,
     private postsHelper: PostsHelper
-  ) {}
+  ) { }
 
   @Get("/profileDetails")
   @ApiOkResponse({
@@ -164,7 +164,6 @@ export class UserController {
     @Query("size", ParseIntPipe) size: number,
     @Query("currentMaxDate") currentMaxDate: Date
   ) {
-    console.log("max dateeeeee!!!", currentMaxDate);
     const user = await this.usersValidator.throwErrorIfUserNameIsNotExist(username);
     try {
       const postsAndTheirRecommendPercent = await this.linkPredictionService.getLinkPredictionCalculationResult(
