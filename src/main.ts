@@ -12,7 +12,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   const linkPredictionController = app.get(LinkPredictionController);
-  // linkPredictionController.initModelTraining();
+  linkPredictionController.initModelTraining();
 
   const options = new DocumentBuilder()
     .setTitle("GymTok server - until when???")
