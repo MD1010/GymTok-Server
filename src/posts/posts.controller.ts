@@ -29,7 +29,7 @@ export class PostsController {
     private hashtagsService: HashtagsService,
     private linkPredictionController: LinkPredictionController,
     private postsHelper: PostsHelper
-  ) {}
+  ) { }
 
   @Get()
   @ApiOkResponse({
@@ -76,7 +76,10 @@ export class PostsController {
   async getRepliesOfPostId(@Param("postId") postId: string) {
     const post = await this.postsService.getPostById(postId);
 
-    return await this.postsService.getPostsByIds(post.replies.map((reply) => reply.toString()));
+    const posts = await this.postsService.getPostsByIds(post.replies.map((reply) => reply.toString()));
+    await this.postsHelper.addParamsToPosts(posts);
+
+    return posts;
   }
 
   @Post("/upload")
