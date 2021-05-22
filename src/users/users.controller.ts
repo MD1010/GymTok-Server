@@ -172,10 +172,13 @@ export class UserController {
       const allRecommendedPostsIds = this.linkPredictionHelper.getMostRecommendedPosts(postsAndTheirRecommendPercent);
 
       const currentPostsIdsPage = allRecommendedPostsIds.slice(page * size, (page + 1) * size);
-      const posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
-      let tempPosts = posts.filter((post, i) => post.publishDate > currentMaxDate);
+      let posts = await this.postsService.findPostsByIds(currentPostsIdsPage);
 
-      await this.postsHelper.addParamsToPosts(tempPosts);
+      if (currentMaxDate) {
+        posts = posts.filter((post, i) => post.publishDate > currentMaxDate);
+      }
+
+      await this.postsHelper.addParamsToPosts(posts);
 
       return posts;
     } catch (err) {
