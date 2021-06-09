@@ -5,7 +5,7 @@ import { PostDto } from "./posts.model";
 export class PostsParser {
   parsePostFileDataToPost(formDataFields: any, isReply: boolean): PostDto {
     const parsedPost = {
-      description: formDataFields.description,
+      description: formDataFields.description === "null" ? null : formDataFields.description,
       createdBy: formDataFields.createdBy,
       taggedUsers:
         formDataFields.taggedUsers && formDataFields.taggedUsers !== "undefined"
@@ -13,9 +13,7 @@ export class PostsParser {
           : [],
       likes: [],
       hashtags:
-        formDataFields.hashtags && formDataFields.hashtags !== "undefined"
-          ? JSON.parse(formDataFields.hashtags)
-          : [],
+        formDataFields.hashtags && formDataFields.hashtags !== "undefined" ? JSON.parse(formDataFields.hashtags) : [],
       isReply,
       videoURI: "",
       gif: "",

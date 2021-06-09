@@ -29,7 +29,7 @@ export class PostsController {
     private hashtagsService: HashtagsService,
     private linkPredictionController: LinkPredictionController,
     private postsHelper: PostsHelper
-  ) { }
+  ) {}
 
   @Get()
   @ApiOkResponse({
@@ -153,6 +153,8 @@ export class PostsController {
 
   private async validateAndAddNewPost(filesToUpload: any, formDataFields: any, isReply: boolean) {
     const parsedPost = this.postsParser.parsePostFileDataToPost(formDataFields, isReply);
+    console.log("posted", parsedPost);
+
     await this.usersValidator.getOrThrowErrorIfIdIsNotNotExist(parsedPost.createdBy);
     await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(parsedPost.likes);
     await this.usersValidator.getOrThrowErrorIfOneOfEntityIdsIsNotExist(parsedPost.taggedUsers);
